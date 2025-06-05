@@ -1,6 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap');
 @import "tailwindcss";
 
 @theme {
+    /* font-family */
+     --font-manrope: "Manrope";
+     --font-inter: "Inter"; 
+
+    /* background color */
+    --color-bg-primary: #00263E;
+    --color-bg-secondary: #0091F0;
+
+
     /* Pri Light Colors */
     --color-pri-light-1: #e6f4fe;
     --color-pri-light-2: #d9effd;

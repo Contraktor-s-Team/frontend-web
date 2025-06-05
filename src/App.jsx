@@ -1,15 +1,15 @@
 import React from 'react'
 import { ButtonDemo, CtaButtonDemo, ChipDemo } from "./components/Button";
 import { FormDemo } from "./components/Form";
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Signup from './pages/Onboarding/Signup';
 function App() {
   return (
-    <div className="bg-gray-50 min-h-screen py-8">
-      <ButtonDemo />
-      <CtaButtonDemo />
-      <ChipDemo />
-      <FormDemo />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Signup/>} />
+      </Routes>
+    </Router>
   );
 }
 
