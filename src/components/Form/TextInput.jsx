@@ -72,7 +72,7 @@ const TextInput = ({
   }
 
   const baseInputClasses = `
-    w-full py-[16px] text-base font-inter text-[#98A2B3] bg-white border-[1px] focus:border-sec-norm-1 focus:outline-none
+    w-full py-[16px] text-base font-inter text-[#98A2B3] bg-white border-[1px] focus:border-[#0091F0] focus:outline-none
     border rounded-[6px] transition-colors duration-150 ease-in-out 
     disabled:bg-gray-50 disabled:cursor-not-allowed 
     read-only:bg-gray-50 read-only:cursor-default

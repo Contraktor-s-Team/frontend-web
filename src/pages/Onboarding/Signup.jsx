@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { FiEye, FiMail, FiMapPin, FiSearch } from "react-icons/fi";
+import { useState, useRef } from "react";
+import { FiEye, FiMail, FiMapPin, FiSearch, FiUpload } from "react-icons/fi";
 import { TiSpanner } from "react-icons/ti";
 import Button from "../../components/Button";
 import { TbCircleCheckFilled } from "react-icons/tb";
 import { Checkbox, TextInput } from "../../components/Form";
 import google from "../../assets/img/google.png";
 import facebook from "../../assets/img/facebook.png";
-import { FaMapPin } from "react-icons/fa";
+import profile from '../../assets/img/profile.png';
+import { FaMapPin, FaRegMap } from "react-icons/fa";
 
 const Signup = () => {
     const [step, setStep] = useState(1);
@@ -16,8 +17,19 @@ const Signup = () => {
     const [nearbyLandmark, setNearbyLandmark] = useState('');
     const [areaLocality, setAreaLocality] = useState('');
     const [poBox, setPoBox] = useState('');
+    const [profileImage, setProfileImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [selectedServices, setSelectedServices] = useState([]);
+    const [dragOver, setDragOver] = useState(false);
+    const fileInputRef = useRef(null);
+    const services = [
+        'Carpentry', 'Banking', 'Interior', 'Gas works', 'Plumbing', 'AC/Refrigeration',
+        'Beauty/Salon', 'Bricklaying / POP', 'Catering', 'Cleaning', 'Fumigation',
+        'DSTV/CCTV', 'Generator Repair', 'Haulage/Movers', 'Painter', 'Photographer',
+        'Electrician'
+    ];
     const nextStep = () => {
-        if (step < 5) {
+        if (step < 6) {
             if (selectedRole) {
                 setStep(step + 1);
             }
@@ -36,19 +48,16 @@ const Signup = () => {
         }
         }
     };
-
     const handleKeyDown = (index, e) => {
         if (e.key === 'Backspace' && !code[index] && index > 0) {
         const prevInput = document.getElementById(`code-${index - 1}`);
         if (prevInput) prevInput.focus();
         }
     };
-
     const handleResendCode = () => {
         // Handle resend code logic here
         console.log('Resending code...');
     };
-
     const handleCreateAccount = () => {
         const verificationCode = code.join('');
         if (verificationCode.length === 6) {
@@ -60,7 +69,6 @@ const Signup = () => {
         // Handle setting location on map
         console.log('Opening map for location selection...');
     };
-
     const handleSetLocation = () => {
         const locationData = {
         streetAddress,
@@ -70,6 +78,78 @@ const Signup = () => {
         };
         console.log('Setting location:', locationData);
     };
+    const handleImageUpload = (file) => {
+        if (file && file.type.startsWith('image/')) {
+        // Check file size (2MB limit)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File size should be less than 2MB');
+            return;
+        }
+
+        setProfileImage(file);
+        
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(file);
+        } else {
+        alert('Please select a valid image file');
+        }
+    };
+
+    const handleFileSelect = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+        handleImageUpload(file);
+        }
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setDragOver(false);
+        const file = e.dataTransfer.files[0];
+        if (file) {
+        handleImageUpload(file);
+        }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setDragOver(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        setDragOver(false);
+    };
+
+    const removeImage = () => {
+        setProfileImage(null);
+        setImagePreview(null);
+        if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+        }
+    };
+
+    const toggleService = (service) => {
+        setSelectedServices(prev => 
+        prev.includes(service) 
+            ? prev.filter(s => s !== service)
+            : [...prev, service]
+        );
+    };
+
+    const handleSaveAndContinue = () => {
+        const profileData = {
+        profileImage,
+        selectedServices
+        };
+        console.log('Saving profile:', profileData);
+    };
+
+    const isFormValid = selectedServices.length > 0;
     return ( 
         <div className="relative flex items-center h-screen w-full bg-white p-[27px]">
             <div className="hidden bg-bg-primary p-[54px] rounded-[20px] w-[55%] h-full md:flex flex-col justify-between">
@@ -87,6 +167,7 @@ const Signup = () => {
                     <div className={`w-100/5 h-1.5 ${step >= 3 ? "bg-blue-500" : "bg-gray-200"} rounded`}></div>
                     <div className={`w-100/5 h-1.5 ${step >= 4 ? "bg-blue-500" : "bg-gray-200"} rounded`}></div>
                     <div className={`w-100/5 h-1.5 ${step >= 5 ? "bg-blue-500" : "bg-gray-200"} rounded`}></div>
+                    <div className={`w-100/5 h-1.5 ${step >= 6 ? "bg-blue-500" : "bg-gray-200"} rounded`}></div>
                 </div>
                 {/* Progress bar section Ends*/}
                 {/* Steps form section Start*/}
@@ -212,7 +293,7 @@ const Signup = () => {
                                     value={digit}
                                     onChange={(e) => handleCodeChange(index, e.target.value)}
                                     onKeyDown={(e) => handleKeyDown(index, e)}
-                                    className="w-[82px] h-[80px] md:w-[126px] md:h-[123px] text-center text-xl font-semibold border-2 border-[#DFE2E7] rounded-[10px] focus:border-blue-500 focus:outline-none transition-colors"
+                                    className="w-[82px] h-[80px] md:w-[126px] md:h-[123px] text-center text-xl font-semibold border-[2px] border-[#DFE2E7] rounded-[10px] focus:border-[#0091F0] focus:outline-none transition-colors"
                                     />
                                 ))}
                             </div>
@@ -227,10 +308,10 @@ const Signup = () => {
                             </div>
                             <Button 
                                 variant="secondary" 
-                                className="w-full mt-[38px] py-[11px]" 
+                                className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
                                 onClick={nextStep}
                             >
-                                Create Account
+                                Verify Email
                             </Button>
                         
                         </div>
@@ -245,12 +326,12 @@ const Signup = () => {
                             </div>
                             <button
                                 onClick={handleSetLocationOnMap}
-                                className="mt-[52px] w-full py-3 px-4 border-2 border-blue-500 text-blue-500 rounded-[50px] font-medium hover:bg-blue-50 transition-colors flex items-center justify-center space-x-2"
+                                className="mt-[52px] w-full py-3 px-4 border-2 border-[#0091F0] text-sm text-[#0091F0] rounded-[50px] font-medium hover:bg-blue-50 transition-colors flex items-center justify-center space-x-2"
                                 >
                                 <span>Set Location on map</span>
-                                <FaMapPin size={20} />
+                                <FaRegMap size={20} />
                             </button>
-                            <form>
+                            <form className="mt-[36px]">
                                 <TextInput
                                     id="default-text"
                                     label="Street Address"
@@ -289,7 +370,159 @@ const Signup = () => {
                             </form>
                             <Button 
                                 variant="secondary" 
-                                className="w-full mt-[38px] py-[11px]" 
+                                className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
+                                onClick={nextStep}
+                            >
+                                Set Location
+                            </Button>
+                        
+                        </div>
+                    </div>
+                )}
+                {step === 5  && (
+                    <div>
+                        <div>
+                            <div className="space-y-2">
+                                <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-4xl">Finish creating account</h3>
+                                <p className="font-inter font-medium text-[#101928] text-sm md:text-base">Add your name and phone number to finish creating your account</p>
+                            </div>
+                            <form className="mt-[36px]">
+                                <TextInput
+                                    id="default-text"
+                                    label="First Name"
+                                    placeholder="Enter your first name"
+                                    className="mb-[40px]"
+                                    // value={textInputValue}
+                                    // onChange={(e) => setTextInputValue(e.target.value)}
+                                />
+
+                                 <TextInput
+                                    id="default-text"
+                                    label="Last Name"
+                                    placeholder="Enter your last name"
+                                    className="mb-[40px]"
+                                    // value={textInputValue}
+                                    // onChange={(e) => setTextInputValue(e.target.value)}
+                                />
+
+                                 <TextInput
+                                    id="default-text"
+                                    label="Phone Number"
+                                    placeholder="Enter your phone number"
+                                    className="mb-[40px]"
+                                    // value={textInputValue}
+                                    // onChange={(e) => setTextInputValue(e.target.value)}
+                                />
+                            </form>
+                            <Button 
+                                variant="secondary" 
+                                className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
+                                onClick={nextStep}
+                            >
+                                Create Account
+                            </Button>
+                        
+                        </div>
+                    </div>
+                )}
+                {step === 6  && (
+                    <div>
+                        <div>
+                            <div className="space-y-2">
+                                <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-4xl">Almost There — Complete Your Profile</h3>
+                                <p className="font-inter font-medium text-[#101928] text-sm md:text-base">Tell us a bit more about you so we can personalize your experience.</p>
+                            </div>
+                            <div className="mt-[45px]">
+                                <label className="block text-sm font-medium font-inter text-[#101928] mb-[20px]">
+                                    Profile Picture
+                                </label>     
+                                <div className="flex items-center space-x-4">
+                                    {/* Profile Image Preview */}
+                                    <div className="relative">
+                                    {imagePreview ? (
+                                        <div className="relative">
+                                        <img 
+                                            src={imagePreview} 
+                                            alt="Profile preview" 
+                                            className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                                        />
+                                        {/* <button
+                                            onClick={removeImage}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                        >
+                                            <X size={12} />
+                                        </button> */}
+                                        </div>
+                                    ) : (
+                                        <div className="rounded-full flex items-center justify-center">
+                                            <img 
+                                                src={imagePreview || profile} 
+                                                alt="Profile preview" 
+                                                className="w-30 h-30 rounded-full object-cover"
+                                            />
+                                        </div>
+                                    )}
+                                    </div>
+
+                                    {/* Upload Area */}
+                                    <div className="">
+                                    <div
+                                        onDrop={handleDrop}
+                                        onDragOver={handleDragOver}
+                                        onDragLeave={handleDragLeave}
+                                        className={`p-4 text-center transition-colors flex flex-col-reverse md:flex-row md:justify-between md: gap-9
+                                            ${
+                                            dragOver 
+                                                ? 'border-blue-400 bg-blue-50' 
+                                                : 'border-gray-300 hover:border-gray-400'
+                                            }
+                                        `}
+                                    >
+                                        <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileSelect}
+                                        className="hidden"
+                                        />
+                                        <button
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="mt-[20px] md:mt-[0px] text-[#0091F0] text-sm font-inter font-medium border border-[#0091F0] px-[12px] py-[8px] rounded-[50px] hover:bg-blue-600 transition-colors flex items-center space-x-2 mx-auto"
+                                        >
+                                        <FiUpload size={16} />
+                                        <span>Upload picture</span>
+                                        </button>
+                                        <p className="text-sm font-inter font-medium text-[#98A2B3] mt-2">
+                                            JPG or PNG file, no larger than 2MB.<br></br> (400x400px) with a clean background.
+                                        </p>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-[59px]">
+                                <label className="block text-sm font-medium font-inter text-[#101928] mb-3">
+                                    Service Interests
+                                </label>
+                                
+                                <div className="flex flex-wrap gap-2">
+                                    {services.map((service) => (
+                                    <button
+                                        key={service}
+                                        onClick={() => toggleService(service)}
+                                        className={`px-[18px] py-[14px] rounded-full text-sm font-medium font-inter text-[#667185] border transition-colors ${
+                                        selectedServices.includes(service)
+                                            ? 'bg-[#E6F4FE]  border-[#0074C0]'
+                                            : 'bg-white border-[#DFE2E7] hover:border-[#F7D7BA]'
+                                        }`}
+                                    >
+                                        {service}
+                                    </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <Button 
+                                variant="secondary" 
+                                className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
                                 onClick={nextStep}
                             >
                                 Create Account
