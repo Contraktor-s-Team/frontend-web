@@ -53,8 +53,8 @@ const TextInput = ({
   const hasLeadingIcon = !!leadingIcon;
   const hasTrailingIcon = !!trailingIcon || (type === 'password' && value) || isError || isSuccess;
 
-  let borderColor = 'border-gray-300';
-  let iconColor = 'text-gray-400';
+  let borderColor = 'border-[#D0D5DD]';
+  let iconColor = 'text-[#98A2B3]';
   let helperTextColor = 'text-gray-500';
 
   if (disabled || readOnly) {
@@ -72,8 +72,8 @@ const TextInput = ({
   }
 
   const baseInputClasses = `
-    form-input w-full py-2 text-sm text-gray-700 bg-white border-[1.5px] focus:border-sec-norm-1 focus:outline-none
-    border rounded-md shadow-sm transition-colors duration-150 ease-in-out 
+    w-full py-[16px] text-base font-inter text-[#98A2B3] bg-white border-[1px] focus:border-sec-norm-1 focus:outline-none
+    border rounded-[6px] transition-colors duration-150 ease-in-out 
     disabled:bg-gray-50 disabled:cursor-not-allowed 
     read-only:bg-gray-50 read-only:cursor-default
   `;
@@ -94,11 +94,11 @@ const TextInput = ({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={id || name} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={id || name} className="block text-sm font-medium font-inter text-[#101928] mb-[10px]">
           {label}
         </label>
       )}
-      <div className="relative rounded-md shadow-sm">
+      <div className="relative">
         {hasLeadingIcon && (
           <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${iconColor}`}>
             {React.cloneElement(leadingIcon, { className: 'h-5 w-5' })}

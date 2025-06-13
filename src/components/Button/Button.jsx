@@ -56,10 +56,10 @@ const Button = ({
       disabled:bg-neu-norm-1
     `,
     secondary: `
-      bg-white 
-      text-pri-norm-1 
+      bg-pri-norm-1
+      text-white 
       border-[1.5px] border-pri-norm-1 
-      hover:bg-pri-light-1 hover:border-pri-norm-1 hover:text-pri-norm-1
+      hover:bg-[#006DB4] hover:border-[#006DB4] hover:text-[#FFFFFF]
       focus:bg-pri-light-1 focus:border-pri-dark-1 focus:text-pri-dark-1
       disabled:border-neu-light-3 disabled:text-neu-norm-1 disabled:bg-white
     `,

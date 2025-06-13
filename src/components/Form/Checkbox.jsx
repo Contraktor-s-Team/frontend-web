@@ -88,8 +88,8 @@ const Checkbox = ({
         <label
           id={`${checkboxId}-label`}
           htmlFor={checkboxId}
-          className={`ml-3 text-sm font-medium ${
-            disabled ? 'text-gray-500' : 'text-gray-700'
+          className={`ml-3 text-sm font-medium font-inter ${
+            disabled ? 'text-gray-500' : 'text-[#98A2B3]'
           } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         >
           {label}
