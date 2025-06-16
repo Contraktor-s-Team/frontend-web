@@ -72,10 +72,10 @@ const TextInput = ({
   }
 
   const baseInputClasses = `
-    w-full py-[16px] text-base font-inter text-[#98A2B3] bg-white border-[1px] focus:border-[#0091F0] focus:outline-none
+    w-full py-[16px] text-base font-inter text-[#101928] bg-white border-[1px] focus:border-[#0091F0] focus:outline-none
     border rounded-[6px] transition-colors duration-150 ease-in-out 
-    disabled:bg-gray-50 disabled:cursor-not-allowed 
-    read-only:bg-gray-50 read-only:cursor-default
+    disabled:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-400
+    read-only:bg-gray-50 read-only:cursor-default read-only:text-gray-400
   `;
 
   let currentTrailingIcon = trailingIcon;
@@ -94,7 +94,7 @@ const TextInput = ({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={id || name} className="block text-sm font-medium font-inter text-[#101928] mb-[10px]">
+        <label htmlFor={id || name} className="block font-medium font-inter text-[#101928] mb-[10px]">
           {label}
         </label>
       )}
