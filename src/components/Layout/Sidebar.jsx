@@ -101,62 +101,38 @@ const Sidebar = () => {
         <div className="h-[264px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mt-3 m-3"></div>
       </div>
 
-      {/* Tablet Sidebar */}
-      <div className="hidden md:flex lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 h-16">
-        <div className="flex justify-around items-center w-full h-full px-4">
-          {navItems.concat(bottomNavItems).map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors flex-1 h-full ${
-                isActive(item.path) ? 'text-pri-norm-1' : 'text-gray-500'
-              }`}
-            >
-              <div className="relative">
-                {React.cloneElement(item.icon, {
-                  size: 20,
-                  strokeWidth: isActive(item.path) ? 2.5 : 2,
-                })}
-                {item.notification && (
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-sec-norm-1 text-white text-[10px] rounded-full flex items-center justify-center">
-                    {item.notification}
-                  </span>
-                )}
-              </div>
-              <span className="text-[10px] mt-1 font-medium hidden sm:block">
-                {item.label}
-              </span>
-            </Link>
-          ))}
+      {/* Responsive Bottom Navigation */}
+<div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 h-16 md:h-20">
+  <div className="flex justify-around items-center w-full h-full px-1 md:px-4">
+    {navItems.concat(bottomNavItems).map((item) => (
+      <Link
+        key={item.path}
+        to={item.path}
+        className={`
+          flex items-center justify-center w-full h-full
+          md:flex-col md:justify-center md:items-center
+          transition-colors
+          ${isActive(item.path) ? 'text-pri-norm-1' : 'text-gray-500'}
+        `}
+      >
+        <div className="relative p-2 rounded-lg hover:bg-gray-50">
+          {React.cloneElement(item.icon, {
+            size: 24,
+            strokeWidth: isActive(item.path) ? 2.5 : 2,
+          })}
+          {item.notification && (
+            <span className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 h-4 w-4 bg-sec-norm-1 text-white text-[10px] rounded-full flex items-center justify-center">
+              {item.notification}
+            </span>
+          )}
         </div>
-      </div>
-
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 h-16">
-        <div className="flex justify-around items-center w-full h-full px-1">
-          {navItems.concat(bottomNavItems).map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center justify-center w-full h-full transition-colors ${
-                isActive(item.path) ? 'text-pri-norm-1' : 'text-gray-500'
-              }`}
-            >
-              <div className="relative p-2 rounded-lg hover:bg-gray-50">
-                {React.cloneElement(item.icon, {
-                  size: 24,
-                  strokeWidth: isActive(item.path) ? 2.5 : 2,
-                })}
-                {item.notification && (
-                  <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-sec-norm-1 text-white text-[10px] rounded-full flex items-center justify-center">
-                    {item.notification}
-                  </span>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+        <span className="hidden md:block text-xs mt-1 font-medium">
+          {item.label}
+        </span>
+      </Link>
+    ))}
+  </div>
+</div>
     </>
   );
 };

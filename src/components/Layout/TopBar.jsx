@@ -34,7 +34,7 @@ const TopBar = () => {
           </div>
 
           {/* Notifications */}
-            <button className="relative p-1.5 rounded-full ring-2 ring-gray-200">
+            <button className="cursor-pointer relative p-1.5 rounded-full ring-2 ring-gray-200">
               <Bell className="h-5 w-5 text-gray-500" />
               <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-sec-norm-1 rounded-full border-2 border-white"></span>
             </button>
