@@ -73,9 +73,10 @@ const TextInput = ({
 
   const baseInputClasses = `
     w-full py-[16px] text-base font-inter text-[#101928] bg-white border-[1px] focus:border-[#0091F0] focus:outline-none
-    border rounded-[6px] transition-colors duration-150 ease-in-out 
+    border transition-colors duration-150 ease-in-out 
     disabled:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-400
     read-only:bg-gray-50 read-only:cursor-default read-only:text-gray-400
+    ${inputClassName.includes('rounded-') ? '' : 'rounded-[6px]'}
   `;
 
   let currentTrailingIcon = trailingIcon;
@@ -100,7 +101,7 @@ const TextInput = ({
       )}
       <div className="relative">
         {hasLeadingIcon && (
-          <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${iconColor}`}>
+          <div className={`absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none ${iconColor}`}>
             {React.cloneElement(leadingIcon, { className: 'h-5 w-5' })}
           </div>
         )}
@@ -118,7 +119,7 @@ const TextInput = ({
           className={`
             ${baseInputClasses}
             ${borderColor}
-            ${hasLeadingIcon ? 'pl-10' : 'px-3'}
+            ${hasLeadingIcon ? 'pl-14' : 'px-3'}
             ${hasTrailingIcon ? 'pr-10' : !hasLeadingIcon ? 'px-3' : 'pl-10'}
             ${inputClassName}
           `}
@@ -149,11 +150,11 @@ const TextInput = ({
           </div>
         )}
       </div>
-      {(errorMessage && isError) ? (
+      {isError && errorMessage ? (
         <p id={`${id || name}-description`} className={`mt-1 text-xs ${helperTextColor}`}>
           {errorMessage}
         </p>
-      ) : (successMessage && isSuccess) ? (
+      ) : isSuccess && successMessage ? (
         <p id={`${id || name}-description`} className={`mt-1 text-xs ${helperTextColor}`}>
           {successMessage}
         </p>

@@ -63,6 +63,14 @@ const Button = ({
       focus:bg-pri-light-1 focus:border-pri-dark-1 focus:text-pri-dark-1
       disabled:border-neu-light-3 disabled:text-neu-norm-1 disabled:bg-white
     `,
+    'primary-trans': `
+    text-pri-norm-1 
+    border-[1.5px] border-pri-norm-1
+    hover:bg-pri-light-1 
+    focus:bg-pri-light-1 focus:border-pri-dark-1 focus:text-pri-dark-1
+    disabled:text-neu-norm-1 disabled:border-[#F0F2F5] disabled:bg-white
+  `,
+
     'destructive-pri': `
       bg-err-norm-2 
       text-white 
