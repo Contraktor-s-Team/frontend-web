@@ -23,6 +23,7 @@ import { FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
  * @param {Function} [onTrailingIconClick] - Callback when trailing icon is clicked
  * @param {string} [className=''] - Additional CSS classes for the container
  * @param {string} [inputClassName=''] - Additional CSS classes for the input element
+ * @param {string} [labelClasses=''] - Additional CSS classes for the label element
  * @returns {JSX.Element} A text input field with optional icons and states
  */
 
@@ -46,6 +47,7 @@ const TextInput = ({
   onTrailingIconClick,
   className = '',
   inputClassName = '',
+  labelClasses = '',
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -72,10 +74,11 @@ const TextInput = ({
   }
 
   const baseInputClasses = `
-    w-full py-[16px] text-base font-inter text-[#101928] bg-white border-[1px] focus:border-[#0091F0] focus:outline-none
-    border transition-colors duration-150 ease-in-out 
-    disabled:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-400
+    block w-full border py-4 focus:outline-none
+    border-[1px] focus:border-pri-norm-1
+    disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-gray-50
     read-only:bg-gray-50 read-only:cursor-default read-only:text-gray-400
+    placeholder:text-neu-norm-1
     ${inputClassName.includes('rounded-') ? '' : 'rounded-[6px]'}
   `;
 
@@ -95,7 +98,7 @@ const TextInput = ({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={id || name} className="block font-medium font-inter text-[#101928] mb-[10px]">
+        <label htmlFor={id || name} className={`block font-medium font-inter text-[#101928] mb-[10px] ${labelClasses}`}>
           {label}
         </label>
       )}
@@ -112,6 +115,7 @@ const TextInput = ({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
+          autoComplete='on'
           disabled={disabled}
           readOnly={readOnly}
           aria-invalid={isError}

@@ -14,7 +14,7 @@ const MainLayout = () => {
         <TopBar />
         
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6 pb-20 lg:pb-6">
           <Outlet />
         </main>
       </div>

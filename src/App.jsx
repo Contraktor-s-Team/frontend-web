@@ -18,6 +18,10 @@ import MyJobs from './pages/MyJobs/MyJobs';
 import Messages from './pages/Messages/Messages';
 import ProfileSettings from './pages/ProfileSettings/ProfileSettings';
 import HelpCentre from './pages/HelpCentre/HelpCentre';
+import PostJobLayout from './pages/PostJob/PostJobLayout';
+import DescribeJob from './pages/PostJob/DescribeJob';
+import TimeLocation from './pages/PostJob/TimeLocation';
+import ReviewPost from './pages/PostJob/ReviewPost';
 
 // Auth context
 import { AuthProvider } from './contexts/AuthContext';
@@ -59,6 +63,13 @@ function App() {
             <Route path="/messages" element={<Messages />} />
             <Route path="/settings" element={<ProfileSettings />} />
             <Route path="/help" element={<HelpCentre />} />
+            {/* Post a Job multi-step nested routes */}
+            <Route path="/dashboard/post-job" element={<PostJobLayout />}>
+              <Route index element={<Navigate to="describe" replace />} />
+              <Route path="describe" element={<DescribeJob />} />
+              <Route path="time-location" element={<TimeLocation />} />
+              <Route path="review" element={<ReviewPost />} />
+            </Route>
           </Route>
           
           {/* 404 - Not Found */}

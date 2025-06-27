@@ -66,7 +66,7 @@ const Select = ({
           id={selectId}
           onClick={() => !disabled && setIsOpen(!isOpen)}
           className={`
-            flex items-center w-full px-4 py-2.5 text-left
+            flex items-center w-full px-4 py-4 text-left
             bg-white border border-gray-300 rounded-lg
             ${disabled ? 'cursor-not-allowed bg-gray-50' : 'cursor-pointer hover:bg-gray-50'}
             ${error ? 'border-red-500' : ''}
@@ -80,7 +80,10 @@ const Select = ({
               <FiHeart className="flex-shrink-0 w-5 h-5 mr-3 text-gray-400" />
             )}
             <div className="flex-1 min-w-0">
-              <span className="text-sm font-medium text-gray-900 truncate">
+              <span className={`
+                text-sm truncate
+                ${value ? '' : 'text-neu-norm-1'}
+              `}>
                 {value ? options.find(opt => opt.value === value)?.label || placeholder : placeholder}
               </span>
               {options.find(opt => opt.value === value)?.description && (

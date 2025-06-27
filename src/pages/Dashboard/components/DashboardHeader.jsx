@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../../../components/Button/Button';
 import { Plus, Briefcase, File, Banknote } from 'lucide-react';
 
@@ -30,6 +31,7 @@ const stats = [
 ];
 
 const DashboardHeader = () => {
+  const navigate = useNavigate();
   return (
     <div className='font-inter font-medium'>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
@@ -40,6 +42,7 @@ const DashboardHeader = () => {
         <Button
           variant="primary-trans"
           leftIcon={<Plus size={20} />}
+          onClick={() => navigate('/dashboard/post-job/describe')}
         >
           Post a Job
         </Button>
