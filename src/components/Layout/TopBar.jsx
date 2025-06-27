@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { MapPin, Bell, ChevronDown, Search } from 'lucide-react';
 import TextInput from '../Form/TextInput';
 import Button from '../Button/Button';
+import NotificationsModal from '../Notifications/NotificationsModal';
 import avatar from '/img/avatar1.jpg';
 
 const TopBar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(true);
   const [location] = useState('Ikeja GRA, Lagos');
 
   return (
@@ -34,10 +37,24 @@ const TopBar = () => {
           </div>
 
           {/* Notifications */}
-            <button className="cursor-pointer relative p-1.5 rounded-full ring-2 ring-gray-200">
-              <Bell className="h-5 w-5 text-gray-500" />
-              <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-sec-norm-1 rounded-full border-2 border-white"></span>
-            </button>
+            <div className="relative">
+              <button 
+                className="cursor-pointer relative p-1.5 rounded-full ring-2 ring-gray-200 hover:ring-gray-300 transition-colors"
+                onClick={() => {
+                  setIsNotificationsOpen(true);
+                  setHasUnread(false);
+                }}
+              >
+                <Bell className="h-5 w-5 text-gray-500" />
+                {hasUnread && (
+                  <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-sec-norm-1 rounded-full border-2 border-white"></span>
+                )}
+              </button>
+              <NotificationsModal 
+                isOpen={isNotificationsOpen} 
+                onClose={() => setIsNotificationsOpen(false)} 
+              />
+            </div>
 
           {/* Profile Dropdown */}
           <div className="relative">

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { MoreVertical, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import { MoreVertical, ChevronRight } from 'lucide-react';
 import Button from '../../../components/Button/Button';
 import { getColorFromString } from '../../../utils/colors';
 
