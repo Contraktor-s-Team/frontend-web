@@ -64,7 +64,7 @@ const RecentServices = () => {
       <div className="px-6 py-5 border-b border-neu-light-1 flex items-center justify-between">
         <h2 className="font-manrope text-xl font-semibold text-gray-900">Recent Services</h2>
         <Button
-          variant="primary-trans"
+          variant="secondary"
           to="/services"
           rightIcon={<ChevronRight size={20} />}
           className=""

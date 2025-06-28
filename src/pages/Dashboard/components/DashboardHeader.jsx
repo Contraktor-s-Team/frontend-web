@@ -40,7 +40,7 @@ const DashboardHeader = () => {
           <p className="text-neu-dark-1">Ready to get things done today?</p>
         </div>
         <Button
-          variant="primary-trans"
+          variant="secondary"
           leftIcon={<Plus size={20} />}
           onClick={() => navigate('/dashboard/post-job/describe')}
         >

@@ -32,7 +32,7 @@ const Button = ({
   ...props
 }) => {
   // Base classes for all buttons
-  const baseClasses = 'cursor-pointer flex items-center justify-center font-semibold rounded-full transition-all focus:outline-none disabled:cursor-not-allowed';
+  const baseClasses = 'cursor-pointer flex items-center justify-center font-semibold rounded-full transition-all active:outline-none disabled:cursor-not-allowed';
   
   // Size classes - only small and large
   const sizeClasses = {
@@ -52,30 +52,22 @@ const Button = ({
       bg-pri-dark-1
       text-white 
       hover:bg-pri-norm-1
-      focus:bg-pri-darker
+      active:bg-pri-darker
       disabled:bg-neu-norm-1
     `,
     secondary: `
-      bg-pri-norm-1
-      text-white 
-      border-[1.5px] border-pri-norm-1 
-      hover:bg-[#006DB4] hover:border-[#006DB4] hover:text-[#FFFFFF]
-      focus:bg-pri-light-1 focus:border-pri-dark-1 focus:text-pri-dark-1
-      disabled:border-neu-light-3 disabled:text-neu-norm-1 disabled:bg-white
-    `,
-    'primary-trans': `
     text-pri-norm-1 
     border-[1.5px] border-pri-norm-1
     hover:bg-pri-light-1 
-    focus:bg-pri-light-1 focus:border-pri-dark-1 focus:text-pri-dark-1
+    active:bg-pri-light-1 active:border-pri-dark-1 active:text-pri-dark-1
     disabled:text-neu-norm-1 disabled:border-[#F0F2F5] disabled:bg-white
-  `,
+    `,
 
     'destructive-pri': `
       bg-err-norm-2 
       text-white 
       hover:bg-err-norm-1 
-      focus:bg-err-dark-1
+      active:bg-err-dark-1
       disabled:bg-neu-light-3
     `,
     'destructive-sec': `
@@ -83,14 +75,14 @@ const Button = ({
       text-err-norm-1
       border-[1.5px] border-err-norm-1
       hover:bg-err-light-1 hover:border-err-norm-2 hover:text-err-norm-1
-      focus:border-err-dark-1 focus:bg-err-light-1 focus:text-err-dark-1
+      active:border-err-dark-1 active:bg-err-light-1 active:text-err-dark-1
       disabled:border-neu-light-3 disabled:text-neu-norm-1 disabled:bg-white
     `,
     'grey-pri': `
       bg-neu-norm-1
       text-white
       hover:bg-neu-darker
-      focus:bg-neu-darker
+      active:bg-neu-darker
       disabled:bg-neu-light-3
     `,
     'grey-sec': `
@@ -98,28 +90,28 @@ const Button = ({
       text-black
       border-[1.5px] border-neu-light-3
       hover:bg-neu-light-1
-      focus:bg-neu-light-3
+      active:bg-neu-light-3
       disabled:border-neu-light-3 disabled:text-neu-norm-1 disabled:bg-white
     `,
     'text-pri': `
       bg-transparent
       text-pri-norm-1
       hover:text-pri-dark-1
-      focus:text-[#00263E]
+      active:text-[#00263E]
       disabled:text-[#D0D5DD]
     `,
     'text-sec': `
       bg-transparent
       text-gray-500
       hover:text-gray-400
-      focus:text-gray-700
+      active:text-gray-700
         disabled:text-[#D0D5DD]
     `,
     'text-destructive': `
       bg-transparent
       text-err-norm-1
       hover:text-err-light-3
-      focus:text-err-dark-1
+      active:text-err-dark-1
        disabled:text-[#D0D5DD]
     `,
   };

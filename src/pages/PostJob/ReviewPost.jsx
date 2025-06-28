@@ -100,45 +100,59 @@ const ReviewPost = () => {
           <div className="pl-8 md:max-w-[314px] border-l-2 border-neu-light-3 h-auto self-start">
             <div className="flex gap-2.5 items-center">
               <h3 className="font-semibold text-gray-900">Time & Location</h3>
-              <Button variant="text-pri" size="small" iconOnly leftIcon={<Pencil size={20}  />} onClick={() => navigate('/dashboard/post-job/time-location')} />
+              <Button 
+                variant="text-pri" 
+                size="small" 
+                iconOnly 
+                leftIcon={<Pencil size={20} />} 
+                onClick={() => navigate('/dashboard/post-job/time-location')} 
+              />
             </div>
 
-              <div className="flex items-center gap-13.5 mt-7.5">
-              <div className="flex flex-col gap-2.5">
-              <p className="text-neu-dark-1 text-sm">Date</p> 
-              <p className="text-sm">{jobData.date ? new Date(jobData.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</p>
-              </div>
-
-              <div className="flex flex-col gap-2.5">
-                <p className="text-neu-dark-1 text-sm">Time</p> 
-                <p className="text-sm">{jobData.time ? new Date(`2000-01-01T${jobData.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : ''}</p>
-              </div>
+            {/* Date and Time section */}
+            <div className="flex items-center gap-13.5 mt-7.5">
+              {[
+                {
+                  label: 'Date',
+                  value: jobData.date 
+                    ? new Date(jobData.date).toLocaleDateString('en-GB', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                      }) 
+                    : ''
+                },
+                {
+                  label: 'Time',
+                  value: jobData.time 
+                    ? new Date(`2000-01-01T${jobData.time}`).toLocaleTimeString('en-US', { 
+                        hour: 'numeric', 
+                        minute: '2-digit', 
+                        hour12: true 
+                      }) 
+                    : ''
+                }
+              ].map((item, index) => (
+                <div key={`time-${index}`} className="flex flex-col gap-2.5">
+                  <p className="text-neu-dark-1 text-sm">{item.label}</p>
+                  <p className="text-sm">{item.value}</p>
+                </div>
+              ))}
             </div>
 
-            <div className="flex flex-col gap-2.5 mt-9.5">
-                <p className="text-neu-dark-1 text-sm">Street Address</p> 
-                <p className="text-sm">{jobData.address?.street}</p>
+            {/* Address section */}
+            {[
+              { label: 'Street Address', value: jobData.address?.street },
+              { label: 'Nearby Landmark', value: jobData.address?.landmark },
+              { label: 'Area / City', value: jobData.address?.city },
+              { label: 'LGA', value: jobData.address?.lga },
+              { label: 'State', value: jobData.address?.state }
+            ].map((item, index) => (
+              <div key={`address-${index}`} className="flex flex-col gap-2.5 mt-9.5">
+                <p className="text-neu-dark-1 text-sm">{item.label}</p>
+                <p className="text-sm">{item.value}</p>
               </div>
-
-              <div className="flex flex-col gap-2.5 mt-9.5">
-                <p className="text-neu-dark-1 text-sm">Nearby Landmark</p> 
-                <p className="text-sm">{jobData.address?.landmark}</p>
-              </div>
-
-              <div className="flex flex-col gap-2.5 mt-9.5">
-                <p className="text-neu-dark-1 text-sm">Area / City</p> 
-                <p className="text-sm">{jobData.address?.city}</p>
-              </div>
-
-              <div className="flex flex-col gap-2.5 mt-9.5">
-                <p className="text-neu-dark-1 text-sm">LGA</p> 
-                <p className="text-sm">{jobData.address?.lga}</p>
-              </div>
-
-               <div className="flex flex-col gap-2.5 mt-9.5">
-                <p className="text-neu-dark-1 text-sm">State</p> 
-                <p className="text-sm">{jobData.address?.state}</p>
-              </div>
+            ))}
           </div>
         </div>
 

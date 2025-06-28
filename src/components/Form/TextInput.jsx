@@ -45,6 +45,7 @@ const TextInput = ({
   leadingIcon,
   trailingIcon,
   onTrailingIconClick,
+  autocomplete='on',
   className = '',
   inputClassName = '',
   labelClasses = '',
@@ -115,7 +116,7 @@ const TextInput = ({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          autoComplete='on'
+          autoComplete={autocomplete}
           disabled={disabled}
           readOnly={readOnly}
           aria-invalid={isError}
