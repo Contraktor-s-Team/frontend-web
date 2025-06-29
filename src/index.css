@@ -1,70 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap');
 @import "tailwindcss";
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@theme {
+    /* font-family */
+     --font-manrope: "Manrope";
+     --font-inter: "Inter"; 
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+    /* background color */
+    --color-bg-primary: #00263E;
+    --color-bg-secondary: #0091F0;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+    /* Pri Light Colors */
+    --color-pri-light-1: #e6f4fe;
+    --color-pri-light-2: #d9effd;
+    --color-pri-light-3: #b0ddfa;
+    
+    /* Pri Norm Colors */
+    --color-pri-norm-1: #0091f0;
+    --color-pri-norm-2: #0083d8;
+    --color-pri-norm-3: #0074c0;
+    
+    /* Pri Dark Colors */
+    --color-pri-dark-1: #006db4;
+    --color-pri-dark-2: #005790;
+    --color-pri-dark-3: #00416c;
+    
+    /* Pri Darker Color */
+    --color-pri-darker: #003354;
+
+    /* Sec Light Colors */
+    --color-sec-light-1: #fdf2e9;
+    --color-sec-light-2: #fbecde;
+    --color-sec-light-3: #f7d7ba;
+    
+    /* Sec Norm Colors */
+    --color-sec-norm-1: #e67e22;
+    --color-sec-norm-2: #cf711f;
+    --color-sec-norm-3: #b8651b;
+    
+    /* Sec Dark Colors */
+    --color-sec-dark-1: #ad5f1a;
+    --color-sec-dark-2: #8a4c14;
+    --color-sec-dark-3: #67390f;
+    
+    /* Sec Darker Color */
+    --color-sec-darker: #512c0c;
+
+    /* Success Light Colors */
+    --color-success-light-1: #e7f5ec;
+    --color-success-light-2: #dbefe2;
+    --color-success-light-3: #b5dfc3;
+    
+    /* Success Norm Colors */
+    --color-success-norm-1: #0f973d;
+    --color-success-norm-2: #0e8837;
+    --color-success-norm-3: #0c7931;
+    
+    /* Success Dark Colors */
+    --color-success-dark-1: #0b712e;
+    --color-success-dark-2: #095b25;
+    --color-success-dark-3: #07441b;
+    
+    /* Success Darker Color */
+    --color-success-darker: #053515;
+
+    /* Warning Light Colors */
+    --color-warning-light-1: #fef6e8;
+    --color-warning-light-2: #fdf1dc;
+    --color-warning-light-3: #fbe2b7;
+    
+    /* Warning Norm Colors */
+    --color-warning-norm-1: #f3a218;
+    --color-warning-norm-2: #db9216;
+    --color-warning-norm-3: #c28213;
+    
+    /* Warning Dark Colors */
+    --color-warning-dark-1: #b67a12;
+    --color-warning-dark-2: #92610e;
+    --color-warning-dark-3: #6d490b;
+    
+    /* Warning Darker Color */
+    --color-warning-darker: #553908;
+
+    /* Error Light Colors */
+    --color-err-light-1: #fbe9e9;
+    --color-err-light-2: #f9dede;
+    --color-err-light-3: #f2bcba;
+    
+    /* Err Norm Colors */
+    --color-err-norm-1: #d42620;
+    --color-err-norm-2: #bf221d;
+    --color-err-norm-3: #aa1e1a;
+    
+    /* Err Dark Colors */
+    --color-err-dark-1: #9f1d18;
+    --color-err-dark-2: #7f1713;
+    --color-err-dark-3: #5f110e;
+    
+    /* Err Darker Color */
+    --color-err-darker: #4a0d0b;
+
+    /* Neutral Light Colors */
+    --color-neu-light-1: #f5f6f7;
+    --color-neu-light-2: #f0f1f4;
+    --color-neu-light-3: #dfe2e7;
+    
+    /* Neu Norm Colors */
+    --color-neu-norm-1: #98a2b3;
+    --color-neu-norm-2: #8992a1;
+    --color-neu-norm-3: #7a828f;
+    
+    /* Neu Dark Colors */
+    --color-neu-dark-1: #727a86;
+    --color-neu-dark-2: #5b616b;
+    --color-neu-dark-3: #444951;
+    
+    /* Neu Darker Color */
+    --color-neu-darker: #35393f;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* styles.css */
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
   }
-  a:hover {
-    color: #747bff;
+  .scrollbar-hidden {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
   }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+  
