@@ -18,7 +18,7 @@ import { FiHeart } from 'react-icons/fi';
  * @returns {JSX.Element} A custom-styled select dropdown
  */
 
-const Select = ({
+const SelectField = ({
   label,
   value,
   onChange,
@@ -76,9 +76,9 @@ const Select = ({
           disabled={disabled}
         >
           <div className="flex items-center flex-1 min-w-0">
-            {showIcon && (
+            {/* {showIcon && (
               <FiHeart className="flex-shrink-0 w-5 h-5 mr-3 text-gray-400" />
-            )}
+            )} */}
             <div className="flex-1 min-w-0">
               <span className="text-sm font-medium text-gray-900 truncate">
                 {value ? options.find(opt => opt.value === value)?.label || placeholder : placeholder}
@@ -116,9 +116,9 @@ const Select = ({
                 `}
               >
                 <div className="flex items-center">
-                  {showIcon && (
+                  {/* {showIcon && (
                     <FiHeart className="flex-shrink-0 w-5 h-5 mr-3 text-gray-400" />
-                  )}
+                  )} */}
                   <div>
                     <span className="text-sm font-medium text-gray-900">
                       {option.label}
@@ -144,7 +144,7 @@ const Select = ({
   );
 };
 
-Select.propTypes = {
+SelectField.propTypes = {
   /** Label text displayed above the select */
   label: PropTypes.string,
   /** Currently selected value */
@@ -178,10 +178,10 @@ Select.propTypes = {
   showIcon: PropTypes.bool,
 };
 
-Select.defaultProps = {
+SelectField.defaultProps = {
   showIcon: true,
   disabled: false,
   required: false,
 };
 
-export default Select;
+export default SelectField;

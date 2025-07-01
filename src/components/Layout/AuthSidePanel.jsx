@@ -46,9 +46,9 @@ const AuthSidePanel = ({
   }, [externalCurrentSlide, slides.length]);
 
   return (
-    <div className={`hidden md:flex w-[566px] flex-col justify-between bg-[#002B41] p-[54px] text-white rounded-[20px] h-full ${className}`}>
+    <div className={`hidden md:flex w-[40%] flex-col justify-between bg-[#002B41] md:p-[30px] xl:p-[54px] text-white rounded-[20px] h-full ${className}`}>
       {/* Logo */}
-      <div className="font-manrope font-bold text-white text-4xl">ContraKtor</div>
+      <div className="font-manrope font-bold text-white md:text-2xl xl:text-4xl">ContraKtor</div>
       
       {/* Slider Content */}
       <div className="flex flex-col items-center space-y-6">
@@ -56,10 +56,10 @@ const AuthSidePanel = ({
         <div className="w-[168px] h-[96px] bg-gray-300 rounded"></div>
         
         {/* Current Slide Content */}
-        <h2 className="font-manrope font-bold text-[28px] leading-[42px] text-center text-white">
+        <h2 className="font-manrope font-bold md:text-[20px] xl:text-[28px] text-center text-white">
           {slides[currentSlide]?.title}
         </h2>
-        <p className="font-inter font-normal text-base leading-6 text-center text-[#98A2B3] max-w-[400px]">
+        <p className="font-inter font-normal md:text-sm xl:text-base leading-6 text-center text-[#98A2B3] max-w-[400px]">
           {slides[currentSlide]?.description}
         </p>
         

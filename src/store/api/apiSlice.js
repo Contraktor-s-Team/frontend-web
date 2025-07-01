@@ -1,0 +1,112 @@
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { use } from 'react'
+
+
+const BASE_URL = 'https://kontractor.bsite.net'
+export const apiSlice = createApi({
+  reducerPath: 'api',
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://kontractor.bsite.net',
+    prepareHeaders: (headers, { getState }) => {
+      // Add auth token if available
+      const token = getState().auth.token
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`)
+      }
+      return headers
+    },
+  }),
+  tagTypes: ['User', 'Post', 'Auth'],
+  endpoints: (builder) => ({
+     // Authentication endpoints
+    login: builder.mutation({
+      query: (credentials) => ({
+        url: '/auth/login',
+        method: 'POST',
+        body: credentials,
+      }),
+      providesTags: ['Auth'],
+    }),
+    register: builder.mutation({
+      query: (userData) => ({
+        url: '/api/Auth/register',
+        method: 'POST',
+        body: userData,
+      }),
+      providesTags: ['Auth'],
+    }),
+    validateEmail: builder.mutation({
+      query: (userData) => ({
+        url: '/api/Auth/validate-email',
+        method: 'POST',
+        body: JSON.stringify(userData),
+        headers: {
+          'Content-Type': 'application/json', 
+        },
+      }),
+      providesTags: ['Auth'],
+    }),
+    confirmEmail: builder.mutation({
+      query: (userData) => ({
+        url: '/api/Auth/confirm-email-validation',
+        method: 'POST',
+        body: userData,
+      }),
+      providesTags: ['Auth'],
+    }),
+    logout: builder.mutation({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+    // Get users
+    getUsers: builder.query({
+      query: () => '/users',
+      providesTags: ['User'],
+    }),
+    // Get single user
+    getUser: builder.query({
+      query: (id) => `/users/${id}`,
+      providesTags: (result, error, id) => [{ type: 'User', id }],
+    }),
+    // Create user
+    createUser: builder.mutation({
+      query: (newUser) => ({
+        url: '/users',
+        method: 'POST',
+        body: newUser,
+      }),
+      invalidatesTags: ['User'],
+    }),
+    // Update user
+    updateUser: builder.mutation({
+      query: ({ id, ...patch }) => ({
+        url: `/users/${id}`,
+        method: 'PATCH',
+        body: patch,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
+    }),
+    // Delete user
+    deleteUser: builder.mutation({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['User'],
+    }),
+  }),
+})
+
+export const {
+  useGetUsersQuery,
+  useGetUserQuery, 
+  useCreateUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+  useRegisterMutation,
+  useValidateEmailMutation,
+  useConfirmEmailMutation,
+} = apiSlice

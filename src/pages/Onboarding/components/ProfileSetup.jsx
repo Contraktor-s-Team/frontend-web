@@ -2,20 +2,39 @@ import React, { useRef, useCallback } from 'react';
 import { FiUpload } from 'react-icons/fi';
 import Button from '../../../components/Button';
 import { TextInput } from '../../../components/Form';
+import SelectField from '../../../components/Form/Select';
+import imagePreview from "../../../assets/profile.png"
+import SuccessModal from '../../../components/Modal/SuccessModal';
+import { useNavigate } from 'react-router-dom';
+import TextAreaInput from '../../../components/Form/TextAreaInput';
+
+
+const options = [
+  { value: 'plumbing', label: 'Plumber' },
+  { value: 'cleaner', label: 'Cleaner' },
+  { value: 'acrepair', label: 'AC Repair'},
+];
 
 const ProfileSetup = ({ 
   onNext,
   onImageUpload,
   onRemoveImage,
   onFormChange,
-  formData = {},
+  formData,
   selectedServices = [],
   onToggleService
 }) => {
+  const Navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = React.useState(false);
+  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
   const { firstName = '', lastName = '', phoneNumber = '' } = formData;
+  console.log("ProfileSetup formData", formData);
+  const [selectedService, setSelectedService] = React.useState('');
 
+  const handleServiceChange = (e) => {
+    setSelectedService(e.target.value);
+  };
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -54,116 +73,186 @@ const ProfileSetup = ({
     onFormChange(name, value);
   };
 
+  const handleSuccess = (e) => {
+    setShowSuccessModal(true);
+    onNext();
+  }
+
   return (
-    <div className="mt-[58px] pb-6 w-full md:max-w-[704px]">
-      <div className="space-y-2">
-        <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Finish creating account</h3>
-        <p className="font-inter font-medium text-[#101928] text-sm md:text-base">
-          Add your name and phone number to finish creating your account
-        </p>
-      </div>
-
-      <div className="mt-8">
-        {/* Profile Image Upload */}
-        <div 
-          className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
-            dragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-          }`}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            onChange={handleFileSelect}
-            accept="image/*"
-          />
-          <div className="flex flex-col items-center justify-center space-y-2">
-            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-              <FiUpload className="text-gray-400 text-2xl" />
+    <div className='mt-[37px] md:mt-[100px]'>
+        <div>
+            <div className="space-y-2">
+                <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-4xl">Almost There — Complete Your Profile</h3>
+                <p className="font-inter font-medium text-[#101928] text-sm md:text-base">Tell us a bit more about you so we can personalize your experience.</p>
             </div>
-            <p className="text-sm text-gray-600">
-              <span className="text-blue-600 font-medium">Click to upload</span> or drag and drop
-            </p>
-            <p className="text-xs text-gray-500">PNG, JPG (max. 2MB)</p>
-          </div>
-        </div>
+            <div className="mt-[45px]">
+                <label className="block text-sm font-medium font-inter text-[#101928] mb-[20px]">
+                    Profile Picture
+                </label>     
+                <div className="flex items-center space-x-4">
+                    {/* Profile Image Preview */}
+                    <div className="">
+                      {imagePreview ? (
+                          <div className="">
+                            <img 
+                                src={imagePreview} 
+                                alt="Profile preview" 
+                                className="w-30 h-30 md:w-45 md:h-45 object-cover"
+                            />
+                          </div>
+                      ) : (
+                        <div className="flex items-center justify-center">
+                            <img 
+                                src={imagePreview || profile} 
+                                alt="Profile preview" 
+                                className="w-30 h-30 md:w-45 md:h-45 object-cover"
+                            />
+                        </div>
+                      )}
+                    </div>
 
-        {/* Form Fields */}
-        <div className="mt-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <TextInput
-              id="first-name"
-              name="firstName"
-              label="First Name"
-              placeholder="Enter your first name"
-              value={firstName}
-              onChange={handleChange}
-              required
-            />
-            <TextInput
-              id="last-name"
-              name="lastName"
-              label="Last Name"
-              placeholder="Enter your last name"
-              value={lastName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          
-          <div className="mt-6">
-            <TextInput
-              id="phone-number"
-              name="phoneNumber"
-              label="Phone Number"
-              placeholder="Enter your phone number"
-              type="tel"
-              value={phoneNumber}
-              onChange={handleChange}
-              className="mt-6"
-              required
-            />
-          </div>
-
-          {/* Services Selection */}
-          {selectedServices && (
-            <div className="mt-8">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Services (Select all that apply)
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {services.map((service) => (
-                  <button
-                    key={service}
-                    type="button"
-                    onClick={() => onToggleService(service)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      selectedServices.includes(service)
-                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-                    }`}
-                  >
-                    {service}
-                  </button>
-                ))}
+                    {/* Upload Area */}
+                    <div className="">
+                    <div
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        className={`p-4 text-center transition-colors flex flex-col-reverse md:flex-row md:justify-between md: gap-9
+                            ${
+                            dragOver 
+                                ? 'border-blue-400 bg-blue-50' 
+                                : 'border-gray-300 hover:border-gray-400'
+                            }
+                        `}
+                    >
+                        <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                        />
+                        <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="mt-[20px] md:mt-[0px] text-[#0091F0] text-sm font-inter font-medium border border-[#0091F0] px-[12px] py-[8px] rounded-[50px] hover:bg-blue-600 transition-colors flex items-center space-x-2 mx-auto"
+                        >
+                        <span>Upload picture</span>
+                        <FiUpload size={20} />
+                        </button>
+                        <p className="text-sm font-inter font-medium text-[#98A2B3] mt-2">
+                            JPG or PNG file, no larger than 2MB.<br></br> (400x400px) with a clean background.
+                        </p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            {formData.role === 'client' && (
+              <div className="mt-[59px]">
+                  <label className="block text-sm font-medium font-inter text-[#101928] mb-3">
+                      Service Interests
+                  </label>
+                  
+                  <div className="flex flex-wrap gap-3 mt-[35px]">
+                      {services.map((service) => (
+                      <button
+                          key={service}
+                          onClick={() => onToggleService(service)}
+                          className={`px-[18px] py-[14px] rounded-full text-sm font-medium font-inter text-[#8992A1] border transition-colors ${
+                          selectedServices.includes(service)
+                              ? 'bg-[#E6F4FE]  border-[#0074C0]'
+                              : 'bg-white border-[#DFE2E7] hover:border-[#F7D7BA]'
+                          }`}
+                      >
+                          {service}
+                      </button>
+                      ))}
+                  </div>
               </div>
-            </div>
-          )}
+            )}
+            {formData.role === 'artisan' && (
+              <div className="mt-[59px]">
+                <div>
+                  <TextInput
+                    id="businessName"
+                    name="businessName"
+                    label="Business Name (Optional)"
+                    type="text"
+                    required
+                    // value={email}
+                    // onChange={handleEmailChange}
+                    placeholder="Enter your business name"
+                    className="w-full mb-[43px]"
+                  />
+                  <div className='flex justify-between items-center gap-4'>
+                      <SelectField
+                        label="Service Category"
+                        value={selectedService}
+                        onChange={handleServiceChange}
+                        options={options}
+                        placeholder="e.g., Plumbing, Cleaning, AC Repair"
+                       
+                      />
+                      <SelectField
+                        label="Years of experience"
+                        value={selectedService}
+                        onChange={handleServiceChange}
+                        options={options}
+                        placeholder="Select your years of experience"
+                        
+                      />
+                  </div>
+                </div>
+                <div className="mt-[44px]">
+                  <label className="block text-sm font-medium font-inter text-[#101928] mb-3">
+                      Sub Categories
+                  </label>
+                  <div className="flex flex-wrap gap-3 mt-[35px]">
+                      {services.map((service) => (
+                      <button
+                          key={service}
+                          onClick={() => onToggleService(service)}
+                          className={`px-[18px] py-[14px] rounded-full text-sm font-medium font-inter text-[#8992A1] border transition-colors ${
+                          selectedServices.includes(service)
+                              ? 'bg-[#E6F4FE]  border-[#0074C0]'
+                              : 'bg-white border-[#DFE2E7] hover:border-[#F7D7BA]'
+                          }`}
+                      >
+                          {service}
+                      </button>
+                      ))}
+                  </div>
+                </div>
+                <div className='mt-[44px]'>
+                   <TextAreaInput
+                    id="serviceDescription"
+                    name="serviceDescription"
+                    label="Service Description"
+                    type="text"
+                    required
+                    // value={email}
+                    // onChange={handleEmailChange}
+                    placeholder="Describe your services"
+                    className="w-full mb-[43px]"
+                  />
+                </div>
+              </div>
+            )}
+            <Button 
+                variant="secondary" Add commentMore actions
+                className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
+                onClick={(e)=> handleSuccess(e)}
+            >
+                Create Account
+            </Button>
+            <SuccessModal
+              isOpen={showSuccessModal}
+              onClose={() => setShowSuccessModal(false)}
+              title="You’re All Set!"
+              message="You’ve successfully created your account and Ready to find the right artisan for the job"
+              buttonText="Browse Artisans"
+              onButtonClick={() => Navigate('/')}
+            />
         </div>
-      </div>
-
-      <Button 
-        variant="secondary" 
-        className="w-full max-w-[384px] mt-8 py-3"
-        onClick={onNext}
-        disabled={!firstName || !lastName || !phoneNumber || selectedServices.length === 0}
-      >
-        Save & Continue
-      </Button>
     </div>
   );
 };

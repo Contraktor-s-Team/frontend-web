@@ -14,23 +14,23 @@ const SuccessModal = ({ isOpen, onClose, title, message, buttonText = 'Browse Ar
       aria-labelledby="modal-title"
     >
       <div 
-        className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center relative"
+        className="bg-white rounded-2xl p-10 w-[25%] mx-4 text-center relative"
         onClick={e => e.stopPropagation()}
       >
         {/* Success Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-[#FFEFD8] flex items-center justify-center">
-            <FaCheck className="text-[#FFA500] text-2xl" />
+          <div className="w-25 h-25 rounded-full bg-[#FFEFD8] flex items-center justify-center">
+            <FaCheck className="text-[#FFA500] text-3xl" />
           </div>
         </div>
         
         {/* Title */}
-        <h3 id="modal-title" className="text-2xl font-bold text-gray-900 mb-2">
+        <h3 id="modal-title" className="text-2xl font-bold font-manrope text-[#101928] mb-2">
           {title || 'Success!'}
         </h3>
         
         {/* Message */}
-        <p className="text-gray-600 mb-6">
+        <p className="font-inter text-base font-medium text-[#101928] mb-6">
           {message || 'Operation completed successfully.'}
         </p>
         

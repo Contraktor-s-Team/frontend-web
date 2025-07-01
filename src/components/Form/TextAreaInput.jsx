@@ -26,7 +26,7 @@ import { FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
  * @returns {JSX.Element} A text input field with optional icons and states
  */
 
-const TextInput = ({
+const TextAreaInput = ({
   id,
   name,
   label,
@@ -104,7 +104,8 @@ const TextInput = ({
             {React.cloneElement(leadingIcon, { className: 'h-5 w-5' })}
           </div>
         )}
-        <input
+        <textarea
+          rows={4}
           type={effectiveType}
           id={id || name}
           name={name}
@@ -124,13 +125,13 @@ const TextInput = ({
           `}
           {...props}
         />
-        {hasTrailingIcon && (
+        {(currentTrailingIcon || (type === 'password' && value)) && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-            {type === 'password' && !isError && !isSuccess ? (
+            {type === 'password' && value && !isError && !isSuccess ? (
               <button
                 type="button"
                 onClick={handlePasswordToggle}
-                className={`p-1 rounded-full focus:outline-none ${iconColor} hover:text-gray-600 transition-colors`}
+                className={`p-1 rounded-full focus:outline-none ${iconColor}`}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}
@@ -139,7 +140,7 @@ const TextInput = ({
               <button 
                 type="button" 
                 onClick={onTrailingIconClick}
-                disabled={disabled || readOnly || isError || isSuccess}
+                disabled={disabled || readOnly || isError || isSuccess} // Error/Success icons are not clickable by default
                 className={`p-1 ${onTrailingIconClick && !isError && !isSuccess ? 'cursor-pointer' : 'pointer-events-none'} ${iconColor}`}
                 aria-label="Trailing icon action"
               >
@@ -166,5 +167,4 @@ const TextInput = ({
   );
 };
 
-
-export default TextInput;
+export default TextAreaInput;

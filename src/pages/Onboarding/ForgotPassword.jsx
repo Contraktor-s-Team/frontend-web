@@ -21,7 +21,7 @@ const ForgotPassword = () => {
     <div className="flex h-screen bg-white p-[27px] gap-14">
       <AuthSidePanel className="hidden md:flex" />
       
-      <div className="px-6 py-12 lg:px-8 sm:w-full sm:max-w-[526px]">
+      <div className="px-6 py-12 lg:px-8 lg:py-[100px] w-full md:w-[40%]">
         <div className="w-full max-w-[350px] mb-[71px]">
           <h2 className="text-3xl font-bold leading-9 tracking-tight text-gray-900 font-manrope">
             Reset Your Password

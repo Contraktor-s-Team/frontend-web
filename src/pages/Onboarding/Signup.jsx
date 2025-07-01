@@ -16,6 +16,9 @@ import SuccessMessage from "./components/SuccessMessage";
 import Button from "../../components/Button";
 import TextInput from "../../components/Form/TextInput";
 import Checkbox from "../../components/Form/Checkbox";
+import PersonalInfo from "./components/PersonalInfoForm";
+import { useDispatch } from "react-redux";
+import { useConfirmEmailMutation, useRegisterMutation, useValidateEmailMutation } from "../../store/api/apiSlice";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -36,8 +39,13 @@ const Signup = () => {
         fullName: '',
         phoneNumber: '',
         selectedServices: []
-    });
-    
+    }); 
+    const [validationErrors, setValidationErrors] = useState({})
+    const dispatch = useDispatch()
+    const [register, { isLoading, error }] = useRegisterMutation()
+    const [validateEmail, { isValidateLoading, validateError }] = useValidateEmailMutation()
+    const [confirmEmail, { isLoading:isConfirmLoading, error:confirmError }] = useConfirmEmailMutation()
+    // const { isAuthenticated, error: authError } = useAppSelector((state) => state.auth)
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
     
@@ -55,6 +63,42 @@ const Signup = () => {
         }));
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try{
+            const userData ={
+                role: formData.role,
+                email: formData.email,
+                password: formData.password,
+            }
+            const response = await register(userData).unwrap();
+            if(response.isSuccess){
+                validateEmail(formData.email);
+                nextStep();
+            }
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    };
+
+    const handleConfirmEmail = async (e) => {
+        e.preventDefault();
+        try{
+            const userData ={
+                code: formData.code.join(''),
+                email: formData.email,
+            }
+            const response = await confirmEmail(userData).unwrap();
+            console.log('Registration response:', userData, response);
+            if(response.isSuccess){
+                nextStep();
+            }
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    }
     const handleCodeChange = (index, value) => {
         if (value.length <= 1 && /^\d*$/.test(value)) {
             const newCode = [...formData.code];
@@ -121,7 +165,7 @@ const Signup = () => {
         });
     };
 
-    const nextStep = () => {
+    const nextStep = (e) => {
         if (step < 6) {
             setStep(step + 1);
         }
@@ -133,11 +177,6 @@ const Signup = () => {
         }
     };
 
-    const handleSubmit = () => {
-        console.log('Form submitted:', formData);
-        // TODO: Implement form submission logic
-        nextStep(); // Move to success step
-    };
 
     const isCodeComplete = formData.code.every(digit => digit !== '');
 
@@ -186,83 +225,97 @@ const Signup = () => {
     const isFormValid = formData.selectedServices.length > 0;
 
     return ( 
-        <div className="flex h-screen bg-white p-[27px] gap-14">
+        <div className="flex h-screen bg-white px-[18px] py-[27px] md:p-[27px] gap-14">
             <AuthSidePanel className="hidden md:flex" />
-            <div className="flex flex-1 flex-col px-6 lg:px-8">
-            <ProgressBar currentStep={step} totalSteps={6} />
-            <div className=" overflow-y-auto scrollbar-hidden">
-                {/* Step 1: Role Selection */}
-                {step === 1 && (
-                    <RoleSelection 
-                        selectedRole={formData.role}
-                        setSelectedRole={(role) => handleInputChange('role', role)}
-                        onNext={nextStep}
-                    />
-                )}
+            <div className="flex w-full md:w-[60%] flex-col lg:py-[20px] xl:py-[50px] lg:px-8">
+                <ProgressBar currentStep={step} totalSteps={6} />
+                <div className="w-[100%] xl:w-[90%] overflow-y-auto scrollbar-hidden">
+                    {/* Step 1: Role Selection */}
+                    {step === 1 && (
+                        <RoleSelection 
+                            selectedRole={formData.role}
+                            setSelectedRole={(role) => handleInputChange('role', role)}
+                            onNext={nextStep}
+                        />
+                    )}
 
-                {/* Step 2: Create Account */}
-                {step === 2 && (
-                    <CreateAccountForm 
-                        formData={formData}
-                        onInputChange={handleInputChange}
-                        onNext={nextStep}
-                        onBack={prevStep}
-                    />
-                )}
+                    {/* Step 2: Create Account */}
+                    {step === 2 && (
+                        <CreateAccountForm 
+                            formData={formData}
+                            onInputChange={handleInputChange}
+                            onNext={handleSubmit}
+                            onBack={prevStep}
+                            loading = {isLoading}
+                            error={error}
+                        />
+                    )}
 
-                {/* Step 3: Email Verification */}
-                {step === 3 && (
-                    <EmailVerification 
-                        code={formData.code}
-                        email={formData.email}
-                        onCodeChange={handleCodeChange}
-                        onKeyDown={handleKeyDown}
-                        onResendCode={handleResendCode}
-                        onNext={nextStep}
-                        onBack={prevStep}
-                        isCodeComplete={isCodeComplete}
-                    />
-                )}
+                    {/* Step 3: Email Verification */}
+                    {step === 3 && (
+                        <EmailVerification 
+                            code={formData.code}
+                            email={formData.email}
+                            onCodeChange={handleCodeChange}
+                            onKeyDown={handleKeyDown}
+                            onResendCode={handleResendCode}
+                            onNext={handleConfirmEmail}
+                            onBack={prevStep}
+                            confirmEmail={confirmEmail}
+                            isConfirmLoading={isConfirmLoading}
+                            confirmError={confirmError}
+                            isCodeComplete={isCodeComplete}
+                        />
+                    )}
 
-                {/* Step 4: Location Access */}
-                {step === 4 && (
-                    <LocationForm 
-                        formData={formData}
-                        onInputChange={handleLocationChange}
-                        onSetLocationOnMap={handleSetLocationOnMap}
-                        onNext={nextStep}
-                        onBack={prevStep}
-                    />
-                )}
+                    {/* Step 4: Location Access */}
+                    {step === 4 && (
+                        <LocationForm 
+                            formData={formData}
+                            onInputChange={handleLocationChange}
+                            onSetLocationOnMap={handleSetLocationOnMap}
+                            onNext={nextStep}
+                            onBack={prevStep}
+                        />
+                    )}
 
-                {/* Step 5: Profile Setup */}
-                {step === 5 && (
-                    <ProfileSetup 
-                        formData={formData}
-                        services={services}
-                        dragOver={dragOver}
-                        fileInputRef={fileInputRef}
-                        onImageUpload={handleImageUpload}
-                        onFormChange={handleInputChange}
-                        onDrop={handleDrop}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onRemoveImage={removeImage}
-                        onToggleService={toggleService}
-                        onNext={handleSubmit}
-                        onBack={prevStep}
-                        isFormValid={isFormValid}
-                    />
-                )}
+                    {step === 5 && (
+                        <PersonalInfo
+                            formData={formData}
+                            onInputChange={handleLocationChange}
+                            onNext={nextStep}
+                            onBack={prevStep}
+                        />
+                    )}
 
-                {/* Step 6: Success Message */}
-                {step === 6 && (
-                    <SuccessMessage 
-                        role={formData.role}
-                        onGetStarted={() => navigate('/dashboard')}
-                    />
-                )}
-            </div>
+                    {/* Step 5: Profile Setup */}
+                    {step === 6 && (
+                        <ProfileSetup 
+                            formData={formData}
+                            services={services}
+                            dragOver={dragOver}
+                            fileInputRef={fileInputRef}
+                            onImageUpload={handleImageUpload}
+                            onFormChange={handleInputChange}
+                            onDrop={handleDrop}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onRemoveImage={removeImage}
+                            onToggleService={toggleService}
+                            onNext={nextStep}
+                            onBack={prevStep}
+                            isFormValid={isFormValid}
+                        />
+                    )}
+
+                    {/* Step 6: Success Message */}
+                    {/* {step === 6 && (
+                        <SuccessMessage 
+                            role={formData.role}
+                            onGetStarted={() => navigate('/dashboard')}
+                        />
+                    )} */}
+                </div>
             </div>
         </div>
     );

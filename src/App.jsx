@@ -7,19 +7,23 @@ import Login from './pages/Onboarding/Login';
 import ForgotPassword from './pages/Onboarding/ForgotPassword';
 import VerificationCode from './pages/Onboarding/VerificationCode';
 import CreateNewPassword from './pages/Onboarding/CreateNewPassword';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-code" element={<VerificationCode />} />
-        <Route path="/create-new-password" element={<CreateNewPassword />} />
-      </Routes>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          {/* <Route path="/login" element={<Login />} /> */}
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-code" element={<VerificationCode />} />
+          <Route path="/create-new-password" element={<CreateNewPassword />} />
+        </Routes>
+      </Router>
+    </Provider>
   );
 }
 
