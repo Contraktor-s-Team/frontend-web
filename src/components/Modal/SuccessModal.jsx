@@ -1,13 +1,23 @@
 import React from 'react';
-import { FaCheck } from 'react-icons/fa';
+// import { FaCheck } from 'react-icons/fa';
 import Button from '../Button/Button';
+import { Check } from 'lucide-react';
 
-const SuccessModal = ({ isOpen, onClose, title, message, buttonText = 'Browse Artisans', onButtonClick }) => {
+const SuccessModal = ({
+  isOpen,
+  onClose,
+  title = 'Your Job has been posted!',
+  message = "You'll receive quotes from artisans shortly.",
+  primaryButtonText = 'View Job',
+  secondaryButtonText = 'Back to Dashboard',
+  onPrimaryButtonClick,
+  onSecondaryButtonClick
+}) => {
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+    <div
+      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -19,30 +29,33 @@ const SuccessModal = ({ isOpen, onClose, title, message, buttonText = 'Browse Ar
       >
         {/* Success Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-25 h-25 rounded-full bg-[#FFEFD8] flex items-center justify-center">
-            <FaCheck className="text-[#FFA500] text-3xl" />
+          <div className="w-16 h-16 rounded-full bg-[#FFEFD8] flex items-center justify-center">
+            <FaCheck className="text-[#FFA500] text-2xl" />
           </div>
         </div>
-        
+
         {/* Title */}
         <h3 id="modal-title" className="text-2xl font-bold font-manrope text-[#101928] mb-2">
           {title || 'Success!'}
         </h3>
-        
+
         {/* Message */}
-        <p className="font-inter text-base font-medium text-[#101928] mb-6">
-          {message || 'Operation completed successfully.'}
-        </p>
-        
-        {/* Button */}
-        <div className="w-full">
+        <p className="font-inter mb-6">{message || 'Operation completed successfully.'}</p>
+
+        {/* Buttons */}
+        <div className="w-full flex gap-4 mt-8">
+          {secondaryButtonText && onSecondaryButtonClick && (
+            <Button variant="grey-sec" size="large" className="flex-1 justify-center" onClick={onSecondaryButtonClick}>
+              {secondaryButtonText}
+            </Button>
+          )}
           <Button
-            variant="secondary"
+            variant="primary"
             size="large"
-            className="w-full justify-center"
-            onClick={onButtonClick}
+            className={`justify-center ${secondaryButtonText && onSecondaryButtonClick ? 'flex-1' : 'w-full'}`}
+            onClick={onPrimaryButtonClick}
           >
-            {buttonText}
+            {primaryButtonText}
           </Button>
         </div>
       </div>

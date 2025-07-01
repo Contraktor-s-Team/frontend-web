@@ -225,6 +225,75 @@ const ButtonDemo = () => {
           </div>
         </div>
       </section>
+
+            {/* Primary Trans Buttons */}
+            <section className="mb-12 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-xl font-semibold mb-6 text-gray-800">Primary Trans Buttons</h2>
+        
+        {/* Regular Buttons */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium mb-4 text-gray-700">With Text</h3>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Default</div>
+              <Button variant="primary-trans" leftIcon={<FiPlus />}>
+                Add New
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Hover</div>
+              <Button variant="primary-trans" leftIcon={<FiPlus />}>
+                Add New
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Focused</div>
+              <Button variant="primary-trans" leftIcon={<FiPlus />}>
+                Add New
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Disabled</div>
+              <Button variant="primary-trans" disabled leftIcon={<FiPlus />}>
+                Add New
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Large</div>
+              <Button variant="primary-trans" size="large" leftIcon={<FiPlus />}>
+                Add New
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Icon Only Buttons */}
+        <div>
+          <h3 className="text-lg font-medium mb-4 text-gray-700">Icon Only</h3>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Default</div>
+              <Button variant="primary" iconOnly leftIcon={<FiPlus />} aria-label="Add" />
+            </div>
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Hover</div>
+              <Button variant="primary" iconOnly leftIcon={<FiPlus />} aria-label="Add" />
+            </div>
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Focused</div>
+              <Button variant="primary" iconOnly leftIcon={<FiPlus />} aria-label="Add" />
+            </div>
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Disabled</div>
+              <Button variant="primary" disabled iconOnly leftIcon={<FiPlus />} aria-label="Add" />
+            </div>
+            <div className="space-y-4">
+              <div className="font-medium text-sm text-gray-600">Large</div>
+              <Button variant="primary" size="large" iconOnly leftIcon={<FiPlus />} aria-label="Add" />
+            </div>
+          </div>
+        </div>
+      </section>
       
       {/* Secondary Buttons */}
       <section className="mb-12 bg-white p-6 rounded-lg shadow-sm border border-gray-100">

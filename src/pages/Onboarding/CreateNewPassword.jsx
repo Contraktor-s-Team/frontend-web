@@ -95,8 +95,8 @@ const CreateNewPassword = () => {
         onClose={() => setShowSuccessModal(false)}
         title="Password Reset Successful!"
         message="You can now log in with your new password."
-        buttonText="Browse Artisans"
-        onButtonClick={() => navigate('/')}
+        primaryButtonText="Browse Artisans"
+        onPrimaryButtonClick={() => navigate('/dashboard')}
       />
     </div>
   );

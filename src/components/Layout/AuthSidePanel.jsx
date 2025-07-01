@@ -8,30 +8,27 @@ import PropTypes from 'prop-types';
  * @param {number} [currentSlide=0] - The index of the currently active slide
  * @returns {JSX.Element} A styled side panel with logo, content slider, and footer
  */
-const AuthSidePanel = ({
-  className = "",
-  currentSlide: externalCurrentSlide = null
-}) => {
+const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = null }) => {
   const [internalCurrentSlide, setInternalCurrentSlide] = useState(0);
-  
+
   // Use externalCurrentSlide if provided, otherwise use internal state
   const currentSlide = externalCurrentSlide !== null ? externalCurrentSlide : internalCurrentSlide;
-  
+
   const slides = [
     {
-      title: "Verified Artisans, Always Within Reach",
-      description: "Connect with skilled, locally vetted professionals - no more guesswork or scams.",
-      image: "" // Would be replaced with actual image component
+      title: 'Verified Artisans, Always Within Reach',
+      description: 'Connect with skilled, locally vetted professionals - no more guesswork or scams.',
+      image: '' // Would be replaced with actual image component
     },
     {
-      title: "Secure Payments, Peace of Mind",
+      title: 'Secure Payments, Peace of Mind',
       description: "Pay for work when you're satisfied, with secure escrow protection.",
-      image: "" // Would be replaced with actual image component
+      image: '' // Would be replaced with actual image component
     },
     {
-      title: "Track Your Projects Effortlessly",
-      description: "Monitor progress, communicate, and manage all your projects in one place.",
-      image: "" // Would be replaced with actual image component
+      title: 'Track Your Projects Effortlessly',
+      description: 'Monitor progress, communicate, and manage all your projects in one place.',
+      image: '' // Would be replaced with actual image component
     }
   ];
 
@@ -48,13 +45,13 @@ const AuthSidePanel = ({
   return (
     <div className={`hidden md:flex w-[40%] flex-col justify-between bg-[#002B41] md:p-[30px] xl:p-[54px] text-white rounded-[20px] h-full ${className}`}>
       {/* Logo */}
-      <div className="font-manrope font-bold text-white md:text-2xl xl:text-4xl">ContraKtor</div>
+      <div className="font-manrope font-bold text-white text-4xl">ContraKtor</div>
       
       {/* Slider Content */}
       <div className="flex flex-col items-center space-y-6">
         {/* Image Placeholder - Replace with actual image component */}
         <div className="w-[168px] h-[96px] bg-gray-300 rounded"></div>
-        
+
         {/* Current Slide Content */}
         <h2 className="font-manrope font-bold md:text-[20px] xl:text-[28px] text-center text-white">
           {slides[currentSlide]?.title}
@@ -62,7 +59,7 @@ const AuthSidePanel = ({
         <p className="font-inter font-normal md:text-sm xl:text-base leading-6 text-center text-[#98A2B3] max-w-[400px]">
           {slides[currentSlide]?.description}
         </p>
-        
+
         {/* Slide Indicators */}
         <div className="flex justify-center items-center space-x-4 mt-8">
           {slides.map((_, index) => (
@@ -70,9 +67,9 @@ const AuthSidePanel = ({
               key={index}
               onClick={() => setInternalCurrentSlide(index)}
               className={`rounded-full transition-all duration-300 ${
-                index === currentSlide 
-                  ? "w-3 h-3 bg-[var(--color-pri-norm-1)]" 
-                  : "w-2 h-2 bg-[#98A2B3] bg-opacity-30 hover:bg-opacity-50"
+                index === currentSlide
+                  ? 'w-3 h-3 bg-pri-norm-1'
+                  : 'w-2 h-2 bg-[#98A2B3] bg-opacity-30 hover:bg-opacity-50'
               }`}
               aria-label={`Go to slide ${index + 1}`}
               aria-current={index === currentSlide}
@@ -80,7 +77,7 @@ const AuthSidePanel = ({
           ))}
         </div>
       </div>
-      
+
       {/* Footer */}
       <div className="space-y-2">
         <p className="font-inter font-medium text-[#98A2B3] text-sm">©2025 Contraktor Inc. All rights reserved</p>
@@ -104,7 +101,7 @@ AuthSidePanel.propTypes = {
   /** Additional CSS classes */
   copyrightText: PropTypes.string,
   /** Additional CSS classes for the container */
-  className: PropTypes.string,
+  className: PropTypes.string
 };
 
 export default AuthSidePanel;
