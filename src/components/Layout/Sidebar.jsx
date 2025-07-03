@@ -5,7 +5,11 @@ import logo from '/img/logo.png';
 
 const Sidebar = () => {
   const location = useLocation();
-  const isActive = path => location.pathname === path;
+  // Check if the current path starts with the given path to support nested routes
+  const isActive = path => {
+    if (path === '/') return location.pathname === path;
+    return location.pathname.startsWith(path);
+  };
 
   const navItems = [
     {
@@ -68,14 +72,14 @@ const Sidebar = () => {
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex font-inter w-[280px] bg-white h-screen flex-col border-r border-gray-100">
         {/* Logo */}
-        <div className="pt-6 px-[30px]">
+        <div className="my-8 px-[30px]">
           <div className="flex items-center">
             <img src={logo} alt="Contraktor" className="h-8 w-auto" />
           </div>
         </div>
 
         {/* Main Navigation */}
-        <nav className="mt-9">{navItems.map(renderNavItem)}</nav>
+        <nav className="">{navItems.map(renderNavItem)}</nav>
 
         {/* Bottom Navigation */}
         <div className="mt-auto">{bottomNavItems.map(renderNavItem)}</div>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button from '../../../components/Button/Button';
+import PageHeader from '../../../components/PageHeader/PageHeader';
 import { Plus, Briefcase, File, Banknote } from 'lucide-react';
 
 const stats = [
@@ -31,22 +31,16 @@ const stats = [
 ];
 
 const DashboardHeader = () => {
-  const navigate = useNavigate();
   return (
     <div className='font-inter font-medium'>
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-manrope text-2xl font-semibold text-gray-900">Good morning, Chika 👋</h1>
-          <p className="text-neu-dark-1">Ready to get things done today?</p>
-        </div>
-        <Button
-          variant="secondary"
-          leftIcon={<Plus size={20} />}
-          onClick={() => navigate('/dashboard/post-job/describe')}
-        >
-          Post a Job
-        </Button>
-      </div>
+      <PageHeader
+        title="Good morning, Chika 👋"
+        subtitle="Ready to get things done today?"
+        buttonText="Post a Job"
+        buttonVariant="secondary"
+        buttonHref="/post-job/describe"
+        buttonIcon={<Plus size={20} />}
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

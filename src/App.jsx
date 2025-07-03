@@ -10,6 +10,7 @@ import Login from './pages/Onboarding/Login';
 import ForgotPassword from './pages/Onboarding/ForgotPassword';
 import VerificationCode from './pages/Onboarding/VerificationCode';
 import CreateNewPassword from './pages/Onboarding/CreateNewPassword';
+import JobDetails from './pages/MyJobs/JobDetails';
 
 // Dashboard Pages
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -23,6 +24,14 @@ import DescribeJob from './pages/PostJob/DescribeJob';
 import TimeLocation from './pages/PostJob/TimeLocation';
 import ReviewPost from './pages/PostJob/ReviewPost';
 
+// Hire Artisan Flow
+import { 
+  HireArtisanLayout, 
+  DescribeJob as HireArtisanDescribeJob, 
+  TimeLocation as HireArtisanTimeLocation, 
+  ReviewSubmit 
+} from './pages/FindArtisans/HireArtisan';
+
 // Modals
 import NotificationsModal from './components/Notifications/NotificationsModal';
 
@@ -30,6 +39,7 @@ import NotificationsModal from './components/Notifications/NotificationsModal';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './contexts/AuthContext/useAuth';
 import ScrollToTop from './components/ScrollToTop';
+import ArtisanDetails from './pages/FindArtisans/ArtisanDetails';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -67,17 +77,36 @@ const AppRoutes = () => {
         <Route element={<ProtectedLayout />}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/artisans" element={<FindArtisans />} />
-          <Route path="/jobs" element={<MyJobs />} />
+          <Route path="/artisans" element={<Navigate to="/artisans/all" replace />} />
+          <Route path="/artisans/:tab" element={<FindArtisans />} />
+          <Route path="/artisans/:tab/:artisanId" element={<ArtisanDetails />} />
+          {/* Nested hire-artisan routes within artisan details */}
+          <Route path="/artisans/:tab/:artisanId/hire-artisan" element={<HireArtisanLayout />}>
+            <Route index element={<Navigate to="describe" replace />} />
+            <Route path="describe" element={<HireArtisanDescribeJob />} />
+            <Route path="time-location" element={<HireArtisanTimeLocation />} />
+            <Route path="review" element={<ReviewSubmit />} />
+          </Route>
+          <Route path="/jobs" element={<Navigate to="/jobs/ongoing" replace />} />
+          <Route path="/jobs/:tab" element={<MyJobs />} />
+          <Route path="/jobs/:tab/:jobId" element={<JobDetails />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/settings" element={<ProfileSettings />} />
           <Route path="/help" element={<HelpCentre />} />
           {/* Post a Job multi-step nested routes */}
-          <Route path="/dashboard/post-job" element={<PostJobLayout />}>
+          <Route path="/post-job" element={<PostJobLayout />}>
             <Route index element={<Navigate to="describe" replace />} />
             <Route path="describe" element={<DescribeJob />} />
             <Route path="time-location" element={<TimeLocation />} />
             <Route path="review" element={<ReviewPost />} />
+          </Route>
+          
+          {/* Hire Artisan multi-step nested routes */}
+          <Route path="/hire-artisan/:artisanId" element={<HireArtisanLayout />}>
+            <Route index element={<Navigate to="describe" replace />} />
+            <Route path="describe" element={<HireArtisanDescribeJob />} />
+            <Route path="time-location" element={<HireArtisanTimeLocation />} />
+            <Route path="review" element={<ReviewSubmit />} />
           </Route>
         </Route>
         
