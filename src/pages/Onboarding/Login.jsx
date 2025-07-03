@@ -4,13 +4,15 @@ import { TextInput } from "../../components/Form";
 import AuthSidePanel from "../../components/Layout/AuthSidePanel";
 import google from "../../assets/google.png";
 import facebook from "../../assets/facebook.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoginMutation } from "../../store/api/apiSlice";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
+  const [login, { isLoading, error }] = useLoginMutation()
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
   };
@@ -23,9 +25,21 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
+     try{
+            const userData ={
+              email: email,
+              password: password,
+            }
+            const response = await login(userData).unwrap();
+            if(response.isSuccess){
+              navigate("/dashboard");
+            }
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
   };
 
   return (

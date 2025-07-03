@@ -18,7 +18,28 @@ const LocationForm = ({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Update the individual field
     onFormChange(name, value);
+    
+    // Create updated form data with the new value
+    const updatedFormData = {
+      ...formData,
+      [name]: value
+    };
+    
+    // Concatenate all location fields into one string
+    const locationParts = [
+      updatedFormData.streetAddress,
+      updatedFormData.nearbyLandmark,
+      updatedFormData.areaLocality,
+      updatedFormData.poBox
+    ].filter(part => part && part.trim() !== ''); // Remove empty values
+    
+    const concatenatedLocation = locationParts.join(', ');
+    
+    // Save the concatenated location
+    onFormChange('location', concatenatedLocation);
   };
 
   return (

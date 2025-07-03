@@ -3,7 +3,7 @@ import { MapPin, Bell, ChevronDown, Search } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import TextInput from '../Form/TextInput';
 import Button from '../Button/Button';
-import avatar from '/img/avatar1.jpg';
+import avatar from '../../assets/avatar1.jpg';
 
 const TopBar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);

@@ -45,7 +45,7 @@ const EmailVerification = ({
       )}
       <div className="mt-[61px]">
       <div className="flex space-x-3">
-        {[...Array(4)].map((_, index) => (
+        {[...Array(6)].map((_, index) => (
           <input
             key={index}
             id={`code-${index}`}

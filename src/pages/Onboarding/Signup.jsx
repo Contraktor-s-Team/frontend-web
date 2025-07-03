@@ -45,6 +45,7 @@ const Signup = () => {
     const [register, { isLoading, error }] = useRegisterMutation()
     const [validateEmail, { isValidateLoading, validateError }] = useValidateEmailMutation()
     const [confirmEmail, { isLoading:isConfirmLoading, error:confirmError }] = useConfirmEmailMutation()
+    const [updateUser, { isLoading:isUpdateLoading, error:updateError }] = useConfirmEmailMutation()
     // const { isAuthenticated, error: authError } = useAppSelector((state) => state.auth)
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
@@ -82,6 +83,24 @@ const Signup = () => {
         }
     };
 
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try{
+            const userData ={
+                role: formData.role,
+                email: formData.email,
+                password: formData.password,
+            }
+            const response = await register(userData).unwrap();
+            if(response.isSuccess){
+                validateEmail(formData.email);
+                nextStep();
+            }
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    };
     const handleConfirmEmail = async (e) => {
         e.preventDefault();
         try{
@@ -110,7 +129,7 @@ const Signup = () => {
             }));
 
             // Auto-focus next input
-            if (value && index < 3) {
+            if (value && index < 5) {
                 const nextInput = document.getElementById(`code-${index + 1}`);
                 if (nextInput) nextInput.focus();
             }

@@ -21,7 +21,7 @@ export const apiSlice = createApi({
      // Authentication endpoints
     login: builder.mutation({
       query: (credentials) => ({
-        url: '/auth/login',
+        url: '/api/Auth/login',
         method: 'POST',
         body: credentials,
       }),
@@ -54,6 +54,15 @@ export const apiSlice = createApi({
       }),
       providesTags: ['Auth'],
     }),
+    // Update user
+    updateUser: builder.mutation({
+      query: ({ id, userData }) => ({
+        url: `/users/${id}`,
+        method: 'POST',
+        body: userData,
+      }),
+      providesTags: ['Auth'],
+    }),
     logout: builder.mutation({
       query: () => ({
         url: '/auth/logout',
@@ -80,15 +89,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['User'],
     }),
-    // Update user
-    updateUser: builder.mutation({
-      query: ({ id, ...patch }) => ({
-        url: `/users/${id}`,
-        method: 'PATCH',
-        body: patch,
-      }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
-    }),
+    
     // Delete user
     deleteUser: builder.mutation({
       query: (id) => ({
@@ -101,6 +102,8 @@ export const apiSlice = createApi({
 })
 
 export const {
+  useLoginMutation,
+  useLogoutMutation,  
   useGetUsersQuery,
   useGetUserQuery, 
   useCreateUserMutation,

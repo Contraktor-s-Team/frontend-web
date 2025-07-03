@@ -32,12 +32,13 @@ import NotificationsModal from './components/Notifications/NotificationsModal';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './contexts/AuthContext/useAuth';
 import ScrollToTop from './components/ScrollToTop';
+import ProtectedRoute from './ProtectedRoute';
 
 // Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const { currentUser } = useAuth();
-  return currentUser ? children : <Navigate to="/login" />;
-};
+// const ProtectedRoute = ({ children }) => {
+//   const { currentUser } = useAuth();
+//   return currentUser ? children : <Navigate to="/login" />;
+// };
 
 // Layout Wrapper for protected routes
 const ProtectedLayout = ({ children }) => (
@@ -49,11 +50,8 @@ const ProtectedLayout = ({ children }) => (
 );
 
 // Route-based modal wrapper component
-const AppRoutes = () => {
-  const location = useLocation();
+const App = () => {
   
-  // Use the current location as the "under" location or the saved background location from state
-  const backgroundLocation = location.state?.backgroundLocation || location;
   
   return (
     <Provider store={store}>
@@ -65,6 +63,24 @@ const AppRoutes = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-code" element={<VerificationCode />} />
           <Route path="/create-new-password" element={<CreateNewPassword />} />
+
+
+          {/* route from faheez */}
+           <Route element={<ProtectedLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/artisans" element={<FindArtisans />} />
+              <Route path="/jobs" element={<MyJobs />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/settings" element={<ProfileSettings />} />
+              <Route path="/help" element={<HelpCentre />} />
+              {/* Post a Job multi-step nested routes */}
+              <Route path="/dashboard/post-job" element={<PostJobLayout />}>
+                <Route index element={<Navigate to="describe" replace />} />
+                <Route path="describe" element={<DescribeJob />} />
+                <Route path="time-location" element={<TimeLocation />} />
+                <Route path="review" element={<ReviewPost />} />
+              </Route>
+        </Route>
         </Routes>
       </Router>
     </Provider>
