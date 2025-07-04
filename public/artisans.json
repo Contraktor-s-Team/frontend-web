@@ -1,0 +1,2324 @@
+[
+  {
+    "id": 1,
+    "name": "Amina Sule",
+    "specialty": "Plumbing",
+    "services": [
+      "Pipe Fixing",
+      "Drain Cleaning",
+      "Tap Installation",
+      "Toilet Repairs",
+      "Bathroom Leak Fix"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Igbo"
+    ],
+    "biography": "I'm a professional plumbing specialist with over 4 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ikeja, Lagos",
+    "rating": 4.7,
+    "reviewCount": 78,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-1-1/400/300",
+      "https://picsum.photos/seed/artisan-1-2/400/300",
+      "https://picsum.photos/seed/artisan-1-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Amina showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer B",
+        "comment": "Very polite. Amina explained the issue clearly and did great work.",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer C",
+        "comment": "Amina completed the job earlier than expected and it was flawless.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Tunde Bakare",
+    "specialty": "AC Installation",
+    "services": [
+      "Split AC Setup",
+      "Window Unit Installation",
+      "Gas Refill",
+      "AC Cleaning"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Hausa"
+    ],
+    "biography": "I'm a professional ac installation specialist with over 5 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Yaba, Lagos",
+    "rating": 4.9,
+    "reviewCount": 78,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-2-1/400/300",
+      "https://picsum.photos/seed/artisan-2-2/400/300",
+      "https://picsum.photos/seed/artisan-2-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Very polite. Tunde explained the issue clearly and did great work.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Tunde was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer C",
+        "comment": "Top-notch work! Tunde handled it like a pro.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Ngozi Ibe",
+    "specialty": "Painting",
+    "services": [
+      "Color Blending",
+      "POP Painting",
+      "Exterior",
+      "Interior",
+      "Graffiato"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English"
+    ],
+    "biography": "I'm a professional painting specialist with over 6 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Gbagada, Lagos",
+    "rating": 5,
+    "reviewCount": 32,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-3-1/400/300",
+      "https://picsum.photos/seed/artisan-3-2/400/300",
+      "https://picsum.photos/seed/artisan-3-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Top-notch work! Ngozi handled it like a pro.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Ngozi did a fantastic job and even gave helpful advice.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Ngozi completed the job earlier than expected and it was flawless.",
+        "rating": 4.7
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Ibrahim Musa",
+    "specialty": "Carpentry",
+    "services": [
+      "Wood Polishing",
+      "Door Repairs",
+      "Wardrobe Fixing",
+      "Furniture Assembly",
+      "TV Shelf Installation"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Pidgin"
+    ],
+    "biography": "I'm a professional carpentry specialist with over 7 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Mushin, Lagos",
+    "rating": 4.9,
+    "reviewCount": 31,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-4-1/400/300",
+      "https://picsum.photos/seed/artisan-4-2/400/300",
+      "https://picsum.photos/seed/artisan-4-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Friendly and skilled — Ibrahim knows what they’re doing.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Ibrahim completed the job earlier than expected and it was flawless.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "I’m impressed by how neat and efficient Ibrahim was.",
+        "rating": 4.7
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Femi Johnson",
+    "specialty": "Tiling",
+    "services": [
+      "Floor Tiling",
+      "Wall Tiling",
+      "Re-grouting",
+      "Tile Removal"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Tiv"
+    ],
+    "biography": "I'm a professional tiling specialist with over 8 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ajah, Lagos",
+    "rating": 4.7,
+    "reviewCount": 44,
+    "available": true,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-5-1/400/300",
+      "https://picsum.photos/seed/artisan-5-2/400/300",
+      "https://picsum.photos/seed/artisan-5-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Femi was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Femi completed the job earlier than expected and it was flawless.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "I’m impressed by how neat and efficient Femi was.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Blessing Umeh",
+    "specialty": "Roofing",
+    "services": [
+      "New Roof Setup",
+      "Zinc Replacement",
+      "Gutter Fixing",
+      "Leak Repairs"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Fulfulde"
+    ],
+    "biography": "I'm a professional roofing specialist with over 9 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Lekki, Lagos",
+    "rating": 4.7,
+    "reviewCount": 67,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-6-1/400/300",
+      "https://picsum.photos/seed/artisan-6-2/400/300",
+      "https://picsum.photos/seed/artisan-6-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Blessing showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Great experience with Blessing — punctual, skilled, and respectful.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Blessing again.",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Samuel Obasi",
+    "specialty": "Masonry",
+    "services": [
+      "Cement Finishing",
+      "Block Laying",
+      "Plastering",
+      "Foundation Work"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Efik"
+    ],
+    "biography": "I'm a professional masonry specialist with over 10 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Oshodi, Lagos",
+    "rating": 4.5,
+    "reviewCount": 85,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-7-1/400/300",
+      "https://picsum.photos/seed/artisan-7-2/400/300",
+      "https://picsum.photos/seed/artisan-7-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Samuel showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Samuel completed the job earlier than expected and it was flawless.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "Samuel did a fantastic job and even gave helpful advice.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Joy Etim",
+    "specialty": "Welding",
+    "services": [
+      "Window Grills",
+      "Gate Welding",
+      "Security Bars",
+      "Door Frames"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Urhobo"
+    ],
+    "biography": "I'm a professional welding specialist with over 11 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ikorodu, Lagos",
+    "rating": 4.6,
+    "reviewCount": 86,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-8-1/400/300",
+      "https://picsum.photos/seed/artisan-8-2/400/300",
+      "https://picsum.photos/seed/artisan-8-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Joy was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Top-notch work! Joy handled it like a pro.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "Joy completed the job earlier than expected and it was flawless.",
+        "rating": 4.7
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Emeka Nwosu",
+    "specialty": "Generator Repairs",
+    "services": [
+      "Fuel Line Replacement",
+      "Engine Servicing",
+      "Oil Change",
+      "Starter Fixing"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Ibibio"
+    ],
+    "biography": "I'm a professional generator repairs specialist with over 12 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Apapa, Lagos",
+    "rating": 4.5,
+    "reviewCount": 42,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-9-1/400/300",
+      "https://picsum.photos/seed/artisan-9-2/400/300",
+      "https://picsum.photos/seed/artisan-9-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Emeka was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Emeka showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer C",
+        "comment": "Emeka did a fantastic job and even gave helpful advice.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Chisom Anene",
+    "specialty": "POP Design",
+    "services": [
+      "Lighting Integration",
+      "Bulkhead Design",
+      "Screeding",
+      "Ceiling Layout"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Yoruba"
+    ],
+    "biography": "I'm a professional pop design specialist with over 3 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Victoria Island, Lagos",
+    "rating": 4.7,
+    "reviewCount": 50,
+    "available": true,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-10-1/400/300",
+      "https://picsum.photos/seed/artisan-10-2/400/300",
+      "https://picsum.photos/seed/artisan-10-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Chisom showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 5
+      },
+      {
+        "user": "Customer B",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Chisom again.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. Chisom explained the issue clearly and did great work.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Rasheed Lawal",
+    "specialty": "Furniture Assembly",
+    "services": [
+      "Sofa Setup",
+      "Custom Bed Frames",
+      "Table Fixing"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Igbo"
+    ],
+    "biography": "I'm a professional furniture assembly specialist with over 4 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Agege, Lagos",
+    "rating": 4.7,
+    "reviewCount": 20,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-11-1/400/300",
+      "https://picsum.photos/seed/artisan-11-2/400/300",
+      "https://picsum.photos/seed/artisan-11-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "I’m impressed by how neat and efficient Rasheed was.",
+        "rating": 5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Rasheed showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Rasheed was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Esther Ojo",
+    "specialty": "Gate Installation",
+    "services": [
+      "Security Lock Integration",
+      "Gate Hanging",
+      "Painting & Finishing"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Hausa"
+    ],
+    "biography": "I'm a professional gate installation specialist with over 5 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Festac, Lagos",
+    "rating": 5,
+    "reviewCount": 74,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-12-1/400/300",
+      "https://picsum.photos/seed/artisan-12-2/400/300",
+      "https://picsum.photos/seed/artisan-12-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Very polite. Esther explained the issue clearly and did great work.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "Top-notch work! Esther handled it like a pro.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Great experience with Esther — punctual, skilled, and respectful.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Kelechi Udo",
+    "specialty": "Glass Work",
+    "services": [
+      "Glass Door Repairs",
+      "Shower Glass Installation",
+      "Mirror Hanging"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English"
+    ],
+    "biography": "I'm a professional glass work specialist with over 6 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Egbeda, Lagos",
+    "rating": 5,
+    "reviewCount": 55,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-13-1/400/300",
+      "https://picsum.photos/seed/artisan-13-2/400/300",
+      "https://picsum.photos/seed/artisan-13-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Kelechi did a fantastic job and even gave helpful advice.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Very polite. Kelechi explained the issue clearly and did great work.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Top-notch work! Kelechi handled it like a pro.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Peter Agbaje",
+    "specialty": "Floor Screeding",
+    "services": [
+      "Waterproof Screeding",
+      "Leveling",
+      "Cement Screeding"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Pidgin"
+    ],
+    "biography": "I'm a professional floor screeding specialist with over 7 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ojota, Lagos",
+    "rating": 4.8,
+    "reviewCount": 43,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-14-1/400/300",
+      "https://picsum.photos/seed/artisan-14-2/400/300",
+      "https://picsum.photos/seed/artisan-14-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Peter was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Very polite. Peter explained the issue clearly and did great work.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Peter showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Halima Bello",
+    "specialty": "Interlocking",
+    "services": [
+      "Walkway",
+      "Edge Cutting",
+      "Driveway"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Tiv"
+    ],
+    "biography": "I'm a professional interlocking specialist with over 8 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ogba, Lagos",
+    "rating": 4.9,
+    "reviewCount": 94,
+    "available": false,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-15-1/400/300",
+      "https://picsum.photos/seed/artisan-15-2/400/300",
+      "https://picsum.photos/seed/artisan-15-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Halima completed the job earlier than expected and it was flawless.",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer B",
+        "comment": "Top-notch work! Halima handled it like a pro.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "Friendly and skilled — Halima knows what they’re doing.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Tope Ajayi",
+    "specialty": "Bathroom Fittings",
+    "services": [
+      "Sink Mounting",
+      "Shower Installation",
+      "Tap Fixing"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Fulfulde"
+    ],
+    "biography": "I'm a professional bathroom fittings specialist with over 9 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Isolo, Lagos",
+    "rating": 4.5,
+    "reviewCount": 72,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-16-1/400/300",
+      "https://picsum.photos/seed/artisan-16-2/400/300",
+      "https://picsum.photos/seed/artisan-16-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Tope was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Very polite. Tope explained the issue clearly and did great work.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer C",
+        "comment": "Tope did a fantastic job and even gave helpful advice.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Adaeze Nwachukwu",
+    "specialty": "Wall Finishing",
+    "services": [
+      "Sandtex Painting",
+      "Smooth Coating",
+      "Cement Finish"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Efik"
+    ],
+    "biography": "I'm a professional wall finishing specialist with over 10 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Maryland, Lagos",
+    "rating": 4.8,
+    "reviewCount": 22,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-17-1/400/300",
+      "https://picsum.photos/seed/artisan-17-2/400/300",
+      "https://picsum.photos/seed/artisan-17-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Great experience with Adaeze — punctual, skilled, and respectful.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Adaeze again.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Adaeze showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Sulaimon Kareem",
+    "specialty": "Satellite Installation",
+    "services": [
+      "Signal Setup",
+      "Dish Mounting",
+      "Cable Routing"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Urhobo"
+    ],
+    "biography": "I'm a professional satellite installation specialist with over 11 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Sango-Ota, Ogun",
+    "rating": 4.9,
+    "reviewCount": 39,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-18-1/400/300",
+      "https://picsum.photos/seed/artisan-18-2/400/300",
+      "https://picsum.photos/seed/artisan-18-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Sulaimon again.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Sulaimon showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. Sulaimon explained the issue clearly and did great work.",
+        "rating": 4.7
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Jane Igbokwe",
+    "specialty": "Security Systems",
+    "services": [
+      "Alarm Setup",
+      "Gate Buzzers",
+      "Door Sensor Mounting"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Ibibio"
+    ],
+    "biography": "I'm a professional security systems specialist with over 12 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ibadan, Oyo",
+    "rating": 4.5,
+    "reviewCount": 40,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-19-1/400/300",
+      "https://picsum.photos/seed/artisan-19-2/400/300",
+      "https://picsum.photos/seed/artisan-19-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Jane again.",
+        "rating": 5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Jane did a fantastic job and even gave helpful advice.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "Jane completed the job earlier than expected and it was flawless.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "David Oyeniyi",
+    "specialty": "CCTV Setup",
+    "services": [
+      "Cable Management",
+      "Outdoor Setup",
+      "Indoor Cams"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Yoruba"
+    ],
+    "biography": "I'm a professional cctv setup specialist with over 3 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Abeokuta, Ogun",
+    "rating": 5,
+    "reviewCount": 75,
+    "available": true,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-20-1/400/300",
+      "https://picsum.photos/seed/artisan-20-2/400/300",
+      "https://picsum.photos/seed/artisan-20-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "David did a fantastic job and even gave helpful advice.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "One of the best I’ve worked with. I’ll definitely call David again.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. David explained the issue clearly and did great work.",
+        "rating": 4.7
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Bukky Salami",
+    "specialty": "Solar Panel Installation",
+    "services": [
+      "Roof Mounting",
+      "Battery Hookup",
+      "Inverter Wiring"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Igbo"
+    ],
+    "biography": "I'm a professional solar panel installation specialist with over 4 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ilorin, Kwara",
+    "rating": 4.9,
+    "reviewCount": 27,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-21-1/400/300",
+      "https://picsum.photos/seed/artisan-21-2/400/300",
+      "https://picsum.photos/seed/artisan-21-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Bukky completed the job earlier than expected and it was flawless.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Bukky was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Bukky did a fantastic job and even gave helpful advice.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Joseph Anibaba",
+    "specialty": "Borehole Drilling",
+    "services": [
+      "Water Analysis",
+      "Pump Setup",
+      "Drilling"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Hausa"
+    ],
+    "biography": "I'm a professional borehole drilling specialist with over 5 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Akure, Ondo",
+    "rating": 4.9,
+    "reviewCount": 23,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-22-1/400/300",
+      "https://picsum.photos/seed/artisan-22-2/400/300",
+      "https://picsum.photos/seed/artisan-22-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Joseph was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "Top-notch work! Joseph handled it like a pro.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Joseph showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Tosin Aluko",
+    "specialty": "Interior Decoration",
+    "services": [
+      "Lighting Setup",
+      "Wall Art",
+      "Curtain Rails"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English"
+    ],
+    "biography": "I'm a professional interior decoration specialist with over 6 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Benin City, Edo",
+    "rating": 4.8,
+    "reviewCount": 52,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-23-1/400/300",
+      "https://picsum.photos/seed/artisan-23-2/400/300",
+      "https://picsum.photos/seed/artisan-23-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Tosin was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Tosin did a fantastic job and even gave helpful advice.",
+        "rating": 5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. Tosin explained the issue clearly and did great work.",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Victoria Okon",
+    "specialty": "Ceiling Mounting",
+    "services": [
+      "PVC Ceilings",
+      "LED Integration",
+      "Suspended Ceiling"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Pidgin"
+    ],
+    "biography": "I'm a professional ceiling mounting specialist with over 7 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Abuja, FCT",
+    "rating": 4.9,
+    "reviewCount": 30,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-24-1/400/300",
+      "https://picsum.photos/seed/artisan-24-2/400/300",
+      "https://picsum.photos/seed/artisan-24-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Top-notch work! Victoria handled it like a pro.",
+        "rating": 5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Victoria was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer C",
+        "comment": "I’m impressed by how neat and efficient Victoria was.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Amaka Obi",
+    "specialty": "Soundproofing",
+    "services": [
+      "Wall Paneling",
+      "Studio Insulation",
+      "Room Padding"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Tiv"
+    ],
+    "biography": "I'm a professional soundproofing specialist with over 8 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Port Harcourt, Rivers",
+    "rating": 4.9,
+    "reviewCount": 78,
+    "available": true,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-25-1/400/300",
+      "https://picsum.photos/seed/artisan-25-2/400/300",
+      "https://picsum.photos/seed/artisan-25-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Great experience with Amaka — punctual, skilled, and respectful.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "Top-notch work! Amaka handled it like a pro.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "I’m impressed by how neat and efficient Amaka was.",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Ahmed Danjuma",
+    "specialty": "Wall Paneling",
+    "services": [
+      "3D Panels",
+      "Wooden Panels",
+      "PVC Panels"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Fulfulde"
+    ],
+    "biography": "I'm a professional wall paneling specialist with over 9 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Uyo, Akwa Ibom",
+    "rating": 4.7,
+    "reviewCount": 99,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-26-1/400/300",
+      "https://picsum.photos/seed/artisan-26-2/400/300",
+      "https://picsum.photos/seed/artisan-26-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Ahmed showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Ahmed completed the job earlier than expected and it was flawless.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "I’m impressed by how neat and efficient Ahmed was.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Chuka Eze",
+    "specialty": "Water Heater Installation",
+    "services": [
+      "Heater Mounting",
+      "Pipe Connection",
+      "Electrical Wiring"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Efik"
+    ],
+    "biography": "I'm a professional water heater installation specialist with over 10 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Onitsha, Anambra",
+    "rating": 4.6,
+    "reviewCount": 86,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-27-1/400/300",
+      "https://picsum.photos/seed/artisan-27-2/400/300",
+      "https://picsum.photos/seed/artisan-27-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "I’m impressed by how neat and efficient Chuka was.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Chuka was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. Chuka explained the issue clearly and did great work.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Yetunde Adebayo",
+    "specialty": "Fence Wiring",
+    "services": [
+      "Security Integration",
+      "Barbed Wire",
+      "Electric Fence"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Urhobo"
+    ],
+    "biography": "I'm a professional fence wiring specialist with over 11 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Enugu, Enugu",
+    "rating": 4.8,
+    "reviewCount": 59,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-28-1/400/300",
+      "https://picsum.photos/seed/artisan-28-2/400/300",
+      "https://picsum.photos/seed/artisan-28-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Yetunde showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Yetunde was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. Yetunde explained the issue clearly and did great work.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Gbenga Ogunleye",
+    "specialty": "Water Tank Fixing",
+    "services": [
+      "Stand Welding",
+      "Tap Hookup",
+      "Tank Installation"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Ibibio"
+    ],
+    "biography": "I'm a professional water tank fixing specialist with over 12 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Jos, Plateau",
+    "rating": 5,
+    "reviewCount": 66,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-29-1/400/300",
+      "https://picsum.photos/seed/artisan-29-2/400/300",
+      "https://picsum.photos/seed/artisan-29-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Top-notch work! Gbenga handled it like a pro.",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer B",
+        "comment": "Gbenga was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "I’m impressed by how neat and efficient Gbenga was.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Chinedu Okafor",
+    "specialty": "Electrical Repairs",
+    "services": [
+      "Wiring",
+      "Switch Fixing",
+      "Socket Replacement",
+      "Generator Hookup",
+      "Lighting Installation"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Yoruba"
+    ],
+    "biography": "I'm a professional electrical repairs specialist with over 3 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Surulere, Lagos",
+    "rating": 4.6,
+    "reviewCount": 80,
+    "available": false,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-30-1/400/300",
+      "https://picsum.photos/seed/artisan-30-2/400/300",
+      "https://picsum.photos/seed/artisan-30-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "I’m impressed by how neat and efficient Chinedu was.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "Great experience with Chinedu — punctual, skilled, and respectful.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Chinedu again.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Amina Sule",
+    "specialty": "Plumbing",
+    "services": [
+      "Bathroom Leak Fix",
+      "Drain Cleaning",
+      "Toilet Repairs",
+      "Tap Installation",
+      "Pipe Fixing"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Igbo"
+    ],
+    "biography": "I'm a professional plumbing specialist with over 4 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ikeja, Lagos",
+    "rating": 5,
+    "reviewCount": 40,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-31-1/400/300",
+      "https://picsum.photos/seed/artisan-31-2/400/300",
+      "https://picsum.photos/seed/artisan-31-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "I’m impressed by how neat and efficient Amina was.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Amina again.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Top-notch work! Amina handled it like a pro.",
+        "rating": 4.7
+      }
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Tunde Bakare",
+    "specialty": "AC Installation",
+    "services": [
+      "Window Unit Installation",
+      "AC Cleaning",
+      "Split AC Setup",
+      "Gas Refill"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Hausa"
+    ],
+    "biography": "I'm a professional ac installation specialist with over 5 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Yaba, Lagos",
+    "rating": 4.5,
+    "reviewCount": 63,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-32-1/400/300",
+      "https://picsum.photos/seed/artisan-32-2/400/300",
+      "https://picsum.photos/seed/artisan-32-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Tunde was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Friendly and skilled — Tunde knows what they’re doing.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Tunde did a fantastic job and even gave helpful advice.",
+        "rating": 4.5
+      }
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Ngozi Ibe",
+    "specialty": "Painting",
+    "services": [
+      "POP Painting",
+      "Exterior",
+      "Interior",
+      "Graffiato",
+      "Color Blending"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English"
+    ],
+    "biography": "I'm a professional painting specialist with over 6 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Gbagada, Lagos",
+    "rating": 4.6,
+    "reviewCount": 73,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-33-1/400/300",
+      "https://picsum.photos/seed/artisan-33-2/400/300",
+      "https://picsum.photos/seed/artisan-33-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "I’m impressed by how neat and efficient Ngozi was.",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer B",
+        "comment": "Ngozi completed the job earlier than expected and it was flawless.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Great experience with Ngozi — punctual, skilled, and respectful.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Ibrahim Musa",
+    "specialty": "Carpentry",
+    "services": [
+      "Door Repairs",
+      "Wardrobe Fixing",
+      "Furniture Assembly",
+      "TV Shelf Installation"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Pidgin"
+    ],
+    "biography": "I'm a professional carpentry specialist with over 7 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Mushin, Lagos",
+    "rating": 4.5,
+    "reviewCount": 89,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-34-1/400/300",
+      "https://picsum.photos/seed/artisan-34-2/400/300",
+      "https://picsum.photos/seed/artisan-34-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Ibrahim was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Ibrahim completed the job earlier than expected and it was flawless.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer C",
+        "comment": "Top-notch work! Ibrahim handled it like a pro.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Femi Johnson",
+    "specialty": "Tiling",
+    "services": [
+      "Tile Removal",
+      "Wall Tiling",
+      "Floor Tiling",
+      "Re-grouting"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Tiv"
+    ],
+    "biography": "I'm a professional tiling specialist with over 8 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ajah, Lagos",
+    "rating": 4.7,
+    "reviewCount": 56,
+    "available": true,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-35-1/400/300",
+      "https://picsum.photos/seed/artisan-35-2/400/300",
+      "https://picsum.photos/seed/artisan-35-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Top-notch work! Femi handled it like a pro.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "Femi was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. Femi explained the issue clearly and did great work.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Blessing Umeh",
+    "specialty": "Roofing",
+    "services": [
+      "Zinc Replacement",
+      "Leak Repairs",
+      "New Roof Setup",
+      "Gutter Fixing"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Fulfulde"
+    ],
+    "biography": "I'm a professional roofing specialist with over 9 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Lekki, Lagos",
+    "rating": 4.9,
+    "reviewCount": 73,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-36-1/400/300",
+      "https://picsum.photos/seed/artisan-36-2/400/300",
+      "https://picsum.photos/seed/artisan-36-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Blessing was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Very polite. Blessing explained the issue clearly and did great work.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Friendly and skilled — Blessing knows what they’re doing.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Samuel Obasi",
+    "specialty": "Masonry",
+    "services": [
+      "Plastering",
+      "Block Laying",
+      "Cement Finishing",
+      "Foundation Work"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Efik"
+    ],
+    "biography": "I'm a professional masonry specialist with over 10 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Oshodi, Lagos",
+    "rating": 4.5,
+    "reviewCount": 53,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-37-1/400/300",
+      "https://picsum.photos/seed/artisan-37-2/400/300",
+      "https://picsum.photos/seed/artisan-37-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Samuel was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer B",
+        "comment": "Very polite. Samuel explained the issue clearly and did great work.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Top-notch work! Samuel handled it like a pro.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Joy Etim",
+    "specialty": "Welding",
+    "services": [
+      "Gate Welding",
+      "Door Frames",
+      "Security Bars",
+      "Window Grills"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Urhobo"
+    ],
+    "biography": "I'm a professional welding specialist with over 11 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ikorodu, Lagos",
+    "rating": 4.8,
+    "reviewCount": 99,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-38-1/400/300",
+      "https://picsum.photos/seed/artisan-38-2/400/300",
+      "https://picsum.photos/seed/artisan-38-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Joy was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "Great experience with Joy — punctual, skilled, and respectful.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "Joy showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Emeka Nwosu",
+    "specialty": "Generator Repairs",
+    "services": [
+      "Engine Servicing",
+      "Starter Fixing",
+      "Fuel Line Replacement",
+      "Oil Change"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Ibibio"
+    ],
+    "biography": "I'm a professional generator repairs specialist with over 12 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Apapa, Lagos",
+    "rating": 4.5,
+    "reviewCount": 60,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-39-1/400/300",
+      "https://picsum.photos/seed/artisan-39-2/400/300",
+      "https://picsum.photos/seed/artisan-39-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Emeka was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer B",
+        "comment": "Top-notch work! Emeka handled it like a pro.",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer C",
+        "comment": "Great experience with Emeka — punctual, skilled, and respectful.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Chisom Anene",
+    "specialty": "POP Design",
+    "services": [
+      "Screeding",
+      "Ceiling Layout",
+      "Bulkhead Design",
+      "Lighting Integration"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Yoruba"
+    ],
+    "biography": "I'm a professional pop design specialist with over 3 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Victoria Island, Lagos",
+    "rating": 4.4,
+    "reviewCount": 66,
+    "available": true,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-40-1/400/300",
+      "https://picsum.photos/seed/artisan-40-2/400/300",
+      "https://picsum.photos/seed/artisan-40-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Chisom completed the job earlier than expected and it was flawless.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Chisom again.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. Chisom explained the issue clearly and did great work.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Rasheed Lawal",
+    "specialty": "Furniture Assembly",
+    "services": [
+      "Custom Bed Frames",
+      "Sofa Setup",
+      "Table Fixing"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Igbo"
+    ],
+    "biography": "I'm a professional furniture assembly specialist with over 4 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Agege, Lagos",
+    "rating": 4.8,
+    "reviewCount": 26,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-41-1/400/300",
+      "https://picsum.photos/seed/artisan-41-2/400/300",
+      "https://picsum.photos/seed/artisan-41-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Rasheed completed the job earlier than expected and it was flawless.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Rasheed again.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer C",
+        "comment": "Great experience with Rasheed — punctual, skilled, and respectful.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Esther Ojo",
+    "specialty": "Gate Installation",
+    "services": [
+      "Security Lock Integration",
+      "Painting & Finishing",
+      "Gate Hanging"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Hausa"
+    ],
+    "biography": "I'm a professional gate installation specialist with over 5 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Festac, Lagos",
+    "rating": 4.6,
+    "reviewCount": 31,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-42-1/400/300",
+      "https://picsum.photos/seed/artisan-42-2/400/300",
+      "https://picsum.photos/seed/artisan-42-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Top-notch work! Esther handled it like a pro.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "Esther was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer C",
+        "comment": "I’m impressed by how neat and efficient Esther was.",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 43,
+    "name": "Kelechi Udo",
+    "specialty": "Glass Work",
+    "services": [
+      "Mirror Hanging",
+      "Shower Glass Installation",
+      "Glass Door Repairs"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English"
+    ],
+    "biography": "I'm a professional glass work specialist with over 6 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Egbeda, Lagos",
+    "rating": 4.6,
+    "reviewCount": 61,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-43-1/400/300",
+      "https://picsum.photos/seed/artisan-43-2/400/300",
+      "https://picsum.photos/seed/artisan-43-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Top-notch work! Kelechi handled it like a pro.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Kelechi was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Very polite. Kelechi explained the issue clearly and did great work.",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "id": 44,
+    "name": "Peter Agbaje",
+    "specialty": "Floor Screeding",
+    "services": [
+      "Cement Screeding",
+      "Waterproof Screeding",
+      "Leveling"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Pidgin"
+    ],
+    "biography": "I'm a professional floor screeding specialist with over 7 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ojota, Lagos",
+    "rating": 5,
+    "reviewCount": 94,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-44-1/400/300",
+      "https://picsum.photos/seed/artisan-44-2/400/300",
+      "https://picsum.photos/seed/artisan-44-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "One of the best I’ve worked with. I’ll definitely call Peter again.",
+        "rating": 4.7
+      },
+      {
+        "user": "Customer B",
+        "comment": "Peter showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "Peter completed the job earlier than expected and it was flawless.",
+        "rating": 5
+      }
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Halima Bello",
+    "specialty": "Interlocking",
+    "services": [
+      "Edge Cutting",
+      "Walkway",
+      "Driveway"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Tiv"
+    ],
+    "biography": "I'm a professional interlocking specialist with over 8 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ogba, Lagos",
+    "rating": 4.9,
+    "reviewCount": 51,
+    "available": false,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-45-1/400/300",
+      "https://picsum.photos/seed/artisan-45-2/400/300",
+      "https://picsum.photos/seed/artisan-45-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "I’m impressed by how neat and efficient Halima was.",
+        "rating": 5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Top-notch work! Halima handled it like a pro.",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer C",
+        "comment": "Halima was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.6
+      }
+    ]
+  },
+  {
+    "id": 46,
+    "name": "Tope Ajayi",
+    "specialty": "Bathroom Fittings",
+    "services": [
+      "Tap Fixing",
+      "Sink Mounting",
+      "Shower Installation"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Fulfulde"
+    ],
+    "biography": "I'm a professional bathroom fittings specialist with over 9 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Isolo, Lagos",
+    "rating": 4.4,
+    "reviewCount": 32,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-46-1/400/300",
+      "https://picsum.photos/seed/artisan-46-2/400/300",
+      "https://picsum.photos/seed/artisan-46-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Tope was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Very polite. Tope explained the issue clearly and did great work.",
+        "rating": 5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Tope completed the job earlier than expected and it was flawless.",
+        "rating": 4.9
+      }
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Adaeze Nwachukwu",
+    "specialty": "Wall Finishing",
+    "services": [
+      "Cement Finish",
+      "Smooth Coating",
+      "Sandtex Painting"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Efik"
+    ],
+    "biography": "I'm a professional wall finishing specialist with over 10 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Maryland, Lagos",
+    "rating": 5,
+    "reviewCount": 86,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-47-1/400/300",
+      "https://picsum.photos/seed/artisan-47-2/400/300",
+      "https://picsum.photos/seed/artisan-47-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Adaeze completed the job earlier than expected and it was flawless.",
+        "rating": 4.9
+      },
+      {
+        "user": "Customer B",
+        "comment": "Friendly and skilled — Adaeze knows what they’re doing.",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer C",
+        "comment": "Great experience with Adaeze — punctual, skilled, and respectful.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Sulaimon Kareem",
+    "specialty": "Satellite Installation",
+    "services": [
+      "Cable Routing",
+      "Dish Mounting",
+      "Signal Setup"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Urhobo"
+    ],
+    "biography": "I'm a professional satellite installation specialist with over 11 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Sango-Ota, Ogun",
+    "rating": 4.7,
+    "reviewCount": 86,
+    "available": false,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-48-1/400/300",
+      "https://picsum.photos/seed/artisan-48-2/400/300",
+      "https://picsum.photos/seed/artisan-48-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Sulaimon was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.6
+      },
+      {
+        "user": "Customer B",
+        "comment": "Very polite. Sulaimon explained the issue clearly and did great work.",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer C",
+        "comment": "Sulaimon showed up on time and cleaned up afterward. Excellent service.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Jane Igbokwe",
+    "specialty": "Security Systems",
+    "services": [
+      "Alarm Setup",
+      "Door Sensor Mounting",
+      "Gate Buzzers"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Ibibio"
+    ],
+    "biography": "I'm a professional security systems specialist with over 12 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Ibadan, Oyo",
+    "rating": 4.6,
+    "reviewCount": 81,
+    "available": true,
+    "saved": false,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-49-1/400/300",
+      "https://picsum.photos/seed/artisan-49-2/400/300",
+      "https://picsum.photos/seed/artisan-49-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "Top-notch work! Jane handled it like a pro.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer B",
+        "comment": "Jane was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer C",
+        "comment": "Jane did a fantastic job and even gave helpful advice.",
+        "rating": 4.8
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "name": "David Oyeniyi",
+    "specialty": "CCTV Setup",
+    "services": [
+      "Outdoor Setup",
+      "Indoor Cams",
+      "Cable Management"
+    ],
+    "image": "/img/avatar1.jpg",
+    "languages": [
+      "English",
+      "Yoruba"
+    ],
+    "biography": "I'm a professional cctv setup specialist with over 3 years of experience in residential and commercial projects.",
+    "priceRange": "₦6,000 – ₦15,000",
+    "availabilitySchedule": "Mon–Sat, 9 AM – 6 PM",
+    "baseLocation": "Yaba, Lagos",
+    "location": "Abeokuta, Ogun",
+    "rating": 4.9,
+    "reviewCount": 63,
+    "available": true,
+    "saved": true,
+    "workPhotos": [
+      "https://picsum.photos/seed/artisan-50-1/400/300",
+      "https://picsum.photos/seed/artisan-50-2/400/300",
+      "https://picsum.photos/seed/artisan-50-3/400/300"
+    ],
+    "reviews": [
+      {
+        "user": "Customer A",
+        "comment": "I’m impressed by how neat and efficient David was.",
+        "rating": 4.5
+      },
+      {
+        "user": "Customer B",
+        "comment": "David was fast and professional. Fixed everything quickly. Highly recommend!",
+        "rating": 4.8
+      },
+      {
+        "user": "Customer C",
+        "comment": "Friendly and skilled — David knows what they’re doing.",
+        "rating": 5
+      }
+    ]
+  }
+]
