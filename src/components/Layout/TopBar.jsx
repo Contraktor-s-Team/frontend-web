@@ -20,14 +20,14 @@ const TopBar = () => {
             placeholder="Search for artisans, services, etc"
             leadingIcon={<Search className="h-4 w-4 text-gray-400" />}
             className="w-full"
-            inputClassName="rounded-full"
+            inputClassName="pr-10 rounded-full"
           />
         </div>
 
         <div className="flex items-center gap-9 w-full sm:w-auto">
           {/* Location */}
           <div className="">
-            <Button variant="secondary" size="small" leftIcon={<MapPin size={20} />}>
+            <Button variant="secondary" leftIcon={<MapPin size={20} />} className='px-4 py-3.5'>
               {userLocation}
             </Button>
           </div>

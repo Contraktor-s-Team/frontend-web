@@ -86,12 +86,11 @@ const Button = ({
       disabled:bg-neu-light-3
     `,
     'grey-sec': `
-      bg-white
-      text-black
+      text-neu-dark-1
       border-[1.5px] border-neu-light-3
-      hover:bg-neu-light-1
-      active:bg-neu-light-3
-      disabled:border-neu-light-3 disabled:text-neu-norm-1 disabled:bg-white
+      hover:border-neu-norm-1
+      active:border-neu-norm-1
+      disabled:border-neu-light-3 disabled:text-neu-norm-1
     `,
     'text-pri': `
       bg-transparent

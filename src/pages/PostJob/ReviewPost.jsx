@@ -12,7 +12,7 @@ const ReviewPost = () => {
   const jobData = useSelector(state => state.jobPost);
   const [posted, setPosted] = useState(false);
 
-  const handlePrev = () => navigate('/dashboard/post-job/time-location');
+  const handlePrev = () => navigate('/post-job/time-location');
 
   const handlePost = () => {
     // Simulate saving to localStorage list of jobs
@@ -48,7 +48,7 @@ const ReviewPost = () => {
           <div className="space-y-3 pl-7.5 md:max-w-[496px] border-l-2 border-neu-light-3 h-auto self-start">
             <div className="flex gap-2.5 items-center">
               <h3 className="font-semibold text-gray-900">Service Description</h3>
-              <Button variant="text-pri" size="small" iconOnly leftIcon={<Pencil size={20}  />} onClick={() => navigate('/dashboard/post-job/describe')} />
+              <Button variant="text-pri" size="small" iconOnly leftIcon={<Pencil size={20}  />} onClick={() => navigate('/post-job/describe')} />
             </div>
 
             <div className="flex flex-col gap-2.5 mt-7.5">
@@ -60,6 +60,8 @@ const ReviewPost = () => {
             <p className="text-sm text-neu-dark-1">Job Description</p>
             <p className='text-sm'> {jobData.description}</p>              
               </div>
+
+              
 
               <div className="flex flex-col gap-2.5 mt-11">
               <p className="text-sm text-neu-dark-1">Photos</p>
@@ -105,7 +107,7 @@ const ReviewPost = () => {
                 size="small" 
                 iconOnly 
                 leftIcon={<Pencil size={20} />} 
-                onClick={() => navigate('/dashboard/post-job/time-location')} 
+                onClick={() => navigate('/post-job/time-location')} 
               />
             </div>
 
@@ -157,8 +159,8 @@ const ReviewPost = () => {
         </div>
 
         <div className="flex items-center gap-2.5 mt-14">
-          <Button variant="grey-sec" onClick={handlePrev}>Previous</Button>
-          <Button variant="primary" onClick={handlePost}>Post Job</Button>
+          <Button variant="grey-sec" onClick={handlePrev} className="px-6 py-4.25">Previous</Button>
+          <Button variant="primary" onClick={handlePost} className="px-6 py-4.25">Post Job</Button>
         </div>
       </div>
 
