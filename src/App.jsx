@@ -64,10 +64,12 @@ const App = () => {
   
   
   return (
-    <AuthProvider>
-      <Routes location={backgroundLocation}>
+    <Provider store={store}>
+      <Router>
+    {/* <AuthProvider> */}
+      <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-code" element={<VerificationCode />} />

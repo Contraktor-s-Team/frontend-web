@@ -118,10 +118,7 @@ const Signup = () => {
             const data ={
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                address: formData.location,    
-                middleName: "string",
-                userName: "string",
-                dateOfBirth: "2025-07-04T05:05:35.886Z",  
+                address: formData.location,     
             }
             console.log('User data:', userData);
             const response = await updateUser({ id: userData.data.id, userData: data }).unwrap();

@@ -2,6 +2,7 @@ import React from 'react';
 // import { FaCheck } from 'react-icons/fa';
 import Button from '../Button/Button';
 import { Check } from 'lucide-react';
+import { FaCheck } from 'react-icons/fa';
 
 const SuccessModal = ({
   isOpen,
