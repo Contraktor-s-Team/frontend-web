@@ -6,6 +6,7 @@ import google from "../../assets/google.png";
 import facebook from "../../assets/facebook.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../store/api/apiSlice";
+import LoaderComp from "../../assets/animation/loader";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const Login = () => {
   return (
     <div className="flex h-screen bg-white p-[27px] gap-14 font-manrope">
       <AuthSidePanel className="hidden md:flex gap-8" />
-      <div className="px-2 py-6 lg:px-8 lg:py-[24px] xl:py-[60px] w-full md:w-[45%] overflow-y-scroll ">
+      <div className="px-2 py-6 lg:px-8 lg:py-[24px] xl:py-[60px] w-full md:w-[45%] overflow-y-scroll custom-scrollbar-hide">
         <div>
           <h2 className="text-3xl font-bold leading-9 tracking-tight text-[#101928] font-manrope">
             Welcome Back! <span role="img" aria-label="wave">👋</span>
@@ -54,6 +55,23 @@ const Login = () => {
             Log in to find trusted artisans, manage your<br></br> tasks, and track your payments securely.
           </p>
         </div>
+
+        {error && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <div className="mt-2 text-sm text-red-700">
+                  <p>{error.data.message}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-[74px] lg:mt-[30px] xl:mt-[74px]">
           <form className="space-y-7" onSubmit={handleSubmit}>
@@ -95,9 +113,14 @@ const Login = () => {
                 type="submit"
                 size='large'
                 variant="secondary"
-                className="w-full mt-[33px] lg:mt-[20px] xl:mt-[33px] text-white py-[14px] font-manrope font-semibold"
+                className="w-full mt-[33px] lg:mt-[20px] xl:mt-[33px] py-[14px] font-manrope font-semibold"
+                disabled={isLoading}
               >
-                Login
+                {isLoading ? (
+                  <LoaderComp/>
+                ) : (
+                  "Login"
+                )}  
               </Button>
             </div>
           </form>

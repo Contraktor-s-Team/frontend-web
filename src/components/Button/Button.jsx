@@ -55,10 +55,10 @@ const Button = ({
       active:bg-pri-darker
       disabled:bg-neu-norm-1
     `,
-    secondary: `
-    text-pri-norm-1 
+    secondary: ` 
     border-[1.5px] border-pri-norm-1
     hover:bg-pri-light-1 
+    bg-[#0091F0] text-[#fff] 
     active:bg-pri-light-1 active:border-pri-dark-1 active:text-pri-dark-1
     disabled:text-neu-norm-1 disabled:border-[#F0F2F5] disabled:bg-white
     `,

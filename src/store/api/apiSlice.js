@@ -6,7 +6,7 @@ const BASE_URL = 'https://kontractor.bsite.net'
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://kontractor.bsite.net',
+    baseUrl: 'http://distrolink-001-site1.anytempurl.com',
     prepareHeaders: (headers, { getState }) => {
       // Add auth token if available
       const token = getState().auth.token
@@ -57,9 +57,12 @@ export const apiSlice = createApi({
     // Update user
     updateUser: builder.mutation({
       query: ({ id, userData }) => ({
-        url: `/users/${id}`,
+        url: `/api/users/${id}/update`,
         method: 'POST',
-        body: userData,
+        body: JSON.stringify(userData),
+        headers: {
+          'Content-Type': 'application/json', 
+        },
       }),
       providesTags: ['Auth'],
     }),
@@ -76,9 +79,9 @@ export const apiSlice = createApi({
       providesTags: ['User'],
     }),
     // Get single user
-    getUser: builder.query({
-      query: (id) => `/users/${id}`,
-      providesTags: (result, error, id) => [{ type: 'User', id }],
+    getUserEmail: builder.query({
+      query: (email) => `/api/Users/by-email?email=${email}`,
+      providesTags: ['User'],
     }),
     // Create user
     createUser: builder.mutation({
@@ -105,11 +108,11 @@ export const {
   useLoginMutation,
   useLogoutMutation,  
   useGetUsersQuery,
-  useGetUserQuery, 
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
   useRegisterMutation,
   useValidateEmailMutation,
   useConfirmEmailMutation,
+  useGetUserEmailQuery,
 } = apiSlice

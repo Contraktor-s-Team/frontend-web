@@ -54,7 +54,7 @@ const EmailVerification = ({
             value={code[index] || ''}
             onChange={(e) => onCodeChange(index, e.target.value)}
             onKeyDown={(e) => onKeyDown(index, e)}
-            className="w-[70px] h-[70px] lg:w-[100px] lg:h-[100px] xl:w-[126px] xl:h-[123px] text-center text-3xl font-semibold border-[2px] border-[#DFE2E7] rounded-[10px] focus:border-[#0091F0] focus:outline-none transition-colors"
+            className="w-[20px] h-[20px] lg:w-[40px] lg:h-[40px] xl:w-[83px] xl:h-[80px] text-center text-3xl font-semibold border-[2px] border-[#DFE2E7] rounded-[10px] focus:border-[#0091F0] focus:outline-none transition-colors"
           />
         ))}
       </div>

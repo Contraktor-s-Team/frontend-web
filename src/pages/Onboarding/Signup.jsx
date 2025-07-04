@@ -18,7 +18,8 @@ import TextInput from "../../components/Form/TextInput";
 import Checkbox from "../../components/Form/Checkbox";
 import PersonalInfo from "./components/PersonalInfoForm";
 import { useDispatch } from "react-redux";
-import { useConfirmEmailMutation, useRegisterMutation, useValidateEmailMutation } from "../../store/api/apiSlice";
+import { useConfirmEmailMutation, useGetUserEmailQuery, useRegisterMutation, useUpdateUserMutation, useValidateEmailMutation } from "../../store/api/apiSlice";
+import VerifyIdentify from "./components/VerifyIdentity";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -36,7 +37,9 @@ const Signup = () => {
         poBox: '',
         profileImage: null,
         imagePreview: null,
-        fullName: '',
+        firstName: '',
+        lastName: '',
+        location: '',
         phoneNumber: '',
         selectedServices: []
     }); 
@@ -45,7 +48,16 @@ const Signup = () => {
     const [register, { isLoading, error }] = useRegisterMutation()
     const [validateEmail, { isValidateLoading, validateError }] = useValidateEmailMutation()
     const [confirmEmail, { isLoading:isConfirmLoading, error:confirmError }] = useConfirmEmailMutation()
-    const [updateUser, { isLoading:isUpdateLoading, error:updateError }] = useConfirmEmailMutation()
+     // Only fetch user data when we have an email and shouldFetchUser is true
+    const { 
+        data: userData, 
+        isLoading: isUserLoading, 
+        error: userError,
+        refetch: refetchUser 
+    } = useGetUserEmailQuery(formData.email, {
+        skip: !formData.email, // Skip if no email or not ready to fetch
+    });
+    const [updateUser, { isLoading:isUpdateLoading, error:updateError }] = useUpdateUserMutation()
     // const { isAuthenticated, error: authError } = useAppSelector((state) => state.auth)
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
@@ -82,25 +94,6 @@ const Signup = () => {
             console.error('Registration failed:', error);
         }
     };
-
-    const handleUpdate = async (e) => {
-        e.preventDefault();
-        try{
-            const userData ={
-                role: formData.role,
-                email: formData.email,
-                password: formData.password,
-            }
-            const response = await register(userData).unwrap();
-            if(response.isSuccess){
-                validateEmail(formData.email);
-                nextStep();
-            }
-        }
-        catch (error) {
-            console.error('Registration failed:', error);
-        }
-    };
     const handleConfirmEmail = async (e) => {
         e.preventDefault();
         try{
@@ -111,6 +104,7 @@ const Signup = () => {
             const response = await confirmEmail(userData).unwrap();
             console.log('Registration response:', userData, response);
             if(response.isSuccess){
+                await refetchUser(); 
                 nextStep();
             }
         }
@@ -118,6 +112,29 @@ const Signup = () => {
             console.error('Registration failed:', error);
         }
     }
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try{
+            const data ={
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                address: formData.location,    
+                middleName: "string",
+                userName: "string",
+                dateOfBirth: "2025-07-04T05:05:35.886Z",  
+            }
+            console.log('User data:', userData);
+            const response = await updateUser({ id: userData.data.id, userData: data }).unwrap();
+            if(response.isSuccess){
+                // validateEmail(formData.email);
+                nextStep();
+            }
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    };
+
     const handleCodeChange = (index, value) => {
         if (value.length <= 1 && /^\d*$/.test(value)) {
             const newCode = [...formData.code];
@@ -185,7 +202,7 @@ const Signup = () => {
     };
 
     const nextStep = (e) => {
-        if (step < 6) {
+        if (step < 6 || formData.role === 'artisan') {
             setStep(step + 1);
         }
     };
@@ -301,9 +318,11 @@ const Signup = () => {
                     {step === 5 && (
                         <PersonalInfo
                             formData={formData}
-                            onInputChange={handleLocationChange}
-                            onNext={nextStep}
+                            onFormChange={handleInputChange}
+                            onNext={handleUpdate}
                             onBack={prevStep}
+                            isLoading={isUpdateLoading}
+                            error={updateError}
                         />
                     )}
 
@@ -327,6 +346,9 @@ const Signup = () => {
                         />
                     )}
 
+                    {step === 7 && (
+                        <VerifyIdentify/>
+                    )}
                     {/* Step 6: Success Message */}
                     {/* {step === 6 && (
                         <SuccessMessage 

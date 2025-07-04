@@ -146,7 +146,7 @@ const ProfileSetup = ({
                     </div>
                 </div>
             </div>
-            {formData.role === 'client' && (
+            {formData.role === 'user' && (
               <div className="mt-[59px]">
                   <label className="block text-sm font-medium font-inter text-[#101928] mb-3">
                       Service Interests

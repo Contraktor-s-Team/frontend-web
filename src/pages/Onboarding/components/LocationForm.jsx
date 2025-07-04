@@ -7,7 +7,7 @@ const LocationForm = ({
   onSetLocationOnMap, 
   onNext,
   formData,
-  onFormChange 
+  onInputChange 
 }) => {
   const { 
     streetAddress = '', 
@@ -20,7 +20,7 @@ const LocationForm = ({
     const { name, value } = e.target;
     
     // Update the individual field
-    onFormChange(name, value);
+    onInputChange(name, value);
     
     // Create updated form data with the new value
     const updatedFormData = {
@@ -39,7 +39,7 @@ const LocationForm = ({
     const concatenatedLocation = locationParts.join(', ');
     
     // Save the concatenated location
-    onFormChange('location', concatenatedLocation);
+    onInputChange('location', concatenatedLocation);
   };
 
   return (

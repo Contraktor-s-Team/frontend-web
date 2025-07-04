@@ -13,16 +13,16 @@ const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
       </div>
       <div className="mt-8 flex flex-col md:flex-row gap-4">
         <div 
-          onClick={() => setSelectedRole('client')} 
+          onClick={() => setSelectedRole('user')} 
           className={`relative w-full h-[89px] lg:h-[200px] xl:h-[238px] px-[22px] rounded-2xl flex md:flex-col items-center md:justify-center space-x-5 md:space-y-4 transition-all duration-200 ${
-            selectedRole === 'client'
+            selectedRole === 'user'
               ? 'border border-[#0091F0]'
               : 'border border-[#DFE2E7]'
           }`}
         >
           {selectedRole === 'client' && <TbCircleCheckFilled className="absolute md:top-4 right-1 text-2xl md:text-3xl text-[#0091F0]"/>}
-          <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'client' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
-            <FiSearch className={`text-xl md:text-3xl ${selectedRole === 'client' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
+          <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'user' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
+            <FiSearch className={`text-xl md:text-3xl ${selectedRole === 'user' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
           </div>
           <p className="font-inter font-medium text-[#727A86] text-base lg:text-sm xl:text-lg">I want to Find an Artisan</p>
         </div>
