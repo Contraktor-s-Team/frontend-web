@@ -6,7 +6,7 @@ const BASE_URL = 'https://kontractor.bsite.net'
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://distrolink-001-site1.anytempurl.com',
+    baseUrl: 'https://distrolink-001-site1.anytempurl.com',
     prepareHeaders: (headers, { getState }) => {
       // Add auth token if available
       const token = getState().auth.token
