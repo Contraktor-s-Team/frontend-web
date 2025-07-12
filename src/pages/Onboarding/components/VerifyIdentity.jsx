@@ -51,7 +51,7 @@ const VerifyIdentify = ({
         </div>
     );
     return ( 
-        <div className="mt-[37px] md:mt-[80px] pb-6 w-full">
+        <div className="">
             <div className="space-y-2">
                 <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Verify Your Identity</h3>
                 <p className="font-inter font-medium text-[#101928] text-sm md:text-base">

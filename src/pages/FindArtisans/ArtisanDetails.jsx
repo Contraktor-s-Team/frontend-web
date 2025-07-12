@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { GoStarFill } from 'react-icons/go';
 import Button from '../../components/Button/Button';
-import Avatar from '../../assets/avatar1.jpg';
+import Avatar from '/img/avatar1.jpg';
 import { FaRegBookmark } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
 import { setArtisanDetails } from '../../redux/slices/hireArtisanSlice';

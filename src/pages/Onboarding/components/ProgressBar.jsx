@@ -2,7 +2,7 @@ import React from 'react';
 
 const ProgressBar = ({ currentStep, totalSteps = 6 }) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 mb-[37px] xl:mb-[61px]">
       {[...Array(totalSteps)].map((_, index) => (
         <div 
           key={index}

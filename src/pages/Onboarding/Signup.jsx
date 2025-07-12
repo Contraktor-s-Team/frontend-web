@@ -260,9 +260,9 @@ const Signup = () => {
     return ( 
         <div className="flex h-screen bg-white px-[18px] py-[27px] md:p-[27px] gap-14">
             <AuthSidePanel className="hidden md:flex" />
-            <div className="flex w-full md:w-[60%] flex-col lg:py-[20px] xl:py-[50px] lg:px-8">
+                <div className="w-[100%] md:w-[50%] overflow-y-auto scrollbar-hidden">
                 <ProgressBar currentStep={step} totalSteps={6} />
-                <div className="w-[100%] xl:w-[90%] overflow-y-auto scrollbar-hidden">
+
                     {/* Step 1: Role Selection */}
                     {step === 1 && (
                         <RoleSelection 
@@ -354,7 +354,6 @@ const Signup = () => {
                         />
                     )} */}
                 </div>
-            </div>
         </div>
     );
 }

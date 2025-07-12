@@ -79,7 +79,7 @@ const ProfileSetup = ({
   }
 
   return (
-    <div className='mt-[37px] md:mt-[100px]'>
+    <div className=''>
         <div>
             <div className="space-y-2">
                 <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-4xl">Almost There — Complete Your Profile</h3>

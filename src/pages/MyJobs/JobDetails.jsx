@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Map, Check, MessageSquareText, Banknote, RotateCw, Download, Pencil, Phone } from 'lucide-react';
 import { GoStarFill } from 'react-icons/go';
 import Button from '../../components/Button/Button';
-import Avatar from '../../assets/avatar1.jpg';
+import Avatar from '/img/avatar1.jpg';
 
 const JobDetails = () => {
   const { tab, jobId } = useParams();
