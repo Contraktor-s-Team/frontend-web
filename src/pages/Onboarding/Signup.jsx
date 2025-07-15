@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiUpload } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
@@ -17,13 +17,29 @@ import Button from "../../components/Button";
 import TextInput from "../../components/Form/TextInput";
 import Checkbox from "../../components/Form/Checkbox";
 import PersonalInfo from "./components/PersonalInfoForm";
-import { useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { useConfirmEmailMutation, useGetUserEmailQuery, useRegisterMutation, useUpdateUserMutation, useValidateEmailMutation } from "../../store/api/apiSlice";
 import VerifyIdentify from "./components/VerifyIdentity";
+import { ConfirmEmailAction, registerAction, ValidateEmailAction } from "../../redux/Auth/Register/RegisterAction";
+import { updateUserAction, userEmailAction } from "../../redux/User/UserAction";
 
-const Signup = () => {
+const Signup = ({
+    register, 
+    validateEmail,
+    confirmEmail,
+    userEmailAction,
+    updateUser,
+    loading,
+    confirmLoading,
+    error,
+    confirmError,
+    confirmData, 
+    validateEmailerror,
+    user
+}) => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [errors, setErrors] = useState(false)
     const [formData, setFormData] = useState({
         role: '',
         email: '',
@@ -45,19 +61,19 @@ const Signup = () => {
     }); 
     const [validationErrors, setValidationErrors] = useState({})
     const dispatch = useDispatch()
-    const [register, { isLoading, error }] = useRegisterMutation()
-    const [validateEmail, { isValidateLoading, validateError }] = useValidateEmailMutation()
-    const [confirmEmail, { isLoading:isConfirmLoading, error:confirmError }] = useConfirmEmailMutation()
-     // Only fetch user data when we have an email and shouldFetchUser is true
-    const { 
-        data: userData, 
-        isLoading: isUserLoading, 
-        error: userError,
-        refetch: refetchUser 
-    } = useGetUserEmailQuery(formData.email, {
-        skip: !formData.email, // Skip if no email or not ready to fetch
-    });
-    const [updateUser, { isLoading:isUpdateLoading, error:updateError }] = useUpdateUserMutation()
+    // const [register, { isLoading, error }] = useRegisterMutation()
+    // const [validateEmail, { isValidateLoading, validateError }] = useValidateEmailMutation()
+    // const [confirmEmail, { isLoading:isConfirmLoading, error:confirmError }] = useConfirmEmailMutation()
+    // Only fetch user data when we have an email and shouldFetchUser is true
+    // const { 
+    //     data: userData, 
+    //     isLoading: isUserLoading, 
+    //     error: userError,
+    //     refetch: refetchUser 
+    // } = useGetUserEmailQuery(formData.email, {
+    //     skip: !formData.email, // Skip if no email or not ready to fetch
+    // });
+    // const [updateUser, { isLoading:isUpdateLoading, error:updateError }] = useUpdateUserMutation()
     // const { isAuthenticated, error: authError } = useAppSelector((state) => state.auth)
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
@@ -84,11 +100,12 @@ const Signup = () => {
                 email: formData.email,
                 password: formData.password,
             }
-            const response = await register(userData).unwrap();
-            if(response.isSuccess){
+            await register(userData, ()=>{
                 validateEmail(formData.email);
                 nextStep();
-            }
+            }, ()=>{
+                setErrors(true);
+            });
         }
         catch (error) {
             console.error('Registration failed:', error);
@@ -99,14 +116,30 @@ const Signup = () => {
         try{
             const userData ={
                 code: formData.code.join(''),
-                email: formData.email,
+                email: formData.email || user?.data?.email,
             }
-            const response = await confirmEmail(userData).unwrap();
-            console.log('Registration response:', userData, response);
-            if(response.isSuccess){
-                await refetchUser(); 
+            await confirmEmail(userData, ()=>{
+                // refetchUser();
+                // userEmailAction(formData.email) 
                 nextStep();
-            }
+            },()=>{
+                setErrors(true);
+            });
+            console.log('Registration response:', userData, response);
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    }
+    const handleResendCode = async (e) => {
+        e.preventDefault();
+        const emailToUse = formData?.email || user?.data?.email;
+        if (!emailToUse) {
+            console.error('No email found to resend code');
+            return;
+        }
+        try{
+            await validateEmail(emailToUse);
         }
         catch (error) {
             console.error('Registration failed:', error);
@@ -121,7 +154,7 @@ const Signup = () => {
                 address: formData.location,     
             }
             console.log('User data:', userData);
-            const response = await updateUser({ id: userData.data.id, userData: data }).unwrap();
+            const response = await updateUser({ id: user.data.id, userData: data }).unwrap();
             if(response.isSuccess){
                 // validateEmail(formData.email);
                 nextStep();
@@ -155,11 +188,6 @@ const Signup = () => {
             const prevInput = document.getElementById(`code-${index - 1}`);
             if (prevInput) prevInput.focus();
         }
-    };
-
-    const handleResendCode = () => {
-        console.log('Resending code...');
-        // TODO: Implement resend code logic
     };
 
     const handleImageUpload = (file) => {
@@ -210,7 +238,6 @@ const Signup = () => {
         }
     };
 
-
     const isCodeComplete = formData.code.every(digit => digit !== '');
 
     const handleDrop = (e) => {
@@ -254,9 +281,22 @@ const Signup = () => {
         console.log('Opening map for location selection...');
         // TODO: Implement map location selection
     };
-
     const isFormValid = formData.selectedServices.length > 0;
-
+    useEffect(() => {
+        if (user && user?.data && !user?.data?.emailConfirmed) {
+            setStep(3);
+        }
+    }, [user]);
+    //  useEffect(() => {
+    //     if (user?.data?.firstName === null) {
+    //         setStep(4);
+    //     }
+    // }, [user]);
+    useEffect(()=>{
+        if(step === 4){
+            userEmailAction(formData.email) 
+        }
+    },[step, formData.email])
     return ( 
         <div className="flex h-screen bg-white px-[18px] py-[27px] md:p-[27px] gap-14">
             <AuthSidePanel className="hidden md:flex" />
@@ -279,8 +319,9 @@ const Signup = () => {
                             onInputChange={handleInputChange}
                             onNext={handleSubmit}
                             onBack={prevStep}
-                            loading = {isLoading}
+                            loading = {loading}
                             error={error}
+                            isError={errors}
                         />
                     )}
 
@@ -295,7 +336,8 @@ const Signup = () => {
                             onNext={handleConfirmEmail}
                             onBack={prevStep}
                             confirmEmail={confirmEmail}
-                            isConfirmLoading={isConfirmLoading}
+                            isConfirmLoading={confirmLoading}
+                            isError={errors}
                             confirmError={confirmError}
                             isCodeComplete={isCodeComplete}
                         />
@@ -358,4 +400,27 @@ const Signup = () => {
     );
 }
 
-export default Signup;
+const mapStoreToProps = (state) => {
+    console.log(state)
+    return {
+        loading: state?.register?.loading,
+        error: state?.register?.error,
+        data: state?.register?.data,
+        user: state?.user?.data,
+        validateEmailerror: state?.validateEmail?.error,
+        confirmLoading: state?.confirmEmail?.loading,
+        confirmError: state?.confirmEmail?.error,
+        confirmData: state?.confirmEmail?.data,
+    };
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+        register: (poststate, history,errors) => dispatch(registerAction(poststate, history, errors)),
+        validateEmail: (poststate, history,errors) => dispatch(ValidateEmailAction(poststate, history, errors)),
+        confirmEmail: (poststate, history,errors) => dispatch(ConfirmEmailAction(poststate, history, errors)),
+        userEmailAction:(email) => dispatch(ConfirmEmailAction(email)),
+        updateUser: (id, poststate, history,errors) => dispatch(updateUserAction(id, poststate, history, errors)),
+    };
+};
+
+export default connect(mapStoreToProps, mapDispatchToProps)(Signup);

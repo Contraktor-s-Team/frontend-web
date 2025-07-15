@@ -1,18 +1,28 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, token } = useSelector((state) => state.auth);
+const ProtectedRoute = ({ children, isAuthenticated }) => {
+  // const { isAuthenticated, token } = useSelector((state) => {
+  //   state.login
+  //   console.log(state.login)
+  // });
+  const Authenticated = localStorage.getItem("auth")
   const location = useLocation();
 
   // Check if user is authenticated
-  if (!isAuthenticated || !token) {
+  if (!Authenticated ) {
     // Redirect to login page with return url
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return <Navigate to="/"  replace />;
   }
 
   return children;
 };
 
-export default ProtectedRoute;
+const mapStoreToProps = (state) => {
+  console.log(state)
+    return {
+        isAuthenticated: state?.login?.isAuthenticated,
+    };
+};
+export default connect(mapStoreToProps)(ProtectedRoute);

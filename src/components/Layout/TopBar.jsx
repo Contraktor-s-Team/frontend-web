@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { MapPin, Bell, ChevronDown, Search } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import TextInput from '../Form/TextInput';
 import Button from '../Button/Button';
 import avatar from '/img/avatar1.jpg';
 
-const TopBar = () => {
+const TopBar = ({logout}) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
   const [userLocation] = useState('Ikeja GRA, Lagos');
   const location = useLocation();
+
 
   return (
     <header className="font-inter bg-white border-b border-gray-100 px-6 py-5">
@@ -110,8 +111,8 @@ const TopBar = () => {
                     Settings
                   </a>
                 </div>
-                <div className="py-1 border-t border-gray-100">
-                  <a href="#" className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
+                <div className="py-1 border-t border-gray-100" onClick={()=> logout()}>
+                  <a href="#" className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-50" >
                     <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"

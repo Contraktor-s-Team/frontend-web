@@ -18,6 +18,7 @@
     "@storybook/addon-links": "^8.0.0",
     "@storybook/react": "^8.0.0",
     "@tailwindcss/vite": "^4.1.8",
+    "axios": "^1.10.0",
     "lucide-react": "^0.523.0",
     "prop-types": "^15.8.1",
     "react": "^19.1.0",
@@ -27,6 +28,9 @@
     "react-loader-spinner": "^6.1.6",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.2",
+    "redux": "^5.0.1",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^3.1.0",
     "tailwindcss": "^4.1.8"
   },
   "devDependencies": {

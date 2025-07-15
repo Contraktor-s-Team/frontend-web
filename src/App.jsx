@@ -12,6 +12,8 @@ import Login from './pages/Onboarding/Login';
 import ForgotPassword from './pages/Onboarding/ForgotPassword';
 import VerificationCode from './pages/Onboarding/VerificationCode';
 import CreateNewPassword from './pages/Onboarding/CreateNewPassword';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 import JobDetails from './pages/MyJobs/JobDetails';
 
 // Dashboard Pages
