@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '../Button/Button';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Reusable Page Header Component
@@ -22,18 +23,14 @@ const PageHeader = ({
   buttonVariant = 'secondary',
   buttonHref,
   buttonIcon,
-  onButtonClick,
+  // onButtonClick,
   children,
   className = '',
 }) => {
-  const handleClick = (e) => {
-    if (onButtonClick) {
-      onButtonClick(e);
-    } else if (buttonHref) {
-      // If using React Router
-      const navigate = window.navigate || (() => window.location.href = buttonHref);
+  const navigate = useNavigate();
+  const handleClick = () => {
+
       navigate(buttonHref);
-    }
   };
 
   return (

@@ -1,10 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { apiSlice } from './api/apiSlice'
 import authReducer from './api/authSlice'
+import jobPostReducer from '../redux/slices/jobPostSlice';
+import hireArtisanReducer from '../redux/slices/hireArtisanSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    jobPost: jobPostReducer,
+    hireArtisan: hireArtisanReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
