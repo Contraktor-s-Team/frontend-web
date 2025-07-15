@@ -96,7 +96,7 @@ const CreateAccountForm = ({
   
   console.log("CreateAccountForm Rendered with error:", error);
   return (
-    <div className='mt-[37px] md:mt-[100px] w-[100%] pb-6'>
+    <div className=''>
       <div className="space-y-2">
         <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Create Your Account</h3>
         <p className="font-inter font-medium text-[#101928] text-sm md:text-base">Sign up in seconds by entering your basic details</p>

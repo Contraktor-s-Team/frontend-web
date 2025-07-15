@@ -43,7 +43,7 @@ const LocationForm = ({
   };
 
   return (
-    <div className="mt-[37px] md:mt-[100px] pb-6 w-full">
+    <div className="">
       <div className="space-y-2">
         <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Allow Location Access</h3>
         <p className="font-inter font-medium text-[#101928] text-sm md:text-base">

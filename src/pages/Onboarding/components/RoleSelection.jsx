@@ -6,7 +6,7 @@ import Button from '../../../components/Button';
 
 const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
   return (
-    <div className='mt-[37px] md:mt-[100px]'>
+    <div className=''>
       <div className="">
         <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Let's Set You Up Right</h3>
         <p className="font-inter font-medium text-sm md:text-base text-[#101928] mt-4">Choose how you'd like to sign up on contraktor</p>
@@ -20,11 +20,11 @@ const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
               : 'border border-[#DFE2E7]'
           }`}
         >
-          {selectedRole === 'client' && <TbCircleCheckFilled className="absolute md:top-4 right-1 text-2xl md:text-3xl text-[#0091F0]"/>}
+          {selectedRole === 'user' && <TbCircleCheckFilled className="absolute md:top-4 right-1 text-2xl md:text-3xl text-[#0091F0]"/>}
           <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'user' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
             <FiSearch className={`text-xl md:text-3xl ${selectedRole === 'user' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
           </div>
-          <p className="font-inter font-medium text-[#727A86] text-base lg:text-sm xl:text-lg">I want to Find an Artisan</p>
+          <p className="font-inter font-medium capitalize text-[#727A86] text-base lg:text-sm xl:text-lg">I want to Find an Artisan</p>
         </div>
         <div 
           onClick={() => setSelectedRole('artisan')} 
@@ -38,7 +38,7 @@ const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
           <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'artisan' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
             <TiSpanner className={`text-xl md:text-3xl ${selectedRole === 'artisan' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
           </div>
-          <p className="font-inter font-medium text-[#727A86] text-base lg:text-sm xl:text-lg">I want to become an artisan</p>
+          <p className="font-inter font-medium capitalize text-[#727A86] text-base lg:text-sm xl:text-lg">I want to become an artisan</p>
         </div>
       </div>
       <Button 

@@ -37,7 +37,7 @@ const EmailVerification = ({
     return () => clearTimeout(timer);
   }, [countdown]);
   return (
-    <div className='mt-[37px] xl:mt-[100px]'>
+    <div className=''>
       <div className="">
         <h3 className="font-manrope font-bold text-[#101928] text-2xl xl:text-3xl">Verify Your Email Address</h3>
         <p className="font-inter font-medium text-[#101928] text-sm md:text-base t5 mt-4">

@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 // Layouts
 import MainLayout from './components/Layout/MainLayout';
@@ -37,18 +39,10 @@ import {
 // Modals
 import NotificationsModal from './components/Notifications/NotificationsModal';
 
-// Auth context
-import { AuthProvider } from './contexts/AuthContext';
-import { useAuth } from './contexts/AuthContext/useAuth';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './ProtectedRoute';
 import ArtisanDetails from './pages/FindArtisans/ArtisanDetails';
 
-// Protected Route Component
-// const ProtectedRoute = ({ children }) => {
-//   const { currentUser } = useAuth();
-//   return currentUser ? children : <Navigate to="/login" />;
-// };
 
 // Layout Wrapper for protected routes
 const ProtectedLayout = ({ children }) => (
@@ -60,14 +54,15 @@ const ProtectedLayout = ({ children }) => (
 );
 
 // Route-based modal wrapper component
-const App = () => {
+const AppRoutes = () => {
+  const location = useLocation();
   
+  // Use the current location as the "under" location or the saved background location from state
+  const backgroundLocation = location.state?.backgroundLocation || location;
   
   return (
-    <Provider store={store}>
-      <Router>
-    {/* <AuthProvider> */}
-      <Routes>
+    <>
+        <Routes location={backgroundLocation}>
         {/* Public Routes */}
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -95,8 +90,9 @@ const App = () => {
           <Route path="/messages" element={<Messages />} />
           <Route path="/settings" element={<ProfileSettings />} />
           <Route path="/help" element={<HelpCentre />} />
+          
           {/* Post a Job multi-step nested routes */}
-          <Route path="/post-job" element={<PostJobLayout />}>
+          <Route path="/dashboard/post-job" element={<PostJobLayout />}>
             <Route index element={<Navigate to="describe" replace />} />
             <Route path="describe" element={<DescribeJob />} />
             <Route path="time-location" element={<TimeLocation />} />
@@ -111,10 +107,30 @@ const App = () => {
             <Route path="review" element={<ReviewSubmit />} />
           </Route>
         </Route>
+        
+        {/* 404 - Not Found */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+      
+      {/* Modal Routes - shown on top of the main UI when URL matches */}
+      {location !== backgroundLocation && (
+        <Routes>
+          <Route path="/notifications" element={<NotificationsModal />} />
         </Routes>
+      )}
+    </>
+  );
+};
+
+function App() {
+  return (
+    <Provider store={store}>
+      <Router>
+        <ScrollToTop />
+        <AppRoutes />
       </Router>
     </Provider>
   );
 }
 
-export default App
+export default App;
