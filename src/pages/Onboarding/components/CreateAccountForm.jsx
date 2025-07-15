@@ -6,11 +6,18 @@ import LoaderComp from '../../../assets/animation/loader';
 import google from '../../../assets/google.png';
 import facebook from '../../../assets/facebook.png';
 import PasswordChecker from '../../../components/Form/PasswordChecker';
-const CreateAccountForm = ({ onNext, onInputChange, loading, error, formData }) => {
+const CreateAccountForm = ({ 
+  onNext, 
+  onInputChange, 
+  loading, 
+  error, 
+  formData,
+  isError
+}) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [touched, setTouched] = useState({});
-
+  console.log("this is error", error)
   // Email validation
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,7 +102,7 @@ const CreateAccountForm = ({ onNext, onInputChange, loading, error, formData }) 
         <p className="font-inter font-medium text-[#101928] text-sm md:text-base">Sign up in seconds by entering your basic details</p>
       </div>
 
-      {error && (
+      {isError && (
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex">
             <div className="flex-shrink-0">
@@ -108,8 +115,8 @@ const CreateAccountForm = ({ onNext, onInputChange, loading, error, formData }) 
                 {typeof error === 'string' ? error : 'An error occurred'}
               </h3> */}
               {/* {typeof error === 'object' && error.data.message && ( */}
-                <div className="mt-2 text-sm text-red-700">
-                  <p>{error.data.message}</p>
+                <div className="text-sm text-red-700">
+                  <p>{error}</p>
                 </div>
               {/* )} */}
               {/* {typeof error === 'object' && error.errors && (
