@@ -128,4 +128,36 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;     /* Firefox */
   }
-  
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    width: 0px;
+    display: none;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #f7f4ed;
+     display: none;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #e0cbcb;
+    border-radius: 100vh;
+    border: 3px solid #f6f7ed;
+     display: none;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #c0a0b9;
+     display: none;
+  }
+}
+
+.custom-scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}

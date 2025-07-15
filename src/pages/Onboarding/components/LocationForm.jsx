@@ -7,7 +7,7 @@ const LocationForm = ({
   onSetLocationOnMap, 
   onNext,
   formData,
-  onFormChange 
+  onInputChange 
 }) => {
   const { 
     streetAddress = '', 
@@ -18,11 +18,32 @@ const LocationForm = ({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    onFormChange(name, value);
+    
+    // Update the individual field
+    onInputChange(name, value);
+    
+    // Create updated form data with the new value
+    const updatedFormData = {
+      ...formData,
+      [name]: value
+    };
+    
+    // Concatenate all location fields into one string
+    const locationParts = [
+      updatedFormData.streetAddress,
+      updatedFormData.nearbyLandmark,
+      updatedFormData.areaLocality,
+      updatedFormData.poBox
+    ].filter(part => part && part.trim() !== ''); // Remove empty values
+    
+    const concatenatedLocation = locationParts.join(', ');
+    
+    // Save the concatenated location
+    onInputChange('location', concatenatedLocation);
   };
 
   return (
-    <div className="mt-[61px] pb-6 w-full md:max-w-[546px]">
+    <div className="mt-[37px] md:mt-[100px] pb-6 w-full">
       <div className="space-y-2">
         <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Allow Location Access</h3>
         <p className="font-inter font-medium text-[#101928] text-sm md:text-base">

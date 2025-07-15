@@ -1,10 +1,8 @@
-import { configureStore } from '@reduxjs/toolkit';
-import jobPostReducer from './slices/jobPostSlice';
-import hireArtisanReducer from './slices/hireArtisanSlice';
+import { createStore, applyMiddleware } from "redux";
+import { thunk } from "redux-thunk";
+import {composeWithDevTools} from 'redux-devtools-extension';
+import rootReducer from "./rootReducer";
 
-export const store = configureStore({
-  reducer: {
-    jobPost: jobPostReducer,
-    hireArtisan: hireArtisanReducer,
-  },
-});
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)))
+
+export default store

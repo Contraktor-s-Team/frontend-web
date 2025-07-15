@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Search, FileText, MessageSquareText, Disc, Headset } from 'lucide-react';
-import logo from '/img/logo.png';
+import logo from '../../assets/logo.png';
 
 const Sidebar = () => {
   const location = useLocation();

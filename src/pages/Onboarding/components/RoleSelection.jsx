@@ -6,29 +6,29 @@ import Button from '../../../components/Button';
 
 const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
   return (
-    <div className='mt-[111px]'>
+    <div className='mt-[37px] md:mt-[100px]'>
       <div className="">
         <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Let's Set You Up Right</h3>
-        <p className="font-inter font-medium text-[#101928] mt-4">Choose how you'd like to sign up on contraktor</p>
+        <p className="font-inter font-medium text-sm md:text-base text-[#101928] mt-4">Choose how you'd like to sign up on contraktor</p>
       </div>
       <div className="mt-8 flex flex-col md:flex-row gap-4">
         <div 
-          onClick={() => setSelectedRole('client')} 
-          className={`relative w-full h-[89px] md:h-[238px] px-[22px] rounded-2xl flex md:flex-col items-center md:justify-center space-x-5 md:space-y-4 transition-all duration-200 ${
-            selectedRole === 'client'
+          onClick={() => setSelectedRole('user')} 
+          className={`relative w-full h-[89px] lg:h-[200px] xl:h-[238px] px-[22px] rounded-2xl flex md:flex-col items-center md:justify-center space-x-5 md:space-y-4 transition-all duration-200 ${
+            selectedRole === 'user'
               ? 'border border-[#0091F0]'
               : 'border border-[#DFE2E7]'
           }`}
         >
           {selectedRole === 'client' && <TbCircleCheckFilled className="absolute md:top-4 right-1 text-2xl md:text-3xl text-[#0091F0]"/>}
-          <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'client' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
-            <FiSearch className={`text-xl md:text-3xl ${selectedRole === 'client' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
+          <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'user' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
+            <FiSearch className={`text-xl md:text-3xl ${selectedRole === 'user' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
           </div>
-          <p className="font-inter font-medium text-[#727A86] text-base md:text-lg">I want to Find an Artisan</p>
+          <p className="font-inter font-medium text-[#727A86] text-base lg:text-sm xl:text-lg">I want to Find an Artisan</p>
         </div>
         <div 
           onClick={() => setSelectedRole('artisan')} 
-          className={`relative w-full h-[89px] md:h-[238px] px-[22px] rounded-2xl flex md:flex-col items-center md:justify-center space-x-5 md:space-y-4 transition-all duration-200 ${
+          className={`relative w-full h-[89px] lg:h-[200px] xl:h-[238px] px-[22px] rounded-2xl flex md:flex-col items-center md:justify-center space-x-5 md:space-y-4 transition-all duration-200 ${
             selectedRole === 'artisan'
               ? 'border border-[#0091F0]'
               : 'border border-[#DFE2E7]'
@@ -38,7 +38,7 @@ const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
           <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'artisan' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
             <TiSpanner className={`text-xl md:text-3xl ${selectedRole === 'artisan' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
           </div>
-          <p className="font-inter font-medium text-[#727A86] text-base md:text-lg">I want to become an artisan</p>
+          <p className="font-inter font-medium text-[#727A86] text-base lg:text-sm xl:text-lg">I want to become an artisan</p>
         </div>
       </div>
       <Button 

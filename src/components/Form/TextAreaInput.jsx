@@ -23,11 +23,10 @@ import { FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
  * @param {Function} [onTrailingIconClick] - Callback when trailing icon is clicked
  * @param {string} [className=''] - Additional CSS classes for the container
  * @param {string} [inputClassName=''] - Additional CSS classes for the input element
- * @param {string} [labelClasses=''] - Additional CSS classes for the label element
  * @returns {JSX.Element} A text input field with optional icons and states
  */
 
-const TextInput = ({
+const TextAreaInput = ({
   id,
   name,
   label,
@@ -45,10 +44,8 @@ const TextInput = ({
   leadingIcon,
   trailingIcon,
   onTrailingIconClick,
-  autocomplete='on',
   className = '',
   inputClassName = '',
-  labelClasses = '',
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -75,12 +72,10 @@ const TextInput = ({
   }
 
   const baseInputClasses = `
-    block w-full border py-4 focus:outline-none
-    border-[1px] focus:border-pri-norm-1
-    disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-gray-50
+    w-full py-[16px] text-base font-inter text-[#101928] bg-white border-[1px] focus:border-[#0091F0] focus:outline-none
+    border rounded-[6px] transition-colors duration-150 ease-in-out 
+    disabled:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-400
     read-only:bg-gray-50 read-only:cursor-default read-only:text-gray-400
-    placeholder:text-neu-norm-1
-    ${inputClassName.includes('rounded-') ? '' : 'rounded-[6px]'}
   `;
 
   let currentTrailingIcon = trailingIcon;
@@ -99,24 +94,24 @@ const TextInput = ({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={id || name} className={`block font-medium font-inter text-[#101928] mb-[10px] ${labelClasses}`}>
+        <label htmlFor={id || name} className="block font-medium font-inter text-[#101928] mb-[10px]">
           {label}
         </label>
       )}
       <div className="relative">
         {hasLeadingIcon && (
-          <div className={`absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none ${iconColor}`}>
+          <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${iconColor}`}>
             {React.cloneElement(leadingIcon, { className: 'h-5 w-5' })}
           </div>
         )}
-        <input
+        <textarea
+          rows={4}
           type={effectiveType}
           id={id || name}
           name={name}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          autoComplete={autocomplete}
           disabled={disabled}
           readOnly={readOnly}
           aria-invalid={isError}
@@ -124,19 +119,19 @@ const TextInput = ({
           className={`
             ${baseInputClasses}
             ${borderColor}
-            ${hasLeadingIcon ? 'pl-14' : 'px-3'}
+            ${hasLeadingIcon ? 'pl-10' : 'px-3'}
             ${hasTrailingIcon ? 'pr-10' : !hasLeadingIcon ? 'px-3' : 'pl-10'}
             ${inputClassName}
           `}
           {...props}
         />
-        {hasTrailingIcon && (
+        {(currentTrailingIcon || (type === 'password' && value)) && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-            {type === 'password' && !isError && !isSuccess ? (
+            {type === 'password' && value && !isError && !isSuccess ? (
               <button
                 type="button"
                 onClick={handlePasswordToggle}
-                className={`p-1 rounded-full focus:outline-none ${iconColor} hover:text-gray-600 transition-colors`}
+                className={`p-1 rounded-full focus:outline-none ${iconColor}`}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}
@@ -145,7 +140,7 @@ const TextInput = ({
               <button 
                 type="button" 
                 onClick={onTrailingIconClick}
-                disabled={disabled || readOnly || isError || isSuccess}
+                disabled={disabled || readOnly || isError || isSuccess} // Error/Success icons are not clickable by default
                 className={`p-1 ${onTrailingIconClick && !isError && !isSuccess ? 'cursor-pointer' : 'pointer-events-none'} ${iconColor}`}
                 aria-label="Trailing icon action"
               >
@@ -155,11 +150,11 @@ const TextInput = ({
           </div>
         )}
       </div>
-      {isError && errorMessage ? (
+      {(errorMessage && isError) ? (
         <p id={`${id || name}-description`} className={`mt-1 text-xs ${helperTextColor}`}>
           {errorMessage}
         </p>
-      ) : isSuccess && successMessage ? (
+      ) : (successMessage && isSuccess) ? (
         <p id={`${id || name}-description`} className={`mt-1 text-xs ${helperTextColor}`}>
           {successMessage}
         </p>
@@ -172,5 +167,4 @@ const TextInput = ({
   );
 };
 
-
-export default TextInput;
+export default TextAreaInput;

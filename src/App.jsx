@@ -10,6 +10,8 @@ import Login from './pages/Onboarding/Login';
 import ForgotPassword from './pages/Onboarding/ForgotPassword';
 import VerificationCode from './pages/Onboarding/VerificationCode';
 import CreateNewPassword from './pages/Onboarding/CreateNewPassword';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 import JobDetails from './pages/MyJobs/JobDetails';
 
 // Dashboard Pages
@@ -39,13 +41,14 @@ import NotificationsModal from './components/Notifications/NotificationsModal';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './contexts/AuthContext/useAuth';
 import ScrollToTop from './components/ScrollToTop';
+import ProtectedRoute from './ProtectedRoute';
 import ArtisanDetails from './pages/FindArtisans/ArtisanDetails';
 
 // Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const { currentUser } = useAuth();
-  return currentUser ? children : <Navigate to="/login" />;
-};
+// const ProtectedRoute = ({ children }) => {
+//   const { currentUser } = useAuth();
+//   return currentUser ? children : <Navigate to="/login" />;
+// };
 
 // Layout Wrapper for protected routes
 const ProtectedLayout = ({ children }) => (
@@ -57,17 +60,16 @@ const ProtectedLayout = ({ children }) => (
 );
 
 // Route-based modal wrapper component
-const AppRoutes = () => {
-  const location = useLocation();
+const App = () => {
   
-  // Use the current location as the "under" location or the saved background location from state
-  const backgroundLocation = location.state?.backgroundLocation || location;
   
   return (
-    <AuthProvider>
-      <Routes location={backgroundLocation}>
+    <Provider store={store}>
+      <Router>
+    {/* <AuthProvider> */}
+      <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-code" element={<VerificationCode />} />
@@ -109,27 +111,9 @@ const AppRoutes = () => {
             <Route path="review" element={<ReviewSubmit />} />
           </Route>
         </Route>
-        
-        {/* 404 - Not Found */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-      
-      {/* Modal Routes - shown on top of the main UI when URL matches */}
-      {location !== backgroundLocation && (
-        <Routes>
-          <Route path="/notifications" element={<NotificationsModal />} />
         </Routes>
-      )}
-    </AuthProvider>
-  );
-};
-
-function App() {
-  return (
-    <Router>
-      <ScrollToTop />
-      <AppRoutes />
-    </Router>
+      </Router>
+    </Provider>
   );
 }
 

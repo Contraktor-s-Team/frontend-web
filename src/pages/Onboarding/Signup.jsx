@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiUpload } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
@@ -16,10 +16,30 @@ import SuccessMessage from "./components/SuccessMessage";
 import Button from "../../components/Button";
 import TextInput from "../../components/Form/TextInput";
 import Checkbox from "../../components/Form/Checkbox";
+import PersonalInfo from "./components/PersonalInfoForm";
+import { connect, useDispatch } from "react-redux";
+import { useConfirmEmailMutation, useGetUserEmailQuery, useRegisterMutation, useUpdateUserMutation, useValidateEmailMutation } from "../../store/api/apiSlice";
+import VerifyIdentify from "./components/VerifyIdentity";
+import { ConfirmEmailAction, registerAction, ValidateEmailAction } from "../../redux/Auth/Register/RegisterAction";
+import { updateUserAction, userEmailAction } from "../../redux/User/UserAction";
 
-const Signup = () => {
+const Signup = ({
+    register, 
+    validateEmail,
+    confirmEmail,
+    userEmailAction,
+    updateUser,
+    loading,
+    confirmLoading,
+    error,
+    confirmError,
+    confirmData, 
+    validateEmailerror,
+    user
+}) => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [errors, setErrors] = useState(false)
     const [formData, setFormData] = useState({
         role: '',
         email: '',
@@ -33,11 +53,28 @@ const Signup = () => {
         poBox: '',
         profileImage: null,
         imagePreview: null,
-        fullName: '',
+        firstName: '',
+        lastName: '',
+        location: '',
         phoneNumber: '',
         selectedServices: []
-    });
-    
+    }); 
+    const [validationErrors, setValidationErrors] = useState({})
+    const dispatch = useDispatch()
+    // const [register, { isLoading, error }] = useRegisterMutation()
+    // const [validateEmail, { isValidateLoading, validateError }] = useValidateEmailMutation()
+    // const [confirmEmail, { isLoading:isConfirmLoading, error:confirmError }] = useConfirmEmailMutation()
+    // Only fetch user data when we have an email and shouldFetchUser is true
+    // const { 
+    //     data: userData, 
+    //     isLoading: isUserLoading, 
+    //     error: userError,
+    //     refetch: refetchUser 
+    // } = useGetUserEmailQuery(formData.email, {
+    //     skip: !formData.email, // Skip if no email or not ready to fetch
+    // });
+    // const [updateUser, { isLoading:isUpdateLoading, error:updateError }] = useUpdateUserMutation()
+    // const { isAuthenticated, error: authError } = useAppSelector((state) => state.auth)
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
     
@@ -55,6 +92,79 @@ const Signup = () => {
         }));
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try{
+            const userData ={
+                role: formData.role,
+                email: formData.email,
+                password: formData.password,
+            }
+            await register(userData, ()=>{
+                validateEmail(formData.email);
+                nextStep();
+            }, ()=>{
+                setErrors(true);
+            });
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    };
+    const handleConfirmEmail = async (e) => {
+        e.preventDefault();
+        try{
+            const userData ={
+                code: formData.code.join(''),
+                email: formData.email || user?.data?.email,
+            }
+            await confirmEmail(userData, ()=>{
+                // refetchUser();
+                // userEmailAction(formData.email) 
+                nextStep();
+            },()=>{
+                setErrors(true);
+            });
+            console.log('Registration response:', userData, response);
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    }
+    const handleResendCode = async (e) => {
+        e.preventDefault();
+        const emailToUse = formData?.email || user?.data?.email;
+        if (!emailToUse) {
+            console.error('No email found to resend code');
+            return;
+        }
+        try{
+            await validateEmail(emailToUse);
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    }
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try{
+            const data ={
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                address: formData.location,     
+            }
+            console.log('User data:', userData);
+            const response = await updateUser({ id: user.data.id, userData: data }).unwrap();
+            if(response.isSuccess){
+                // validateEmail(formData.email);
+                nextStep();
+            }
+        }
+        catch (error) {
+            console.error('Registration failed:', error);
+        }
+    };
+
     const handleCodeChange = (index, value) => {
         if (value.length <= 1 && /^\d*$/.test(value)) {
             const newCode = [...formData.code];
@@ -66,7 +176,7 @@ const Signup = () => {
             }));
 
             // Auto-focus next input
-            if (value && index < 3) {
+            if (value && index < 5) {
                 const nextInput = document.getElementById(`code-${index + 1}`);
                 if (nextInput) nextInput.focus();
             }
@@ -78,11 +188,6 @@ const Signup = () => {
             const prevInput = document.getElementById(`code-${index - 1}`);
             if (prevInput) prevInput.focus();
         }
-    };
-
-    const handleResendCode = () => {
-        console.log('Resending code...');
-        // TODO: Implement resend code logic
     };
 
     const handleImageUpload = (file) => {
@@ -121,8 +226,8 @@ const Signup = () => {
         });
     };
 
-    const nextStep = () => {
-        if (step < 6) {
+    const nextStep = (e) => {
+        if (step < 6 || formData.role === 'artisan') {
             setStep(step + 1);
         }
     };
@@ -131,12 +236,6 @@ const Signup = () => {
         if (step > 1) {
             setStep(step - 1);
         }
-    };
-
-    const handleSubmit = () => {
-        console.log('Form submitted:', formData);
-        // TODO: Implement form submission logic
-        nextStep(); // Move to success step
     };
 
     const isCodeComplete = formData.code.every(digit => digit !== '');
@@ -182,90 +281,147 @@ const Signup = () => {
         console.log('Opening map for location selection...');
         // TODO: Implement map location selection
     };
-
     const isFormValid = formData.selectedServices.length > 0;
-
+    useEffect(() => {
+        if (user && user?.data && !user?.data?.emailConfirmed) {
+            setStep(3);
+        }
+    }, [user]);
+    //  useEffect(() => {
+    //     if (user?.data?.firstName === null) {
+    //         setStep(4);
+    //     }
+    // }, [user]);
+    useEffect(()=>{
+        if(step === 4){
+            userEmailAction(formData.email) 
+        }
+    },[step, formData.email])
     return ( 
-        <div className="flex h-screen bg-white p-[27px] gap-14">
+        <div className="flex h-screen bg-white px-[18px] py-[27px] md:p-[27px] gap-14">
             <AuthSidePanel className="hidden md:flex" />
-            <div className="flex flex-1 flex-col px-6 lg:px-8">
-            <ProgressBar currentStep={step} totalSteps={6} />
-            <div className=" overflow-y-auto scrollbar-hidden">
-                {/* Step 1: Role Selection */}
-                {step === 1 && (
-                    <RoleSelection 
-                        selectedRole={formData.role}
-                        setSelectedRole={(role) => handleInputChange('role', role)}
-                        onNext={nextStep}
-                    />
-                )}
+            <div className="flex w-full md:w-[60%] flex-col lg:py-[20px] xl:py-[50px] lg:px-8">
+                <ProgressBar currentStep={step} totalSteps={6} />
+                <div className="w-[100%] xl:w-[90%] overflow-y-auto scrollbar-hidden">
+                    {/* Step 1: Role Selection */}
+                    {step === 1 && (
+                        <RoleSelection 
+                            selectedRole={formData.role}
+                            setSelectedRole={(role) => handleInputChange('role', role)}
+                            onNext={nextStep}
+                        />
+                    )}
 
-                {/* Step 2: Create Account */}
-                {step === 2 && (
-                    <CreateAccountForm 
-                        formData={formData}
-                        onInputChange={handleInputChange}
-                        onNext={nextStep}
-                        onBack={prevStep}
-                    />
-                )}
+                    {/* Step 2: Create Account */}
+                    {step === 2 && (
+                        <CreateAccountForm 
+                            formData={formData}
+                            onInputChange={handleInputChange}
+                            onNext={handleSubmit}
+                            onBack={prevStep}
+                            loading = {loading}
+                            error={error}
+                            isError={errors}
+                        />
+                    )}
 
-                {/* Step 3: Email Verification */}
-                {step === 3 && (
-                    <EmailVerification 
-                        code={formData.code}
-                        email={formData.email}
-                        onCodeChange={handleCodeChange}
-                        onKeyDown={handleKeyDown}
-                        onResendCode={handleResendCode}
-                        onNext={nextStep}
-                        onBack={prevStep}
-                        isCodeComplete={isCodeComplete}
-                    />
-                )}
+                    {/* Step 3: Email Verification */}
+                    {step === 3 && (
+                        <EmailVerification 
+                            code={formData.code}
+                            email={formData.email}
+                            onCodeChange={handleCodeChange}
+                            onKeyDown={handleKeyDown}
+                            onResendCode={handleResendCode}
+                            onNext={handleConfirmEmail}
+                            onBack={prevStep}
+                            confirmEmail={confirmEmail}
+                            isConfirmLoading={confirmLoading}
+                            isError={errors}
+                            confirmError={confirmError}
+                            isCodeComplete={isCodeComplete}
+                        />
+                    )}
 
-                {/* Step 4: Location Access */}
-                {step === 4 && (
-                    <LocationForm 
-                        formData={formData}
-                        onInputChange={handleLocationChange}
-                        onSetLocationOnMap={handleSetLocationOnMap}
-                        onNext={nextStep}
-                        onBack={prevStep}
-                    />
-                )}
+                    {/* Step 4: Location Access */}
+                    {step === 4 && (
+                        <LocationForm 
+                            formData={formData}
+                            onInputChange={handleLocationChange}
+                            onSetLocationOnMap={handleSetLocationOnMap}
+                            onNext={nextStep}
+                            onBack={prevStep}
+                        />
+                    )}
 
-                {/* Step 5: Profile Setup */}
-                {step === 5 && (
-                    <ProfileSetup 
-                        formData={formData}
-                        services={services}
-                        dragOver={dragOver}
-                        fileInputRef={fileInputRef}
-                        onImageUpload={handleImageUpload}
-                        onFormChange={handleInputChange}
-                        onDrop={handleDrop}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onRemoveImage={removeImage}
-                        onToggleService={toggleService}
-                        onNext={handleSubmit}
-                        onBack={prevStep}
-                        isFormValid={isFormValid}
-                    />
-                )}
+                    {step === 5 && (
+                        <PersonalInfo
+                            formData={formData}
+                            onFormChange={handleInputChange}
+                            onNext={handleUpdate}
+                            onBack={prevStep}
+                            isLoading={isUpdateLoading}
+                            error={updateError}
+                        />
+                    )}
 
-                {/* Step 6: Success Message */}
-                {step === 6 && (
-                    <SuccessMessage 
-                        role={formData.role}
-                        onGetStarted={() => navigate('/dashboard')}
-                    />
-                )}
-            </div>
+                    {/* Step 5: Profile Setup */}
+                    {step === 6 && (
+                        <ProfileSetup 
+                            formData={formData}
+                            services={services}
+                            dragOver={dragOver}
+                            fileInputRef={fileInputRef}
+                            onImageUpload={handleImageUpload}
+                            onFormChange={handleInputChange}
+                            onDrop={handleDrop}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onRemoveImage={removeImage}
+                            onToggleService={toggleService}
+                            onNext={nextStep}
+                            onBack={prevStep}
+                            isFormValid={isFormValid}
+                        />
+                    )}
+
+                    {step === 7 && (
+                        <VerifyIdentify/>
+                    )}
+                    {/* Step 6: Success Message */}
+                    {/* {step === 6 && (
+                        <SuccessMessage 
+                            role={formData.role}
+                            onGetStarted={() => navigate('/dashboard')}
+                        />
+                    )} */}
+                </div>
             </div>
         </div>
     );
 }
 
-export default Signup;
+const mapStoreToProps = (state) => {
+    console.log(state)
+    return {
+        loading: state?.register?.loading,
+        error: state?.register?.error,
+        data: state?.register?.data,
+        user: state?.user?.data,
+        validateEmailerror: state?.validateEmail?.error,
+        confirmLoading: state?.confirmEmail?.loading,
+        confirmError: state?.confirmEmail?.error,
+        confirmData: state?.confirmEmail?.data,
+    };
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+        register: (poststate, history,errors) => dispatch(registerAction(poststate, history, errors)),
+        validateEmail: (poststate, history,errors) => dispatch(ValidateEmailAction(poststate, history, errors)),
+        confirmEmail: (poststate, history,errors) => dispatch(ConfirmEmailAction(poststate, history, errors)),
+        userEmailAction:(email) => dispatch(ConfirmEmailAction(email)),
+        updateUser: (id, poststate, history,errors) => dispatch(updateUserAction(id, poststate, history, errors)),
+    };
+};
+
+export default connect(mapStoreToProps, mapDispatchToProps)(Signup);

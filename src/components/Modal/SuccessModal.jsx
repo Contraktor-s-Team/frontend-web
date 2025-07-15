@@ -2,6 +2,7 @@ import React from 'react';
 // import { FaCheck } from 'react-icons/fa';
 import Button from '../Button/Button';
 import { Check } from 'lucide-react';
+import { FaCheck } from 'react-icons/fa';
 
 const SuccessModal = ({
   isOpen,
@@ -23,19 +24,19 @@ const SuccessModal = ({
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div
-        className="bg-white rounded-2xl p-8 max-w-xl w-full mx-4 text-center relative"
-        onClick={(e) => e.stopPropagation()}
+      <div 
+        className="bg-white rounded-2xl p-10 w-[25%] mx-4 text-center relative"
+        onClick={e => e.stopPropagation()}
       >
         {/* Success Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-28 h-28 rounded-full bg-[#FFEFD8] flex items-center justify-center">
-            <Check className="text-[#FFA500]" size={55} />
+          <div className="w-16 h-16 rounded-full bg-[#FFEFD8] flex items-center justify-center">
+            <FaCheck className="text-[#FFA500] text-2xl" />
           </div>
         </div>
 
         {/* Title */}
-        <h3 id="modal-title" className="text-2xl font-manrope font-bold text-gray-900 mb-2">
+        <h3 id="modal-title" className="text-2xl font-bold font-manrope text-[#101928] mb-2">
           {title || 'Success!'}
         </h3>
 
