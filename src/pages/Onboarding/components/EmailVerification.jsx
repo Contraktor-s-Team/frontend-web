@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../../../components/Button';
 import LoaderComp from '../../../assets/animation/loader';
 
@@ -9,9 +9,12 @@ const EmailVerification = ({
   onResendCode, 
   isCodeComplete,
   onNext,
-  isConfirmLoading,
+  isError,
+  confirmLoading,
   confirmError
 }) => {
+  const [countdown, setCountdown] = useState(40);
+  const [canResend, setCanResend] = useState(false);
   console.log('EmailVerification component rendered with code:', confirmError);
   const handleSubmit = (e) => {
     e.preventDefault(); 
@@ -19,6 +22,20 @@ const EmailVerification = ({
       onNext(e);
     }
   }
+  const handleResend = (e) => {
+    onResendCode(e);
+    setCountdown(40); // Restart countdown
+    setCanResend(false);
+  };
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else {
+      setCanResend(true);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
   return (
     <div className='mt-[37px] xl:mt-[100px]'>
       <div className="">
@@ -27,7 +44,7 @@ const EmailVerification = ({
           We've sent a 4-digit code to your inbox. Enter it here to activate your account.
         </p>
       </div>
-      {confirmError && (
+      {isError && (
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -37,7 +54,7 @@ const EmailVerification = ({
             </div>
             <div className="ml-3">
                 <div className="text-sm text-red-700">
-                  <p>{confirmError.data.message}</p>
+                  <p>{confirmError}</p>
                 </div>  
             </div>
           </div>
@@ -54,20 +71,24 @@ const EmailVerification = ({
             value={code[index] || ''}
             onChange={(e) => onCodeChange(index, e.target.value)}
             onKeyDown={(e) => onKeyDown(index, e)}
-            className="w-[20px] h-[20px] lg:w-[40px] lg:h-[40px] xl:w-[83px] xl:h-[80px] text-center text-3xl font-semibold border-[2px] border-[#DFE2E7] rounded-[10px] focus:border-[#0091F0] focus:outline-none transition-colors"
+            className="w-[50px] h-[50px] lg:w-[50px] lg:h-[50px] xl:w-[83px] xl:h-[80px] text-center text-3xl font-semibold border-[2px] border-[#DFE2E7] rounded-[10px] focus:border-[#0091F0] focus:outline-none transition-colors"
           />
         ))}
       </div>
       
       <div className="mt-[44px] text-left font-inter font-medium text-[#101928] text-base">
         <span className="">Didn't receive a code? </span>
-        <button 
-          type="button"
-          onClick={onResendCode}
-          className="text-blue-500 hover:text-blue-700 font-medium transition-colors focus:outline-none"
-        >
-          Resend Code
-        </button>
+        {canResend ? (
+          <button 
+            type="button"
+            onClick={handleResend}
+            className="text-blue-500 hover:text-blue-700 font-medium transition-colors focus:outline-none"
+          >
+            Resend Code
+          </button>
+        ) : (
+          <span className="text-gray-500">Resend in {countdown}s</span>
+        )}
       </div>
       
       <Button 
@@ -75,9 +96,9 @@ const EmailVerification = ({
         variant="secondary" 
         className="w-full mt-[38px] py-[11px] h-[52px]" 
         onClick={handleSubmit}
-        disabled={!isCodeComplete || isConfirmLoading}
+        disabled={!isCodeComplete || confirmLoading}
       >
-        {isConfirmLoading ? (
+        {confirmLoading ? (
           <LoaderComp/>
         ) : (
           "Verify Email"

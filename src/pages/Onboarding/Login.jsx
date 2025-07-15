@@ -1,19 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import { TextInput } from "../../components/Form";
 import AuthSidePanel from "../../components/Layout/AuthSidePanel";
 import google from "../../assets/google.png";
 import facebook from "../../assets/facebook.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useLoginMutation } from "../../store/api/apiSlice";
+import { useGetUserEmailQuery, useLoginMutation } from "../../store/api/apiSlice";
 import LoaderComp from "../../assets/animation/loader";
+import { loginaction } from "../../redux/Auth/Login/LoginAction";
+import { connect } from "react-redux";
+import { userAction } from "../../redux/User/UserAction";
 
-const Login = () => {
+const Login = ({
+  loginAction, 
+  userAction,
+  userLoading,
+  loading: isLoading,
+  user,
+  data,
+  error
+}) => {
   const navigate = useNavigate();
+  const [errors, setErrors] = useState(false)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [login, { isLoading, error }] = useLoginMutation()
+
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
   };
@@ -27,27 +39,60 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
+    setErrors(false)
     e.preventDefault();
-     try{
-            const userData ={
-              email: email,
-              password: password,
-            }
-            const response = await login(userData).unwrap();
-            if(response.isSuccess){
-              navigate("/dashboard");
-            }
-        }
-        catch (error) {
-            console.error('Registration failed:', error);
-        }
+    try{
+      const userData ={
+        email: email,
+        password: password,
+      }
+      await loginAction(userData, ()=>{
+        console.log("i got here in login")
+      },()=>{
+        setErrors(true);
+      });
+      }
+    catch (error) {
+        console.error('Registration failed:', error);
+    }
   };
+  useEffect(() => {
+    if (data && data.userId) {
+      userAction(data.userId);
+    }
+  }, [data]);
+  // useEffect(() => {
+  //   if(data.userId){
+  //     if (user && user?.data) {
+  //       if (!user.data.emailConfirmed) {
+  //         navigate('/signup');
+  //       } 
+  //     } 
+  //   } else{
+  //     navigate('/dashboard');
+  //   }
+  // }, [user, data]);
+  useEffect(() => {
+    if (!data) return;
 
+    // Case 1: Email is NOT confirmed
+    if (data?.userId) {
+      navigate("/signup");
+      return;
+    }
+
+    // Case 2: Email is confirmed (via token or nested user)
+    if (data?.token) {
+      navigate("/dashboard");
+      return;
+    }
+
+  }, [data]);
   return (
     <div className="flex h-screen bg-white p-[27px] gap-14 font-manrope">
       <AuthSidePanel className="hidden md:flex gap-8" />
       <div className="px-2 py-6 lg:px-8 lg:py-[24px] xl:py-[60px] w-full md:w-[45%] overflow-y-scroll custom-scrollbar-hide">
-        <div>
+        <div> 
           <h2 className="text-3xl font-bold leading-9 tracking-tight text-[#101928] font-manrope">
             Welcome Back! <span role="img" aria-label="wave">👋</span>
           </h2>
@@ -56,7 +101,7 @@ const Login = () => {
           </p>
         </div>
 
-        {error && (
+        {errors && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -65,15 +110,15 @@ const Login = () => {
                 </svg>
               </div>
               <div className="ml-3">
-                <div className="mt-2 text-sm text-red-700">
-                  <p>{error.data.message}</p>
+                <div className="text-sm text-red-700">
+                  <p>{error}</p>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        <div className="mt-[74px] lg:mt-[30px] xl:mt-[74px]">
+        <div className="mt-[50px] lg:mt-[30px] xl:mt-[74px]">
           <form className="space-y-7" onSubmit={handleSubmit}>
             <TextInput
               id="email"
@@ -114,7 +159,7 @@ const Login = () => {
                 size='large'
                 variant="secondary"
                 className="w-full mt-[33px] lg:mt-[20px] xl:mt-[33px] py-[14px] font-manrope font-semibold"
-                disabled={isLoading}
+                  
               >
                 {isLoading ? (
                   <LoaderComp/>
@@ -167,4 +212,21 @@ const Login = () => {
   );
 };
 
-export default Login;
+const mapStoreToProps = (state) => {
+  console.log(state)
+    return {
+        loading: state?.login?.loading,
+        error: state?.login?.error,
+        data: state?.login?.data,
+        user: state?.user?.data,
+        userLoading: state?.user?.loading
+    };
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loginAction: (poststate, history,errors) => dispatch(loginaction(poststate, history, errors)),
+        userAction: (id) => dispatch(userAction(id))
+    };
+};
+
+export default connect(mapStoreToProps, mapDispatchToProps)(Login);
