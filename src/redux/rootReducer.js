@@ -6,6 +6,8 @@ import {
 } from "./Auth/Register/RegisterReducer";
 import { forgotPasswordReducer, loginReducer, resetPasswordReducer, validateReducer } from "./Auth/Login/LoginReducer";
 import { userEmailReducer, userReducer } from "./User/UserReducer";
+import { hireArtisanSlice } from "./slices/hireArtisanSlice";
+import { jobPostSlice } from "./slices/jobPostSlice";
 
 const rootReducer = combineReducers({
     register: registerReducer,
@@ -16,7 +18,10 @@ const rootReducer = combineReducers({
     user: userReducer,
     resetPassword: resetPasswordReducer,
     forgotPassword: forgotPasswordReducer,
-    reValidate: validateReducer
+    reValidate: validateReducer,
+    hireArtisan: hireArtisanSlice.reducer,
+    jobPost: jobPostSlice.reducer
+
 })
 
 export default rootReducer;

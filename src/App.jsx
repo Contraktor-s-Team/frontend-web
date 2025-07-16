@@ -90,7 +90,7 @@ const AppRoutes = () => {
           <Route path="/help" element={<HelpCentre />} />
           
           {/* Post a Job multi-step nested routes */}
-          <Route path="/dashboard/post-job" element={<PostJobLayout />}>
+          <Route path="/post-job" element={<PostJobLayout />}>
             <Route index element={<Navigate to="describe" replace />} />
             <Route path="describe" element={<DescribeJob />} />
             <Route path="time-location" element={<TimeLocation />} />
