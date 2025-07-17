@@ -12,7 +12,9 @@ import Login from './pages/Onboarding/Login';
 import ForgotPassword from './pages/Onboarding/ForgotPassword';
 import VerificationCode from './pages/Onboarding/VerificationCode';
 import CreateNewPassword from './pages/Onboarding/CreateNewPassword';
-// import store from './redux/store';
+
+import store from './redux/store';
+import { Provider } from 'react-redux';
 
 // Customer Pages
 import CustomerDashboard from './pages/Customer/Dashboard/Dashboard';
@@ -75,7 +77,7 @@ const AppRoutes = () => {
 
         {/* Protected Routes with MainLayout */}
         <Route element={<ProtectedLayout />}>
-        {/* Customer Routes */}
+          {/* Customer Routes */}
           <Route path="/customer" element={<CustomerLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<CustomerDashboard />} />
