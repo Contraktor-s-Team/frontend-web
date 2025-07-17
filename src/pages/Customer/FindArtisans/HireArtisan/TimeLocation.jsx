@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateJobData, updateAddress } from '../../../redux/slices/hireArtisanSlice';
-import { FormSection, DateTimePicker, AddressFields, WorkflowButtons } from '../../../components/FormWorkflow';
-import Button from '../../../components/Button/Button';
+import { updateJobData, updateAddress } from '../../../../redux/slices/hireArtisanSlice';
+import { FormSection, DateTimePicker, AddressFields, WorkflowButtons } from '../../../../components/FormWorkflow';
+import Button from '../../../../components/Button';
 
 const TimeLocation = () => {
   const location = useLocation();

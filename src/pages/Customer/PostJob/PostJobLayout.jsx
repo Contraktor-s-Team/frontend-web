@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { StepIndicator } from '../../components/FormWorkflow';
+import { StepIndicator } from '../../../components/FormWorkflow';
 
 const steps = [
   { label: 'Describe the Job', path: 'describe' },

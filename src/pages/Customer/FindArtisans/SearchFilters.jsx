@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, ChevronDown } from 'lucide-react';
-import { Select, TextInput } from '../../components/Form';
+import { Select, TextInput } from '../../../components/Form';
 
 const SearchFilters = ({ 
   categoryFilter,

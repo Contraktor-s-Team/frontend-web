@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import Button from '../../components/Button/Button';
+import Button from '../../../components/Button/Button';
 import { Plus } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
-import Pagination from '../../components/Pagination';
+import { useParams } from 'react-router-dom';
+import Pagination from '../../../components/Pagination';
 import ArtisanGrid from './ArtisanGrid';
-import TabNav from '../../components/Navigation/TabNav';
+import TabNav from '../../../components/Navigation/TabNav';
 import SearchFilters from './SearchFilters';
+import PageHeader from '../../../components/PageHeader/PageHeader';
 
 const FindArtisans = () => {
   const { tab: activeTab = 'all' } = useParams();
@@ -136,23 +137,17 @@ const FindArtisans = () => {
     { id: 'saved', label: 'Saved Artisans' }
   ];
 
-  const navigate = useNavigate();
+
   return (
-    <div className="font-inter font-medium">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-manrope text-2xl font-semibold text-gray-900">Find Trusted Artisans Near You</h1>
-          <p className="text-neu-dark-1">Browse through verified professionals ready to help with jobs / services</p>
-        </div>
-        <Button
-          variant="secondary"
-          leftIcon={<Plus size={20} />}
-          onClick={() => navigate('/post-job/describe')}
-        >
-          Post a Job
-        </Button>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Find Artisans"
+        subtitle="Browse and hire skilled professionals for your needs"
+        buttonText="Post a Job"
+        buttonVariant="secondary"
+        buttonHref="/customer/post-job/describe"
+        buttonIcon={<Plus size={18} />}
+      />
 
       <SearchFilters
         categoryFilter={categoryFilter}

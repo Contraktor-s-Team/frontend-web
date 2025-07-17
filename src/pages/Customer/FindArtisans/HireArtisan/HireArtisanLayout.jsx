@@ -3,7 +3,7 @@ import { Outlet, Link, useParams, Navigate } from 'react-router-dom';
 import { MessageSquareText, Phone } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { StepIndicator } from '../../../components/FormWorkflow';
+import { StepIndicator } from '../../../../components/FormWorkflow';
 
 const steps = [
   { label: 'Describe the Job', path: 'describe' },

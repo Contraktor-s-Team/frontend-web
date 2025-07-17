@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateJobData } from '../../redux/slices/jobPostSlice';
+import { updateJobData } from '../../../redux/slices/jobPostSlice';
 import {
   FormSection,
   DateTimePicker,
   AddressFields,
   WorkflowButtons
-} from '../../components/FormWorkflow';
-import Button from '../../components/Button/Button';
+} from '../../../components/FormWorkflow';
+import Button from '../../../components/Button/Button';
 
 const TimeLocation = () => {
   const dispatch = useDispatch();

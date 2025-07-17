@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Button from '../../../components/Button/Button';
 import { Pencil } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { resetJobData } from '../../../redux/slices/hireArtisanSlice';
-import SuccessModal from '../../../components/Modal/SuccessModal';
+import { resetJobData } from '../../../../redux/slices/hireArtisanSlice';
+import SuccessModal from '../../../../components/Modal/SuccessModal';
+import Button from '../../../../components/Button';
 
 // Reusable field display component to reduce repetitive code
 const DisplayField = ({ label, value, spanFull = false }) => (

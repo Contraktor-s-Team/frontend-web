@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../../components/Button/Button';
-import SuccessModal from '../../components/Modal/SuccessModal';
+import Button from '../../../components/Button/Button';
+import SuccessModal from '../../../components/Modal/SuccessModal';
 import { useSelector, useDispatch } from 'react-redux';
-import { resetJobData } from '../../redux/slices/jobPostSlice';
+import { resetJobData } from '../../../redux/slices/jobPostSlice';
 import { Pencil } from 'lucide-react';
 
 const ReviewPost = () => {

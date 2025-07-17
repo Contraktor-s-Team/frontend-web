@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { GoStarFill } from 'react-icons/go';
 import { MapPin } from 'lucide-react';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa6';
-import Button from '../../components/Button/Button';
+import Button from '../../../components/Button/Button';
 
 const ArtisanGrid = ({ artisans, activeTab }) => {
   const navigate = useNavigate()

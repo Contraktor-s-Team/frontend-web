@@ -8,11 +8,11 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { GoStarFill } from 'react-icons/go';
-import Button from '../../components/Button/Button';
+import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
 import { FaRegBookmark } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
-import { setArtisanDetails } from '../../redux/slices/hireArtisanSlice';
+import { setArtisanDetails } from '../../../redux/slices/hireArtisanSlice';
 
 const ArtisanDetails = () => {
   const { artisanId, tab } = useParams();

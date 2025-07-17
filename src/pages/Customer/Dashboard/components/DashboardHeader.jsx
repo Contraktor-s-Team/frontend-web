@@ -1,6 +1,5 @@
 import React from 'react';
-import Button from '../../../components/Button/Button';
-import PageHeader from '../../../components/PageHeader/PageHeader';
+import PageHeader from '../../../../components/PageHeader/PageHeader';
 import { Plus, Briefcase, File, Banknote } from 'lucide-react';
 
 const stats = [
@@ -38,7 +37,7 @@ const DashboardHeader = () => {
         subtitle="Ready to get things done today?"
         buttonText="Post a Job"
         buttonVariant="secondary"
-        buttonHref="/post-job/describe"
+        buttonHref="/customer/post-job/describe"
         buttonIcon={<Plus size={20} />}
       />
 

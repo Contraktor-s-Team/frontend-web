@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Search, Calendar, Plus, ChevronDown } from 'lucide-react';
-import { Select } from '../../components/Form';
-import { TextInput } from '../../components/Form';
-import Button from '../../components/Button/Button';
-import Pagination from '../../components/Pagination';
-import TabNav from '../../components/Navigation/TabNav';
-import ServiceTable from '../../components/Tables/ServiceTable';
+import { Select, TextInput } from '../../../components/Form';
+import Button from '../../../components/Button/Button';
+import Pagination from '../../../components/Pagination';
+import TabNav from '../../../components/Navigation/TabNav';
+import ServiceTable from '../../../components/Tables/ServiceTable';
+import PageHeader from '../../../components/PageHeader/PageHeader';
 
 const MyJobs = () => {
   const { tab: activeTab = 'ongoing' } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation();
+
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('status');
@@ -63,14 +62,7 @@ const MyJobs = () => {
   const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
 
   // Change page
-  const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    // Update URL with page number in state to maintain tab
-    navigate(`/jobs/${activeTab}`, {
-      state: { ...location.state, page: pageNumber },
-      replace: true
-    });
-  };
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const tabs = [
     { id: 'ongoing', label: 'Ongoing Jobs' },
@@ -82,21 +74,15 @@ const MyJobs = () => {
   ];
 
   return (
-    <div className="font-inter font-medium">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-manrope text-2xl font-semibold text-gray-900">My Jobs</h1>
-          <p className="text-neu-dark-1">View and manage your posted jobs</p>
-        </div>
-        <Button
-          variant="secondary"
-          leftIcon={<Plus size={20} />}
-          onClick={() => navigate('/post-job/describe')}
-        >
-          Post a Job
-        </Button>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="My Jobs"
+        subtitle="Manage your posted jobs and track their progress"
+        buttonText="Post a Job"
+        buttonVariant="secondary"
+        buttonHref="/customer/post-job/describe"
+        buttonIcon={<Plus size={18} />}
+      />
 
       {/* Tabs */}
       <TabNav 
@@ -164,7 +150,7 @@ const MyJobs = () => {
         {/* Table */}
         <ServiceTable 
           items={currentJobs} 
-          onRowClick={(job) => navigate(`/jobs/${activeTab}/${formatJobSlug(job.title)}`)} 
+          getItemLink={(job) => `/customer/jobs/${activeTab}/${formatJobSlug(job.title)}`}
           activeTab={activeTab} 
           formatItemSlug={formatJobSlug}
         />

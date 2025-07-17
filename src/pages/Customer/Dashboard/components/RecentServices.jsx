@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
-import Button from '../../../components/Button/Button';
-import ServiceTable from '../../../components/Tables/ServiceTable';
+import Button from '../../../../components/Button/Button';
+import ServiceTable from '../../../../components/Tables/ServiceTable';
 
 const services = [
   {
