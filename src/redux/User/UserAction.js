@@ -64,20 +64,6 @@ const baseUrl = 'https://distrolink-001-site1.anytempurl.com/api/Users'
 
 // this is for /api/Users/by-email endpoint
 export const userEmailAction = (email) =>{
-    // return async (dispatch) => {
-    //     dispatch(userEmailRequest())
-    //     try{
-    //         const res = await axios.get(`${baseUrl}/by-email?email=${email}`)
-    //         const {data} = res 
-    //         dispatch(userEmailSuccess(data))
-    //         if(res.status){
-    //             history()
-    //         }
-    //     }
-    //     catch(error){
-    //         dispatch(userEmailFaliure(error.response.data.message))
-    //     }
-    // }
     return async (dispatch) => {
         dispatch(userEmailRequest())
         await axios.get(`${baseUrl}/by-email?email=${email}`)
