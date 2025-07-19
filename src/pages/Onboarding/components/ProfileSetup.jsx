@@ -238,7 +238,7 @@ const ProfileSetup = ({
               </div>
             )}
             <Button 
-                variant="secondary" Add commentMore actions
+                variant="primary" Add commentMore actions
                 className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
                 onClick={(e)=> handleSuccess(e)}
             >

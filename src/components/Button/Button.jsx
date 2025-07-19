@@ -49,9 +49,9 @@ const Button = ({
   // Variant classes (normal, hover, focus, active)
   const variantClasses = {
     primary: `
-      bg-pri-dark-1
+      bg-pri-norm-1
       text-white 
-      hover:bg-pri-norm-1
+      hover:bg-pri-dark-1
       active:bg-pri-darker
       disabled:bg-neu-norm-1
     `,

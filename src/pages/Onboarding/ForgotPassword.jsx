@@ -87,7 +87,7 @@ const ForgotPassword = ({forgotPassword, loading, error, data}) => {
               <Button
                 type="submit"
                 size='large'
-                variant="secondary"
+                variant="primary"
                 className="w-full py-3 font-semibold"
                 disabled={loading}
               >

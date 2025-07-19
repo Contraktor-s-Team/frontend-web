@@ -161,7 +161,7 @@ const VerificationCode = ({validate, forgotPassword, loading, error,  data}) => 
             <Button
             size='large'
               type="submit"
-              variant="secondary"
+              variant="primary"
               className="w-full py-3 font-semibold"
               disabled={!isCodeComplete || loading}
             >

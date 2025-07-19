@@ -31,7 +31,7 @@ const SuccessMessage = () => {
         </p>
         
         <Button 
-          variant="secondary" 
+          variant="primary" 
           className="w-full mt-6"
           onClick={handleGetStarted}
         >
