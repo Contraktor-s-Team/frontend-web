@@ -75,7 +75,7 @@ const JobDetails = () => {
     <div className="font-inter font-medium">
       <div className="">
         <p className="capitalize font-medium text-sm text-pri-norm-1">
-          <Link to="/jobs/ongoing">my jobs</Link> / <Link to={`/jobs/${tab}`}>{tab}</Link> /{' '}
+          <Link to="/customer/jobs/ongoing">my jobs</Link> / <Link to={`/customer/jobs/${tab}`}>{tab}</Link> /{' '}
           <span className="text-black">job details</span>
         </p>
       </div>

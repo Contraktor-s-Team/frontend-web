@@ -90,8 +90,8 @@ const ArtisanDetails = () => {
     <div className="font-inter font-medium">
       <div className="">
         <p className="capitalize text-sm text-pri-norm-1">
-          <Link to="/artisans/all">browse artisans</Link> /{' '}
-          <Link to={`artisans/${artisanId}`}>{artisanId === '1' ? 'all artisans' : 'saved artisans'}</Link> /{' '}
+          <Link to="/customer/artisans/all">browse artisans</Link> /{' '}
+          <Link to={`/customer/artisans/${artisanId}`}>{artisanId === '1' ? 'all artisans' : 'saved artisans'}</Link> /{' '}
           <span className="text-black">artisan details</span>
         </p>
       </div>

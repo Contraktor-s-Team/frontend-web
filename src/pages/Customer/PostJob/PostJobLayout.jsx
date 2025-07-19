@@ -23,7 +23,7 @@ const PostJobLayout = () => (
       <div className="w-min-[579px]">
         <StepIndicator 
           steps={steps}
-          basePath="/post-job"
+          basePath="/customer/post-job"
           getStepPath={getStepPath}
           className="mb-8 overflow-x-auto"
         />

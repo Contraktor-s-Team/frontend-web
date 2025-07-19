@@ -11,7 +11,7 @@ const ArtisanGrid = ({ artisans, activeTab }) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
       {artisans?.map((artisan) => (
         <div key={artisan.id} className="flex flex-col gap-3.5 bg-white rounded-lg shadow-md p-4">
-          <Link to={`/artisans/${activeTab}/${artisan.id}`} className="relative group cursor-pointer">
+          <Link to={`/customer/artisans/${activeTab}/${artisan.id}`} className="relative group cursor-pointer">
             <img src={artisan.image} alt={artisan.name} className="w-full h-45.5 object-cover rounded-xl" />
 
             <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">

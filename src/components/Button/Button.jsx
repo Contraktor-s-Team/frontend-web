@@ -58,7 +58,7 @@ const Button = ({
     secondary: ` 
     border-[1.5px] border-pri-norm-1
     hover:bg-pri-light-1 
-    bg-[#0091F0] text-[#fff] 
+    text-pri-norm-1
     active:bg-pri-light-1 active:border-pri-dark-1 active:text-pri-dark-1
     disabled:text-neu-norm-1 disabled:border-[#F0F2F5] disabled:bg-white
     `,

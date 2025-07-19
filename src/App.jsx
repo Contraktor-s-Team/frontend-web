@@ -44,6 +44,7 @@ import ArtisanMessages from './pages/Artisan/Messages/Messages';
 import ArtisanHelpCentre from './pages/Artisan/HelpCentre/HelpCentre';
 import ArtisanPaymentHistory from './pages/Artisan/PaymentHistory/PaymentHistory';
 import ArtisanFindJob from './pages/Artisan/FindJob/FindJob';
+import ArtisanJobDetails from './pages/Artisan/FindJob/JobDetails';
 
 // Modals
 import NotificationsModal from './components/Notifications/NotificationsModal';
@@ -115,10 +116,19 @@ const AppRoutes = () => {
           {/* Artisan Routes */}
           <Route path="/artisan" element={<ArtisanLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<ArtisanDashboard />} />
+            {/* <Route path="dashboard" element={<ArtisanDashboard />} /> */}
+            <Route path="dashboard">
+              <Route index element={<Navigate to="new" replace />} />
+              <Route path=":tab" element={<ArtisanDashboard />} />
+            </Route>
             <Route path="profile" element={<ArtisanProfile />} />
             <Route path="my-jobs" element={<ArtisanMyJobs />} />
-            <Route path="find-jobs" element={<ArtisanFindJob />} />
+            {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */} 
+            <Route path="find-jobs">
+              <Route index element={<Navigate to="listings" replace />} />
+              <Route path=":tab" element={<ArtisanFindJob />} />
+              <Route path=":tab/:jobId" element={<ArtisanJobDetails />} />
+            </Route>
             <Route path="messages" element={<ArtisanMessages />} />
             <Route path="payment-history" element={<ArtisanPaymentHistory />} />
             <Route path="help" element={<ArtisanHelpCentre />} />

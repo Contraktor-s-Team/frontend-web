@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Search, Calendar, Plus, ChevronDown } from 'lucide-react';
 import { Select, TextInput } from '../../../components/Form';
 import Button from '../../../components/Button/Button';
@@ -11,6 +11,7 @@ import PageHeader from '../../../components/PageHeader/PageHeader';
 const MyJobs = () => {
   const { tab: activeTab = 'ongoing' } = useParams();
 
+  const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('status');
@@ -88,7 +89,7 @@ const MyJobs = () => {
       <TabNav 
         tabs={tabs} 
         activeTab={activeTab} 
-        basePath="/jobs" 
+        basePath="/customer/jobs" 
         navClassName="flex flex-wrap items-center justify-between"
       />
 
@@ -150,7 +151,8 @@ const MyJobs = () => {
         {/* Table */}
         <ServiceTable 
           items={currentJobs} 
-          getItemLink={(job) => `/customer/jobs/${activeTab}/${formatJobSlug(job.title)}`}
+          // getItemLink={(job) => `/customer/jobs/${activeTab}/${formatJobSlug(job.title)}`}
+          onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.title)}`)}
           activeTab={activeTab} 
           formatItemSlug={formatJobSlug}
         />
