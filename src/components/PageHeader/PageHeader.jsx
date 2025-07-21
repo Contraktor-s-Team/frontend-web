@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../Button/Button';
+import { useNavigate } from 'react-router-dom';
+import AvailabilityToggle from '../AvailabilityToggle';
 
 /**
  * Reusable Page Header Component
@@ -14,6 +16,9 @@ import Button from '../Button/Button';
  * @param {function} [props.onButtonClick] - Click handler for the button
  * @param {React.ReactNode} [props.children] - Additional content to render in the header
  * @param {string} [props.className] - Additional CSS classes
+ * @param {boolean} [props.showAvailability] - Whether to show the availability toggle (for artisan view)
+ * @param {boolean} [props.initialAvailability] - Initial state for availability toggle
+ * @param {function} [props.onAvailabilityChange] - Callback when availability changes
  */
 const PageHeader = ({
   title,
@@ -25,14 +30,26 @@ const PageHeader = ({
   onButtonClick,
   children,
   className = '',
+  showAvailability = false,
+  initialAvailability = true,
+  onAvailabilityChange,
 }) => {
-  const handleClick = (e) => {
+  const navigate = useNavigate();
+  const [isAvailable, setIsAvailable] = useState(initialAvailability);
+
+  const handleButtonClick = (e) => {
     if (onButtonClick) {
       onButtonClick(e);
     } else if (buttonHref) {
-      // If using React Router
-      const navigate = window.navigate || (() => window.location.href = buttonHref);
       navigate(buttonHref);
+    }
+  };
+
+  const handleAvailabilityToggle = () => {
+    const newAvailability = !isAvailable;
+    setIsAvailable(newAvailability);
+    if (onAvailabilityChange) {
+      onAvailabilityChange(newAvailability);
     }
   };
 
@@ -43,14 +60,22 @@ const PageHeader = ({
         {subtitle && <p className="text-neu-dark-1">{subtitle}</p>}
       </div>
       
-      {(buttonText || children) && (
+      {(buttonText || children || showAvailability) && (
         <div className="flex items-center gap-3">
           {children}
+          
+          {showAvailability && (
+            <AvailabilityToggle
+              available={isAvailable}
+              onChange={handleAvailabilityToggle}
+            />
+          )}
+          
           {buttonText && (
             <Button
               variant={buttonVariant}
               leftIcon={buttonIcon}
-              onClick={handleClick}
+              onClick={handleButtonClick}
             >
               {buttonText}
             </Button>
@@ -71,6 +96,9 @@ PageHeader.propTypes = {
   onButtonClick: PropTypes.func,
   children: PropTypes.node,
   className: PropTypes.string,
+  showAvailability: PropTypes.bool,
+  initialAvailability: PropTypes.bool,
+  onAvailabilityChange: PropTypes.func,
 };
 
 export default PageHeader;

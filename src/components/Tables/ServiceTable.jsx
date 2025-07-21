@@ -62,16 +62,15 @@ export const StatusBadge = ({ status }) => {
   if (status === 'In Progress') {
     return (
       <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-warning-light-1 text-warning-dark-1">
-        {/* <Clock className="text-warning-norm-1" size={16} /> */}
         {status}
       </div>
     );
   }
   
-  // Default case
+  // Default case for new job requests (no status)
   return (
     <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-neu-light-1 text-neu-dark-1">
-      {status}
+      New Request
     </div>
   );
 };
@@ -82,8 +81,12 @@ const ServiceTable = ({
   activeTab, 
   formatItemSlug = (title) => title,
   actionButton,
-  containerClassName = "" 
+  containerClassName = "",
 }) => {
+  
+  // Determine if this is for new job requests
+  const isArtisanRoute = location.pathname.startsWith('/artisan');
+  
   return (
     <div className={`overflow-x-auto ${containerClassName}`}>
       <table className="min-w-full divide-y divide-neu-light-1">
@@ -99,14 +102,24 @@ const ServiceTable = ({
               scope="col"
               className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
             >
-              Artisan
+              {isArtisanRoute ? "Customer" : "Artisan"}
             </th>
-            <th
-              scope="col"
-              className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
-            >
-              Status
-            </th>
+            {!isArtisanRoute && (
+              <th
+                scope="col"
+                className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
+              >
+                Status
+              </th>
+            )}
+            {isArtisanRoute && (
+              <th
+                scope="col"
+                className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
+              >
+                Location
+              </th>
+            )}
             <th
               scope="col"
               className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
@@ -126,17 +139,17 @@ const ServiceTable = ({
               onClick={() => onRowClick ? onRowClick(item, activeTab, formatItemSlug) : null}
             >
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">{item.title}</div>
+                <div className="text-sm font-medium text-gray-900">{item.title || item.service}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center gap-2">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                    {item.image ? (
+                    {item.image || item.customerImage ? (
                       <>
                         <img
                           className="h-full w-full object-cover"
-                          src={item.image}
-                          alt={item.artisan}
+                          src={item.image || item.customerImage}
+                          alt={isArtisanRoute ? item.customer : item.artisan}
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextElementSibling.style.display = 'flex';
@@ -145,20 +158,32 @@ const ServiceTable = ({
                       </>
                     ) : (
                       <div
-                        className={`h-full w-full flex items-center justify-center font-medium text-white ${getColorFromString(item.artisan)}`}
+                        className={`h-full w-full flex items-center justify-center font-medium text-white ${getColorFromString(isArtisanRoute ? item.customer : item.artisan)}`}
                       >
-                        {item.artisan.charAt(0).toUpperCase()}
+                        {isArtisanRoute 
+                          ? (item.customer ? item.customer.charAt(0).toUpperCase() : 'C')
+                          : (item.artisan ? item.artisan.charAt(0).toUpperCase() : 'A')
+                        }
                       </div>
                     )}
                   </div>
                   <div className="">
-                    <div className="font-medium text-gray-900">{item.artisan}</div>
+                    <div className="font-medium text-gray-900">
+                      {isArtisanRoute ? item.customer : item.artisan}
+                    </div>
                   </div>
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <StatusBadge status={item.status} />
-              </td>
+              {!isArtisanRoute && (
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <StatusBadge status={item.status} />
+                </td>
+              )}
+              {isArtisanRoute && (
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{item.location}</div>
+                </td>
+              )}
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-gray-900">{item.date}</div>
                 <div className="text-xs text-neu-dark-1">{item.time}</div>

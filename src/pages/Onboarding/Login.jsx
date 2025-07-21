@@ -91,7 +91,7 @@ const Login = ({
   return (
     <div className="flex h-screen bg-white p-[27px] gap-14 font-manrope">
       <AuthSidePanel className="hidden md:flex gap-8" />
-      <div className="px-2 py-6 lg:px-8 lg:py-[24px] xl:py-[60px] w-full md:w-[45%] overflow-y-scroll custom-scrollbar-hide">
+      <div className="px-2 py-6 lg:px-8 lg:py-[24px] w-full md:w-[45%] overflow-y-scroll custom-scrollbar-hide">
         <div> 
           <h2 className="text-3xl font-bold leading-9 tracking-tight text-[#101928] font-manrope">
             Welcome Back! <span role="img" aria-label="wave">👋</span>
@@ -119,7 +119,7 @@ const Login = ({
         )}
 
         <div className="mt-[50px] lg:mt-[30px] xl:mt-[44px]">
-          <form className="" onSubmit={handleSubmit}>
+          <form className="" onSubmit={handleSubmit}
             <TextInput
               id="email"
               name="email"
@@ -159,7 +159,7 @@ const Login = ({
                 size='large'
                 variant="secondary"
                 className="w-full mt-[33px] lg:mt-[20px] xl:mt-[20px] py-[14px] font-manrope font-semibold"
-                  
+             
               >
                 {isLoading ? (
                   <LoaderComp/>
@@ -170,11 +170,13 @@ const Login = ({
             </div>
           </form>
 
+
           <div className="mt-[20px] flex items-center justify-center">
             <div className="w-full border-t border-gray-200" />
             <div className="px-2 text-sm text-gray-500 font-manrope font-medium">OR</div>
             <div className="w-full border-t border-gray-200" />
           </div>
+
 
           <div className="mt-[20px] grid grid-cols-2 gap-3">
             <Button
@@ -196,6 +198,7 @@ const Login = ({
               <span>Facebook</span>
             </Button>
           </div>
+
 
           <p className="mt-[30px] font-inter font-medium">
             Don't have an account?{" "}

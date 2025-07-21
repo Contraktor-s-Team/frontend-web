@@ -1,52 +1,102 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, FileText, MessageSquareText, Disc, Headset } from 'lucide-react';
+import { 
+  Home, 
+  Search, 
+  FileText, 
+  MessageSquareText, 
+  Headset, 
+  Banknote,
+  Disc,
+} from 'lucide-react';
 import logo from '../../assets/logo.png';
 
-const Sidebar = () => {
+const Sidebar = ({ userType = 'customer' }) => {
   const location = useLocation();
+  
   // Check if the current path starts with the given path to support nested routes
   const isActive = path => {
     if (path === '/') return location.pathname === path;
     return location.pathname.startsWith(path);
   };
 
-  const navItems = [
+  // Customer specific navigation
+  const customerNavItems = [
     {
-      icon: <Home size={20} strokeWidth={isActive('/dashboard') ? 2.5 : 2} />,
+      icon: <Home size={20} strokeWidth={isActive('/customer/dashboard') ? 2.5 : 2} />,
       label: 'Dashboard',
-      path: '/dashboard'
+      path: '/customer/dashboard'
     },
     {
-      icon: <Search size={20} strokeWidth={isActive('/artisans') ? 2.5 : 2} />,
+      icon: <Search size={20} strokeWidth={isActive('/customer/artisans') ? 2.5 : 2} />,
       label: 'Find Artisans',
-      path: '/artisans'
+      path: '/customer/artisans'
     },
     {
-      icon: <FileText size={20} strokeWidth={isActive('/jobs') ? 2.5 : 2} />,
+      icon: <FileText size={20} strokeWidth={isActive('/customer/jobs') ? 2.5 : 2} />,
       label: 'My Jobs',
-      path: '/jobs'
+      path: '/customer/jobs'
     },
     {
-      icon: <MessageSquareText size={20} strokeWidth={isActive('/messages') ? 2.5 : 2} />,
+      icon: <MessageSquareText size={20} strokeWidth={isActive('/customer/messages') ? 2.5 : 2} />,
       label: 'Messages',
-      path: '/messages',
+      path: '/customer/messages',
       notification: 1
+    },
+    {
+    icon: <Disc size={20} strokeWidth={isActive('/customer/profile') ? 2.5 : 2} />,
+    label: 'Profile & Settings',
+    path: '/customer/profile'
+  },
+  {
+    icon: <Headset size={20} strokeWidth={isActive('/customer/help') ? 2.5 : 2} />,
+    label: 'Help Centre',
+    path: '/customer/help'
+  }
+  ];
+
+  // Artisan specific navigation
+  const artisanNavItems = [
+    {
+      icon: <Home size={20} strokeWidth={isActive('/artisan/dashboard') ? 2.5 : 2} />,
+      label: 'Dashboard',
+      path: '/artisan/dashboard'
+    },
+    {
+      icon: <Search size={20} strokeWidth={isActive('/artisan/find-jobs') ? 2.5 : 2} />,
+      label: 'Find Jobs',
+      path: '/artisan/find-jobs'
+    },
+    {
+      icon: <FileText size={20} strokeWidth={isActive('/artisan/my-jobs') ? 2.5 : 2} />,
+      label: 'My Jobs',
+      path: '/artisan/my-jobs'
+    },
+    {
+      icon: <Banknote size={20} strokeWidth={isActive('/artisan/payment-history') ? 2.5 : 2} />,
+      label: 'Payment History',
+      path: '/artisan/payment-history'
+    },
+    {
+      icon: <MessageSquareText size={20} strokeWidth={isActive('/artisan/messages') ? 2.5 : 2} />,
+      label: 'Messages',
+      path: '/artisan/messages',
+      notification: 1
+    },
+    {
+      icon: <Disc size={20} strokeWidth={isActive('/artisan/profile') ? 2.5 : 2} />,
+      label: 'Profile & Settings',
+      path: '/artisan/profile'
+    },
+    {
+      icon: <Headset size={20} strokeWidth={isActive('/artisan/help') ? 2.5 : 2} />,
+      label: 'Help Centre',
+      path: '/artisan/help'
     }
   ];
 
-  const bottomNavItems = [
-    {
-      icon: <Disc size={20} strokeWidth={isActive('/settings') ? 2.5 : 2} />,
-      label: 'Profile & Settings',
-      path: '/settings'
-    },
-    {
-      icon: <Headset size={20} strokeWidth={isActive('/help') ? 2.5 : 2} />,
-      label: 'Help Centre',
-      path: '/help'
-    }
-  ];
+  // Use appropriate navigation items based on user type
+  const navItems = userType === 'artisan' ? artisanNavItems : customerNavItems;
 
   const renderNavItem = item => (
     <Link
@@ -81,9 +131,6 @@ const Sidebar = () => {
         {/* Main Navigation */}
         <nav className="">{navItems.map(renderNavItem)}</nav>
 
-        {/* Bottom Navigation */}
-        <div className="mt-auto">{bottomNavItems.map(renderNavItem)}</div>
-
         {/* Gradient Decoration */}
         <div className="h-[264px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mt-3 m-3"></div>
       </div>
@@ -91,7 +138,7 @@ const Sidebar = () => {
       {/* Responsive Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 h-20">
         <div className="flex justify-around items-center w-full h-full px-1 md:px-4">
-          {navItems.concat(bottomNavItems.filter(item => item.label !== 'Help Centre')).map(item => (
+          {navItems.map(item => (
             <Link
               key={item.path}
               to={item.path}

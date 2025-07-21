@@ -21,13 +21,13 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
       image: '' // Would be replaced with actual image component
     },
     {
-      title: 'Secure Payments, Peace of Mind',
-      description: "Pay for work when you're satisfied, with secure escrow protection.",
+      title: 'Post a Job in Just a Few Clicks',
+      description: "Easily describe your need, choose a time, and get connected with trusted artisans",
       image: '' // Would be replaced with actual image component
     },
     {
-      title: 'Track Your Projects Effortlessly',
-      description: 'Monitor progress, communicate, and manage all your projects in one place.',
+      title: 'Your Money is Protected',
+      description: 'With escrow payments, funds are only released when the job is done to your satisfaction.',
       image: '' // Would be replaced with actual image component
     }
   ];
@@ -43,7 +43,7 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
   }, [externalCurrentSlide, slides.length]);
 
   return (
-    <div className={`hidden md:flex w-[40%] flex-col justify-between bg-[#002B41] md:p-[30px] xl:p-[54px] text-white rounded-[20px] h-full ${className}`}>
+    <div className={`hidden md:flex w-[40%] flex-col justify-between bg-[url('/onboarding-bg.png')] bg-cover bg-center md:p-[30px] xl:p-[54px] text-white rounded-[20px] h-full ${className}`}>
       {/* Logo */}
       <div className="font-manrope font-bold text-white text-4xl">ContraKtor</div>
       
@@ -53,10 +53,10 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
         <div className="w-[168px] h-[96px] bg-gray-300 rounded"></div>
 
         {/* Current Slide Content */}
-        <h2 className="font-manrope font-bold md:text-[20px] xl:text-[28px] text-center text-white">
+        <h2 className="font-manrope font-bold md:text-2xl text-center text-white">
           {slides[currentSlide]?.title}
         </h2>
-        <p className="font-inter font-normal md:text-sm xl:text-base leading-6 text-center text-[#98A2B3] max-w-[400px]">
+        <p className="font-inter font-normal leading-6 text-center text-neu-light-2 max-w-[400px]">
           {slides[currentSlide]?.description}
         </p>
 
@@ -69,7 +69,7 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
               className={`rounded-full transition-all duration-300 ${
                 index === currentSlide
                   ? 'w-3 h-3 bg-pri-norm-1'
-                  : 'w-2 h-2 bg-[#98A2B3] bg-opacity-30 hover:bg-opacity-50'
+                  : 'w-2 h-2 bg-neu-light-2/40 hover:bg-opacity-50'
               }`}
               aria-label={`Go to slide ${index + 1}`}
               aria-current={index === currentSlide}

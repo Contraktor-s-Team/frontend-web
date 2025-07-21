@@ -103,7 +103,7 @@ const CreateNewPassword = ({resetPassword,loading, error, data}) => {
             <div className="pt-2">
               <Button
                 type="submit"
-                variant="secondary"
+                variant="primary"
                 size="large"
                 className="w-full justify-center"
                 loading={isLoading}

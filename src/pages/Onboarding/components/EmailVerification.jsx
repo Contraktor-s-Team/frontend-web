@@ -93,7 +93,7 @@ const EmailVerification = ({
       
       <Button 
         size='large'
-        variant="secondary" 
+        variant="primary" 
         className="w-full mt-[38px] py-[11px] h-[52px]" 
         onClick={handleSubmit}
         disabled={!isCodeComplete || confirmLoading}

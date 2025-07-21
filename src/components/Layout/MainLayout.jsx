@@ -1,27 +1,34 @@
 import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import { logout } from '../../redux/Auth/Login/LoginAction';
 import { connect } from 'react-redux';
-const MainLayout = ({logout}) => {
-  const navigate = useNavigate();
 
-  const handleLogout = async () =>{
-    await logout()
-    navigate("/")
-    console.log("i got here")
-  }
+const MainLayout = ({ logout }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine user type based on the current route
+  const isArtisanRoute = location.pathname.startsWith('/artisan');
+  const userType = isArtisanRoute ? 'artisan' : 'customer';
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");ed 
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar userType={userType} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
         <TopBar 
           logout={handleLogout}
+          userType={userType}
         />
 
         {/* Main Content Area */}
