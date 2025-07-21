@@ -90,7 +90,9 @@ const Signup = ({
                 password: formData.password,
             }
             await register(userData, ()=>{
-                validateEmail(formData.email);
+                // validateEmail(formData.email, ()=>{}, ()=>{
+                //     setErrors(true);
+                // });
                 nextStep();
             }, ()=>{
                 setErrors(true);
@@ -114,7 +116,7 @@ const Signup = ({
             },()=>{
                 setErrors(true);
             });
-            console.log('Registration response:', userData, response);
+            console.log('Registration response:', userData);
         }
         catch (error) {
             console.error('Registration failed:', error);

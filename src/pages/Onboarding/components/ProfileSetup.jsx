@@ -239,7 +239,7 @@ const ProfileSetup = ({
             )}
             <Button 
                 variant="secondary" Add commentMore actions
-                className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
+                className="w-full mt-[38px] py-[11px]" 
                 onClick={(e)=> handleSuccess(e)}
             >
                 Create Account
