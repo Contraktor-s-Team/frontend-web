@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { MapPin, Bell, ChevronDown, Search } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import TextInput from '../Form/TextInput';
 import Button from '../Button/Button';
 import avatar from '/img/avatar1.jpg';
 
-const TopBar = ({logout}) => {
+const TopBar = ({ logout, userType = 'customer' }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
   const [userLocation] = useState('Ikeja GRA, Lagos');
@@ -18,7 +18,7 @@ const TopBar = ({logout}) => {
         {/* Search Bar */}
         <div className="w-full sm:max-w-md">
           <TextInput
-            placeholder="Search for artisans, services, etc"
+            placeholder={userType === 'artisan' ? 'Search for jobs, clients, etc' : 'Search for artisans, services, etc'}
             leadingIcon={<Search className="h-4 w-4 text-gray-400" />}
             className="w-full"
             inputClassName="pr-10 rounded-full"
@@ -26,12 +26,11 @@ const TopBar = ({logout}) => {
         </div>
 
         <div className="flex items-center gap-9 w-full sm:w-auto">
-          {/* Location */}
-          <div className="">
-            <Button variant="secondary" leftIcon={<MapPin size={20} />} className='px-4 py-3.5'>
-              {userLocation}
-            </Button>
-          </div>
+            <div className="">
+              <Button variant="secondary" leftIcon={<MapPin size={20} />} className='px-4 py-3.5'>
+                {userLocation}
+              </Button>
+            </div>
 
           {/* Notifications */}
           <div className="relative">
@@ -59,8 +58,10 @@ const TopBar = ({logout}) => {
               <div className="flex items-center gap-4">
                 <img className="h-8 w-8 rounded-full border border-gray-200" src={avatar} alt="User avatar" />
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium text-gray-900 leading-tight">Muhamad Aharasa</p>
-                  <p className="text-xs text-gray-500 leading-tight">muhamad@example.com</p>
+                  <p className="text-sm font-medium text-gray-900 leading-tight">
+                    {userType === 'artisan' ? 'Artisan' : 'Customer'} Name
+                  </p>
+                  <p className="text-xs text-gray-500 leading-tight">user@example.com</p>
                 </div>
               </div>
 

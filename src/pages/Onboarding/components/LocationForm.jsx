@@ -104,7 +104,7 @@ const LocationForm = ({
       
       <Button 
         size='large'
-        variant="secondary" 
+        variant="primary" 
         className="w-full mt-[38px] py-[11px]" 
         onClick={onNext}
       >

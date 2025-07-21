@@ -25,13 +25,15 @@ const SuccessModal = ({
       aria-labelledby="modal-title"
     >
       <div 
-        className="bg-white rounded-2xl p-10 w-[90%] lg:w-[25%] mx-4 text-center relative"
+
+        className="bg-white rounded-2xl p-10 w-full md:max-w-100 lg:max-w-150 mx-4 text-center relative"
+
         onClick={e => e.stopPropagation()}
       >
         {/* Success Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-[#FFEFD8] flex items-center justify-center">
-            <FaCheck className="text-[#FFA500] text-2xl" />
+          <div className="w-27 h-27 rounded-full bg-[#FFEFD8] flex items-center justify-center">
+            <Check className="text-[#FFA500]" size={55} />
           </div>
         </div>
 

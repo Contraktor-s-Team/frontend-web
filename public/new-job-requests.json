@@ -1,0 +1,98 @@
+[
+  {
+    "service": "Wall Socket Replacement",
+    "customer": "Grace Okafor",
+    "location": "Yaba, Lagos",
+    "date": "2023-07-06",
+    "time": "1:00 PM",
+    "category": "new"
+  },
+  {
+    "service": "Ceiling Fan Installation",
+    "customer": "Ibrahim Lawal",
+    "location": "Ikeja, Lagos",
+    "date": "2023-07-06",
+    "time": "11:45 AM",
+    "category": "new"
+  },
+  {
+    "service": "Generator Setup Assistance",
+    "customer": "Fatima Bello",
+    "location": "Surulere, Lagos",
+    "date": "2023-07-06",
+    "time": "4:30 PM",
+    "category": "new"
+  },
+  {
+    "service": "Electrical Fuse Fix",
+    "customer": "Chinedu Nwankwo",
+    "location": "Lekki Phase 1",
+    "date": "2023-07-05",
+    "time": "2:10 PM",
+    "category": "new"
+  },
+  {
+    "service": "Bathroom Leak Fix",
+    "customer": "Bisi Alade",
+    "location": "Ajah, Lagos",
+    "date": "2023-07-04",
+    "time": "10:00 AM",
+    "category": "in-progress"
+  },
+  {
+    "service": "Inverter Installation",
+    "customer": "Samuel Adeyemi",
+    "location": "Gbagada, Lagos",
+    "date": "2023-07-03",
+    "time": "12:30 PM",
+    "category": "in-progress"
+  },
+  {
+    "service": "Washing Machine Setup",
+    "customer": "Ada Obi",
+    "location": "Magodo, Lagos",
+    "date": "2023-07-04",
+    "time": "2:00 PM",
+    "category": "in-progress"
+  },
+  {
+    "service": "Gate Security Wiring",
+    "customer": "Tajudeen Musa",
+    "location": "Iyana Ipaja, Lagos",
+    "date": "2023-07-05",
+    "time": "9:45 AM",
+    "category": "in-progress"
+  },
+  {
+    "service": "Kitchen Tap Replacement",
+    "customer": "Ngozi Eze",
+    "location": "Victoria Island",
+    "date": "2023-07-06",
+    "time": "9:00 AM",
+    "category": "today"
+  },
+  {
+    "service": "AC Maintenance",
+    "customer": "Tunde Balogun",
+    "location": "Maryland, Lagos",
+    "date": "2023-07-06",
+    "time": "3:15 PM",
+    "category": "today"
+  },
+  {
+    "service": "TV Wall Mounting",
+    "customer": "Halima Abubakar",
+    "location": "Ogba, Lagos",
+    "date": "2023-07-06",
+    "time": "2:00 PM",
+    "category": "today"
+  },
+  {
+    "service": "Doorbell System Setup",
+    "customer": "Kelvin Onuoha",
+    "location": "Ikorodu, Lagos",
+    "date": "2023-07-06",
+    "time": "11:00 AM",
+    "category": "today"
+  }
+]

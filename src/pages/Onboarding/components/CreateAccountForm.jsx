@@ -101,7 +101,7 @@ const CreateAccountForm = ({
   return (
     <div className=''>
       <div className="space-y-2">
-        <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Create Your Account</h3>
+        <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Create Your CONTRAK’TOR Account</h3>
         <p className="font-inter font-medium text-[#101928] text-sm md:text-base">Sign up in seconds by entering your basic details</p>
       </div>
 
@@ -193,7 +193,7 @@ const CreateAccountForm = ({
   
         <Button 
           size='large'
-          variant="secondary" 
+          variant="primary" 
           className="w-full mt-[38px] py-[11px] h-[52px]" 
           type="button"
           onClick={handleSubmit}
@@ -206,9 +206,14 @@ const CreateAccountForm = ({
           )}  
         </Button>
 
-        <hr className="mt-[38px] md:mt-[41px] mb-[38px] text-[#DFE2E7]" data-content="OR"></hr>
+        <div className="mt-6 flex items-center justify-center">
+            <div className="w-full border-t border-gray-200" />
+            <div className="px-2 text-sm text-gray-500 font-manrope font-medium">OR</div>
+            <div className="w-full border-t border-gray-200" />
+          </div>
 
-        <div className="md:flex md:justify-between md:gap-4">
+
+        <div className="md:flex md:justify-between md:gap-4 mt-6">
           <Button
             size='large'
             variant="grey-sec"
