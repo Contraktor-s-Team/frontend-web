@@ -167,7 +167,7 @@ const CreateAccountForm = ({
          {formData.password && (
           <PasswordChecker password={formData.password} />
         )}
-        <div className="mt-6">
+        <div className="mt-5">
           <div className='flex items-center gap-2'>
             <Checkbox
               id="terms"
