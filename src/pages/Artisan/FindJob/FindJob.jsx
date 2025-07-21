@@ -3,7 +3,7 @@ import PageHeader from '../../../components/PageHeader/PageHeader';
 import SearchFilters from './searchFilters';
 import TabNav from '../../../components/Navigation/TabNav';
 import { useParams } from 'react-router-dom';
-import JobCard from './jobCard';
+// import JobCard from './jobCard';
 
 const FindJob = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -127,13 +127,13 @@ const FindJob = () => {
                 </div>
               ) : filteredJobs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredJobs.map((job) => (
+                  {/* {filteredJobs.map((job) => (
                     <JobCard 
                       key={job.id} 
                       job={job} 
                       activeTab={activeTab} 
                     />
-                  ))}
+                  ))} */}
                 </div>
               ) : (
                 <div className="text-center py-10">
