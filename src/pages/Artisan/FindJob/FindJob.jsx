@@ -5,7 +5,7 @@ import TabNav from '../../../components/Navigation/TabNav';
 import { useParams } from 'react-router-dom';
 import JobCard from './jobCard';
 
-function FindJob() {
+const FindJob = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [locationFilter, setLocationFilter] = useState('');

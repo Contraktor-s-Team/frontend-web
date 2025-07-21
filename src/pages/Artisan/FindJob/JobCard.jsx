@@ -3,7 +3,7 @@ import { Calendar, MapPin, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../../../components/Button/Button';
 
-function JobCard({ job, activeTab }) {
+const JobCard = ({ job, activeTab }) => {
   if (!job) return null;
 
   const { 
