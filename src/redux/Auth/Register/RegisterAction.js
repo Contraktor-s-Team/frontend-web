@@ -96,7 +96,7 @@ export const externalRegister = (providerName) => {
         dispatch(registerRequest())
         try {
             const result = await signInWithPopup(auth, provider);
-            const token = await result.user.getIdToken();
+            const token = await result.user.accessToken;
             console.log("External registration successful", result, token);
             // Optional: Generate a random password or ask the backend to ignore it
             const password = crypto.randomUUID(); // you can generate or use a constant
