@@ -3,7 +3,7 @@ import { FiUpload } from 'react-icons/fi';
 import Button from '../../../components/Button';
 import { TextInput } from '../../../components/Form';
 import SelectField from '../../../components/Form/Select';
-import imagePreview from "../../../assets/profile.png"
+import profile from "../../../assets/profile.png"
 import SuccessModal from '../../../components/Modal/SuccessModal';
 import { useNavigate } from 'react-router-dom';
 import TextAreaInput from '../../../components/Form/TextAreaInput';
@@ -92,18 +92,18 @@ const ProfileSetup = ({
                 <div className="flex items-center space-x-4">
                     {/* Profile Image Preview */}
                     <div className="">
-                      {imagePreview ? (
+                      {formData.imagePreview ? (
                           <div className="">
                             <img 
-                                src={imagePreview} 
+                                src={formData.imagePreview} 
                                 alt="Profile preview" 
-                                className="w-30 h-30 md:w-45 md:h-45 object-cover"
+                                className="w-30 h-30 md:w-45 md:h-45 object-cover rounded-full"
                             />
                           </div>
                       ) : (
                         <div className="flex items-center justify-center">
                             <img 
-                                src={imagePreview || profile} 
+                                src={formData.imagePreview || profile} 
                                 alt="Profile preview" 
                                 className="w-30 h-30 md:w-45 md:h-45 object-cover"
                             />
@@ -239,7 +239,7 @@ const ProfileSetup = ({
             )}
             <Button 
                 variant="secondary" Add commentMore actions
-                className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
+                className="w-full mt-[38px] py-[11px]" 
                 onClick={(e)=> handleSuccess(e)}
             >
                 Create Account

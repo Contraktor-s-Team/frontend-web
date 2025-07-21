@@ -31,11 +31,14 @@ const Signup = ({
     updateUser,
     loading,
     confirmLoading,
+    isUpdateLoading,
     error,
     confirmError,
+    updateError,
     confirmData, 
     validateEmailerror,
-    user
+    user,
+    userEmail
 }) => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
@@ -61,20 +64,6 @@ const Signup = ({
     }); 
     const [validationErrors, setValidationErrors] = useState({})
     const dispatch = useDispatch()
-    // const [register, { isLoading, error }] = useRegisterMutation()
-    // const [validateEmail, { isValidateLoading, validateError }] = useValidateEmailMutation()
-    // const [confirmEmail, { isLoading:isConfirmLoading, error:confirmError }] = useConfirmEmailMutation()
-    // Only fetch user data when we have an email and shouldFetchUser is true
-    // const { 
-    //     data: userData, 
-    //     isLoading: isUserLoading, 
-    //     error: userError,
-    //     refetch: refetchUser 
-    // } = useGetUserEmailQuery(formData.email, {
-    //     skip: !formData.email, // Skip if no email or not ready to fetch
-    // });
-    // const [updateUser, { isLoading:isUpdateLoading, error:updateError }] = useUpdateUserMutation()
-    // const { isAuthenticated, error: authError } = useAppSelector((state) => state.auth)
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
     
@@ -101,7 +90,9 @@ const Signup = ({
                 password: formData.password,
             }
             await register(userData, ()=>{
-                validateEmail(formData.email);
+                // validateEmail(formData.email, ()=>{}, ()=>{
+                //     setErrors(true);
+                // });
                 nextStep();
             }, ()=>{
                 setErrors(true);
@@ -125,7 +116,7 @@ const Signup = ({
             },()=>{
                 setErrors(true);
             });
-            console.log('Registration response:', userData, response);
+            console.log('Registration response:', userData);
         }
         catch (error) {
             console.error('Registration failed:', error);
@@ -153,12 +144,12 @@ const Signup = ({
                 lastName: formData.lastName,
                 address: formData.location,     
             }
-            console.log('User data:', userData);
-            const response = await updateUser({ id: user.data.id, userData: data }).unwrap();
-            if(response.isSuccess){
-                // validateEmail(formData.email);
+            const userToUse = user?.data?.id || userEmail?.data?.id
+            await updateUser( userToUse, data,()=>{
                 nextStep();
-            }
+            },()=>{
+                setErrors(true);
+            });
         }
         catch (error) {
             console.error('Registration failed:', error);
@@ -293,10 +284,11 @@ const Signup = ({
     //     }
     // }, [user]);
     useEffect(()=>{
+        const emailToUse = formData.email || user?.data?.email
         if(step === 4){
-            userEmailAction(formData.email) 
+            userEmailAction(emailToUse)
         }
-    },[step, formData.email])
+    },[step, formData.email, user])
     return ( 
         <div className="flex h-screen bg-white px-[18px] py-[27px] md:p-[27px] gap-14">
             <AuthSidePanel className="hidden md:flex" />
@@ -361,6 +353,7 @@ const Signup = ({
                             onNext={handleUpdate}
                             onBack={prevStep}
                             isLoading={isUpdateLoading}
+                            isError={errors}
                             error={updateError}
                         />
                     )}
@@ -382,6 +375,7 @@ const Signup = ({
                             onNext={nextStep}
                             onBack={prevStep}
                             isFormValid={isFormValid}
+                            selectedServices={formData.selectedServices}
                         />
                     )}
 
@@ -407,10 +401,13 @@ const mapStoreToProps = (state) => {
         error: state?.register?.error,
         data: state?.register?.data,
         user: state?.user?.data,
+        userEmail: state?.userEmail?.data,
         validateEmailerror: state?.validateEmail?.error,
         confirmLoading: state?.confirmEmail?.loading,
         confirmError: state?.confirmEmail?.error,
         confirmData: state?.confirmEmail?.data,
+        isUpdateLoading: state?.updateUser?.loading,
+        updateError: state?.updateUser?.error
     };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -418,7 +415,7 @@ const mapDispatchToProps = (dispatch) => {
         register: (poststate, history,errors) => dispatch(registerAction(poststate, history, errors)),
         validateEmail: (poststate, history,errors) => dispatch(ValidateEmailAction(poststate, history, errors)),
         confirmEmail: (poststate, history,errors) => dispatch(ConfirmEmailAction(poststate, history, errors)),
-        userEmailAction:(email) => dispatch(ConfirmEmailAction(email)),
+        userEmailAction:(email) => dispatch(userEmailAction(email)),
         updateUser: (id, poststate, history,errors) => dispatch(updateUserAction(id, poststate, history, errors)),
     };
 };

@@ -1,7 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './store';
 
 // Layouts
 import MainLayout from './components/Layout/MainLayout';
@@ -92,7 +90,7 @@ const AppRoutes = () => {
           <Route path="/help" element={<HelpCentre />} />
           
           {/* Post a Job multi-step nested routes */}
-          <Route path="/dashboard/post-job" element={<PostJobLayout />}>
+          <Route path="/post-job" element={<PostJobLayout />}>
             <Route index element={<Navigate to="describe" replace />} />
             <Route path="describe" element={<DescribeJob />} />
             <Route path="time-location" element={<TimeLocation />} />
