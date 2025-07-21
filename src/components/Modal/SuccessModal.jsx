@@ -11,7 +11,7 @@ const SuccessModal = ({
   message = "You'll receive quotes from artisans shortly.",
   primaryButtonText = 'View Job',
   secondaryButtonText = 'Back to Dashboard',
-  onPrimaryButtonClick,
+  onButtonClick,
   onSecondaryButtonClick
 }) => {
   if (!isOpen) return null;
@@ -25,7 +25,9 @@ const SuccessModal = ({
       aria-labelledby="modal-title"
     >
       <div 
+
         className="bg-white rounded-2xl p-10 w-full md:max-w-100 lg:max-w-150 mx-4 text-center relative"
+
         onClick={e => e.stopPropagation()}
       >
         {/* Success Icon */}
@@ -54,7 +56,7 @@ const SuccessModal = ({
             variant="primary"
             size="large"
             className={`justify-center ${secondaryButtonText && onSecondaryButtonClick ? 'flex-1' : 'w-full'}`}
-            onClick={onPrimaryButtonClick}
+            onClick={onButtonClick}
           >
             {primaryButtonText}
           </Button>

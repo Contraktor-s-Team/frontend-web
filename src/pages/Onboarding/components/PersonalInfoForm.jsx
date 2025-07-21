@@ -9,6 +9,7 @@ const PersonalInfo = ({
     onNext, 
     userData,
     isLoading,
+    isError,
     error
 }) => {
     const { 
@@ -190,7 +191,7 @@ const PersonalInfo = ({
                   Add your name and phone number to finish creating your account
                 </p>
             </div>
-            {error && (
+            {isError && (
                 <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <div className="flex">
                     <div className="flex-shrink-0">
@@ -200,7 +201,7 @@ const PersonalInfo = ({
                     </div>
                     <div className="ml-3">
                         <div className="mt-2 text-sm text-red-700">
-                        <p>{error.data.message}</p>
+                        {/* <p>{error}</p> */}
                         </div>
                     </div>
                 </div>

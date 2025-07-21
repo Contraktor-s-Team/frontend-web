@@ -6,13 +6,16 @@ import LoaderComp from '../../../assets/animation/loader';
 import google from '../../../assets/google.png';
 import facebook from '../../../assets/facebook.png';
 import PasswordChecker from '../../../components/Form/PasswordChecker';
+import { connect } from 'react-redux';
+import { externalRegister } from '../../../redux/Auth/Register/RegisterAction';
 const CreateAccountForm = ({ 
   onNext, 
   onInputChange, 
   loading, 
   error, 
   formData,
-  isError
+  isError,
+  externalRegister
 }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
@@ -165,21 +168,24 @@ const CreateAccountForm = ({
           <PasswordChecker password={formData.password} />
         )}
         <div className="mt-6">
-          <Checkbox
-            id="terms"
-            label="I agree to the Terms & Conditions and Privacy Policy"
-            checked={isTermsAccepted}
-            onChange={(e) => {
-              setIsTermsAccepted(e.target.checked);
-              setTouched(prev => ({ ...prev, terms: true }));
-              if (e.target.checked) {
-                setValidationErrors(prev => ({ ...prev, terms: "" }));
-              } else {
-                setValidationErrors(prev => ({ ...prev, terms: "You must accept the Terms & Conditions" }));
-              }
-            }}
-            required
-          />
+          <div className='flex items-center gap-2'>
+            <Checkbox
+              id="terms"
+              
+              checked={isTermsAccepted}
+              onChange={(e) => {
+                setIsTermsAccepted(e.target.checked);
+                setTouched(prev => ({ ...prev, terms: true }));
+                if (e.target.checked) {
+                  setValidationErrors(prev => ({ ...prev, terms: "" }));
+                } else {
+                  setValidationErrors(prev => ({ ...prev, terms: "You must accept the Terms & Conditions" }));
+                }
+              }}
+              required
+            />
+            <p className='font-inter text-sm text-[#98A2B3] font-medium'>I agree to the <span className='text-[#0091F0]'>Terms & Conditions</span> and <span className='text-[#0091F0]'>Privacy Policy</span></p>
+          </div>
           {touched.terms && validationErrors.terms && (
             <p className="mt-1 text-sm text-red-600">{validationErrors.terms}</p>
           )}
@@ -213,6 +219,7 @@ const CreateAccountForm = ({
             variant="grey-sec"
             type="button"
             className="w-full justify-center gap-2 py-3 mb-[14px]"
+            onClick={() => externalRegister("Google")}
           >
             <img src={google} alt="Google" className="w-5 h-5" />
             <span>Google</span>
@@ -222,6 +229,7 @@ const CreateAccountForm = ({
             variant="grey-sec"
             type="button"
             className="w-full justify-center gap-2 py-3 mb-[14px]"
+            onClick={() => externalRegister("Facebook")}  
           >
             <img src={facebook} alt="Facebook" className="w-5 h-5" />
             <span>Facebook</span>
@@ -232,4 +240,19 @@ const CreateAccountForm = ({
   );
 };
 
-export default CreateAccountForm;
+
+const mapStoreToProps = (state) => {
+    console.log(state)
+    return {
+        loading: state?.register?.loading,
+        error: state?.register?.error,
+        data: state?.register?.data,
+    };
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+      externalRegister: (providerName) => dispatch(externalRegister(providerName)),
+    };
+};
+
+export default connect(mapStoreToProps, mapDispatchToProps)(CreateAccountForm);

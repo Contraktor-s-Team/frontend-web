@@ -118,8 +118,8 @@ const Login = ({
           </div>
         )}
 
-        <div className="mt-[30px]">
-          <form className="space-y-5" onSubmit={handleSubmit}>
+        <div className="mt-[50px] lg:mt-[30px] xl:mt-[44px]">
+          <form className="" onSubmit={handleSubmit}
             <TextInput
               id="email"
               name="email"
@@ -130,7 +130,7 @@ const Login = ({
               value={email}
               onChange={handleEmailChange}
               placeholder="Enter your email address"
-              className="w-full"
+              className="w-full lg:mb-[20px] xl:mb-[33px]"
             />
 
             <div className="space-y-1">
@@ -157,9 +157,9 @@ const Login = ({
               <Button
                 type="submit"
                 size='large'
-                variant="primary"
-                className="w-full mt-6 py-[14px] font-manrope font-semibold"
-                  
+                variant="secondary"
+                className="w-full mt-[33px] lg:mt-[20px] xl:mt-[20px] py-[14px] font-manrope font-semibold"
+             
               >
                 {isLoading ? (
                   <LoaderComp/>
@@ -170,13 +170,15 @@ const Login = ({
             </div>
           </form>
 
-          <div className="mt-6 flex items-center justify-center">
+
+          <div className="mt-[20px] flex items-center justify-center">
             <div className="w-full border-t border-gray-200" />
             <div className="px-2 text-sm text-gray-500 font-manrope font-medium">OR</div>
             <div className="w-full border-t border-gray-200" />
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
+
+          <div className="mt-[20px] grid grid-cols-2 gap-3">
             <Button
               size='large'
               variant="grey-sec"
@@ -197,7 +199,8 @@ const Login = ({
             </Button>
           </div>
 
-          <p className="mt-8 font-inter font-medium">
+
+          <p className="mt-[30px] font-inter font-medium">
             Don't have an account?{" "}
             <Link
               to="/signup"

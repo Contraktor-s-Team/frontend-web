@@ -1,4 +1,6 @@
 import { REGISTER_REQUEST, REGISTER_SUCCESS, REGISTER_FALIURE, VALIDATE_EMAIL_REQUEST, VALIDATE_EMAIL_SUCCESS, VALIDATE_EMAIL_FALIURE, CONFIRM_EMAIL_FALIURE, CONFIRM_EMAIL_SUCCESS, CONFIRM_EMAIL_REQUEST } from "./RegisterType";
+import {auth, googleProvider, facebookProvider} from "./Config";
+import {signInWithPopup} from "firebase/auth";
 import axios from 'axios'
 
 // this is for /api/Auth/register endpoint
@@ -84,6 +86,40 @@ export const registerAction = (postState, history, errors) =>{
         }
     }
 }
+
+export const externalRegister = (providerName) => {
+    return async (dispatch) => {
+        let provider;
+        if (providerName === "Google") provider = googleProvider;
+        else if (providerName === "Facebook") provider = facebookProvider;
+        else throw new Error("Unsupported provider");
+        dispatch(registerRequest())
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const token = await result.user.getIdToken();
+            console.log("External registration successful", result, token);
+            // Optional: Generate a random password or ask the backend to ignore it
+            const password = crypto.randomUUID(); // you can generate or use a constant
+
+            const payload = {
+            provider: providerName,
+            token,
+            password,
+            };
+
+            const response = await axios.post(`${baseUrl}/external-register`, payload);
+
+            console.log("Registration successful", response.data);
+            // dispatch(registerSuccess(response.data))
+            return response.data;
+        } catch (error) {
+            dispatch(registerFaliure(error))
+            console.error("External registration failed:", error);
+            throw error;
+        }
+    }
+};
+
 
 // this is for /api/Auth/validate-email endpoint
 export const ValidateEmailAction = (postState, history, errors) =>{
