@@ -119,7 +119,7 @@ const Login = ({
         )}
 
         <div className="mt-[50px] lg:mt-[30px] xl:mt-[44px]">
-          <form className="" onSubmit={handleSubmit}
+          <form className="" onSubmit={handleSubmit}>
             <TextInput
               id="email"
               name="email"
