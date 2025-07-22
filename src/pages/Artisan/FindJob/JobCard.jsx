@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import Button from '../../../components/Button/Button';
 
 const JobCard = ({ job, activeTab }) => {
-  if (!job) return null;
 
   const { 
     category, 

@@ -17,14 +17,13 @@ const FindJob = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { tab: activeTab = 'listings' } = useParams();
+  const { tab: activeTab = 'listigs' } = useParams();
   
   const tabs = [
     { id: 'listings', label: 'Job Listings' },
     { id: 'requests', label: 'Direct Job Requests' },
   ];
-
-  // Fetch jobs data
+   // Fetch jobs data
   useEffect(() => {
     const fetchJobs = async () => {
       try {
