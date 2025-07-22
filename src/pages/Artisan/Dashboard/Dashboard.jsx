@@ -12,6 +12,9 @@ const Dashboard = () => {
       const fetchData = async () => {
         try {
           const res = await fetch('/new-job-requests.json');
+          if (!res.ok) {
+            throw new Error('Failed to fetch services');
+          }
           const data = await res.json();
           console.log(data);
           const filtedServices = data.filter((service) => service.category === activeTab);

@@ -83,7 +83,7 @@ const Login = ({
 
     // Case 2: Email is confirmed (via token or nested user)
     if (data?.token) {
-      navigate("/dashboard");
+      navigate("/customer/dashboard");
       return;
     }
 
