@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
  * @param {boolean} [required] - Whether the checkbox is required
  * @param {string} [className] - Additional CSS classes for the container
  * @param {string} [id] - Unique identifier for the checkbox element
+ * @param {elementType} [labelComponent] - Custom component to render the label
  * @returns {JSX.Element} A styled checkbox input with optional label
  */
 
@@ -22,6 +23,7 @@ const Checkbox = ({
   required,
   className,
   id,
+  labelComponent: LabelComponent,
 }) => {
   const checkboxId = id || `checkbox-${label?.toLowerCase().replace(/\s+/g, '-')}`;
 
@@ -59,10 +61,10 @@ const Checkbox = ({
               ${disabled ? 'bg-gray-100' : 'bg-white'}
               ${
                 checked
-                  ? 'border-blue-500 bg-blue-500'
+                  ? 'border-pri-norm-1 bg-pri-norm-1'
                   : 'border-gray-300'
               }
-              peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-opacity-50
+              peer-focus:ring-2 peer-focus:ring-pri-norm-1 peer-focus:ring-opacity-50
               ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
               transition-colors duration-200
               ${className || ''}
@@ -85,16 +87,22 @@ const Checkbox = ({
         </div>
       </div>
       {label && (
-        <label
-          id={`${checkboxId}-label`}
-          htmlFor={checkboxId}
-          className={`ml-3 text-sm font-medium font-inter ${
-            disabled ? 'text-gray-500' : 'text-[#98A2B3]'
-          } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-        >
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
+        LabelComponent ? (
+          <LabelComponent htmlFor={checkboxId} className="cursor-pointer">
+            {label}
+            {required && <span className="text-red-500">*</span>}
+          </LabelComponent>
+        ) : (
+          <label
+            htmlFor={checkboxId}
+            className={`ml-3 text-sm font-medium font-inter ${
+              disabled ? 'text-gray-500' : 'text-[#98A2B3]'
+            } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+          >
+            {label}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+        )
       )}
     </div>
   );
@@ -115,6 +123,8 @@ Checkbox.propTypes = {
   className: PropTypes.string,
   /** Unique identifier for the checkbox element */
   id: PropTypes.string,
+  /** Custom component to render the label */
+  labelComponent: PropTypes.elementType,
 };
 
 Checkbox.defaultProps = {

@@ -167,11 +167,10 @@ const CreateAccountForm = ({
          {formData.password && (
           <PasswordChecker password={formData.password} />
         )}
-        <div className="mt-5">
-          <div className='flex items-center gap-2'>
+        <div className="mt-6">
+          <div className="flex items-start">
             <Checkbox
               id="terms"
-              
               checked={isTermsAccepted}
               onChange={(e) => {
                 setIsTermsAccepted(e.target.checked);
@@ -184,7 +183,12 @@ const CreateAccountForm = ({
               }}
               required
             />
-            <p className='font-inter text-sm text-[#98A2B3] font-medium'>I agree to the <span className='text-[#0091F0]'>Terms & Conditions</span> and <span className='text-[#0091F0]'>Privacy Policy</span></p>
+            <label htmlFor="terms" className="ml-2 text-sm text-gray-700 font-medium font-inter">
+              I agree to the{' '}
+              <span className="text-pri-norm-1">Terms & Conditions</span>
+              {' '}and{' '}
+              <span className="text-pri-norm-1">Privacy Policy</span>
+            </label>
           </div>
           {touched.terms && validationErrors.terms && (
             <p className="mt-1 text-sm text-red-600">{validationErrors.terms}</p>

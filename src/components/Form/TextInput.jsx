@@ -75,7 +75,7 @@ const TextInput = ({
   }
 
   const baseInputClasses = `
-    block w-full border py-4 focus:outline-none
+    font-inter block w-full border py-4 focus:outline-none
     border-[1px] focus:border-pri-norm-1
     disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-gray-50
     read-only:bg-gray-50 read-only:cursor-default read-only:text-gray-400
