@@ -12,7 +12,7 @@ const ReviewPost = () => {
   const jobData = useSelector(state => state.jobPost);
   const [posted, setPosted] = useState(false);
 
-  const handlePrev = () => navigate('/post-job/time-location');
+  const handlePrev = () => navigate('/customer/post-job/time-location');
 
   const handlePost = () => {
     // Simulate saving to localStorage list of jobs

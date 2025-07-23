@@ -10,6 +10,7 @@ import LoaderComp from "../../assets/animation/loader";
 import { loginaction } from "../../redux/Auth/Login/LoginAction";
 import { connect } from "react-redux";
 import { userAction } from "../../redux/User/UserAction";
+import { Info } from "lucide-react";
 
 const Login = ({
   loginAction, 
@@ -157,7 +158,7 @@ const Login = ({
               <Button
                 type="submit"
                 size='large'
-                variant="secondary"
+                variant="primary"
                 className="w-full mt-[33px] lg:mt-[20px] xl:mt-[20px] py-[14px] font-manrope font-semibold"
              
               >
@@ -200,15 +201,24 @@ const Login = ({
           </div>
 
 
-          <p className="mt-[30px] font-inter font-medium">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="leading-6 text-[#0091F0] hover:text-[#006DB4]"
-            >
-              Sign Up
-            </Link>
-          </p>
+          <div className="mt-[30px] flex justify-between items-center font-inter font-medium">
+  <p className="text-sm">
+    Don’t have an account?{" "}
+    <Link to="/signup" className="text-[#0091F0] hover:text-[#006DB4]">
+      Sign Up
+    </Link>
+  </p>
+
+  <Button 
+    variant="text-pri" 
+    size="small" 
+    leftIcon={<Info size={20} />}
+    className=""
+  >
+    Help Centre
+  </Button>
+</div>
+
         </div>
       </div>
     </div>

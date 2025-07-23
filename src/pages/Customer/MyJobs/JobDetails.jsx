@@ -273,67 +273,76 @@ const JobDetails = () => {
 
           {job.jobDetails.quotes && (
             <div className="bg-white rounded-xl p-7 h-fit">
-              {/* Header */}
-              <div className="mb-6">
+                       {/* Header */}
+                       <div className="mb-6">
                 <h1 className="font-manrope text-xl font-semibold mb-2.5">Quotes</h1>
                 <p className="text-neu-dark-1">You've received {job.jobDetails.quotes.length} quotes for this job</p>
               </div>
 
-              {/* Quotes List */}
-              <div className="space-y-4">
-                {job.jobDetails.quotes.map((quote) => (
-                  <div key={quote.artisan} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    {/* Artisan Info Header */}
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="relative">
-                        <img
-                          src={quote.avatar || Avatar}
-                          alt={quote.artisan}
-                          className="w-42.5 h-42.5 rounded-lg object-cover"
-                        />
-                        <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
-                          <GoStarFill size={12} className="text-warning-norm-1" />
-                          <span className="text-xs font-medium text-gray-900">{quote.rating}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex-1 space-y-4.25">
-                        <div className="">
-                          <h3 className="font-semibold mb-1">{quote.artisan}</h3>
-                          <p className="text-neu-dark-1 text-sm mb-2">{quote.category}</p>
-                        </div>
-
-                        <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
-                          <Banknote size={20} className="text-pri-norm-1" />
-                          <p className="font-semibold">{quote.price}</p>
-                        </div>
-
-                        <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
-                          <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
-                          <span className="text-sm text-success-norm-3 font-medium">{quote.availability}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Message */}
-                    <div className="mb-4">
-                      <p className="text-sm text-neu-dark-1 mb-2">Message From artisan</p>
-                      <p className="leading-relaxed">{quote.message}</p>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-4">
-                      <Button variant="secondary" rightIcon={<Check size={20} />}>
-                        Accept Quote
-                      </Button>
-                      <Button variant="grey-sec" rightIcon={<MessageSquareText size={20} />}>
-                        Chat with artisan
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+              <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Quotes yet</h3>
               </div>
-            </div>
+            // <div className="bg-white rounded-xl p-7 h-fit">
+            //   {/* Header */}
+            //   <div className="mb-6">
+            //     <h1 className="font-manrope text-xl font-semibold mb-2.5">Quotes</h1>
+            //     <p className="text-neu-dark-1">You've received {job.jobDetails.quotes.length} quotes for this job</p>
+            //   </div>
+
+            //   {/* Quotes List */}
+            //   <div className="space-y-4">
+            //     {job.jobDetails.quotes.map((quote) => (
+            //       <div key={quote.artisan} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            //         {/* Artisan Info Header */}
+            //         <div className="flex items-start gap-4 mb-4">
+            //           <div className="relative">
+            //             <img
+            //               src={quote.avatar || Avatar}
+            //               alt={quote.artisan}
+            //               className="w-42.5 h-42.5 rounded-lg object-cover"
+            //             />
+            //             <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
+            //               <GoStarFill size={12} className="text-warning-norm-1" />
+            //               <span className="text-xs font-medium text-gray-900">{quote.rating}</span>
+            //             </div>
+            //           </div>
+
+            //           <div className="flex-1 space-y-4.25">
+            //             <div className="">
+            //               <h3 className="font-semibold mb-1">{quote.artisan}</h3>
+            //               <p className="text-neu-dark-1 text-sm mb-2">{quote.category}</p>
+            //             </div>
+
+            //             <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
+            //               <Banknote size={20} className="text-pri-norm-1" />
+            //               <p className="font-semibold">{quote.price}</p>
+            //             </div>
+
+            //             <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
+            //               <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
+            //               <span className="text-sm text-success-norm-3 font-medium">{quote.availability}</span>
+            //             </div>
+            //           </div>
+            //         </div>
+
+            //         {/* Message */}
+            //         <div className="mb-4">
+            //           <p className="text-sm text-neu-dark-1 mb-2">Message From artisan</p>
+            //           <p className="leading-relaxed">{quote.message}</p>
+            //         </div>
+
+            //         {/* Action Buttons */}
+            //         <div className="flex gap-4">
+            //           <Button variant="secondary" rightIcon={<Check size={20} />}>
+            //             Accept Quote
+            //           </Button>
+            //           <Button variant="grey-sec" rightIcon={<MessageSquareText size={20} />}>
+            //             Chat with artisan
+            //           </Button>
+            //         </div>
+            //       </div>
+            //     ))}
+            //   </div>
+            // </div>
           )}
 
           {tab === 'completed' && (

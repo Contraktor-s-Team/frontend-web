@@ -168,12 +168,26 @@ const FindArtisans = () => {
       <TabNav 
         tabs={tabs} 
         activeTab={activeTab} 
-        basePath="/artisans" 
+        basePath="/customer/artisans" 
         navClassName="flex flex-wrap items-center gap-10"
       />
 
       {/* Artisans Grid */}
-      <ArtisanGrid artisans={currentArtisans} activeTab={activeTab} />
+      <ArtisanGrid 
+        artisans={currentArtisans} 
+        activeTab={activeTab}
+        searchQuery={searchQuery}
+        categoryFilter={categoryFilter !== 'category' ? categoryFilter : ''}
+        locationFilter={locationFilter !== 'location' ? locationFilter : ''}
+        onClearFilters={() => {
+          setSearchQuery('');
+          setCategoryFilter('category');
+          setLocationFilter('location');
+          setAvailabilityFilter('availability');
+          setRatingFilter('rating');
+          setPriceFilter('price');
+        }}
+      />
 
       {/* Pagination */}
       {artisans.length > 0 && (

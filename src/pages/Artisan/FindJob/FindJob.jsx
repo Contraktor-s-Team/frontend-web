@@ -17,7 +17,7 @@ const FindJob = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { tab: activeTab = 'listigs' } = useParams();
+  const { tab: activeTab = 'listings' } = useParams();
   
   const tabs = [
     { id: 'listings', label: 'Job Listings' },
