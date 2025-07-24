@@ -16,6 +16,10 @@ import FileUploader from './FileUploader';
  * @param {Function} props.handleFileChange - Function to handle file changes
  * @param {Array} props.categoryOptions - Options for the category dropdown
  * @param {number} [props.maxFiles=3] - Maximum number of files allowed (default: 3)
+ * @param {Array} props.subcategoryOptions - Options for the subcategory dropdown
+ * @param {string} props.subcategory - Current subcategory value
+ * @param {Function} props.setSubcategory - Function to update subcategory
+
  */
 const JobDescriptionForm = ({
   jobTitle,
@@ -28,6 +32,9 @@ const JobDescriptionForm = ({
   handleFileChange = () => {},
   categoryOptions = [],
   maxFiles = 3,
+  subcategoryOptions = [],
+  subcategory,
+  setSubcategory
 }) => {
   return (
     <>
@@ -60,6 +67,26 @@ const JobDescriptionForm = ({
           className='text-sm'
         />
       </div>
+
+      {subcategoryOptions.length > 0 && (
+        <div className="mb-6">
+          <label htmlFor="subCategory" className="block text-sm font-medium text-gray-800 mb-2">
+            Subcategory <span className="text-err-norm-1">*</span>
+          </label>
+          <Select
+            id="subCategory"
+            options={subcategoryOptions}
+            value={subcategory?.value || ''}
+            onChange={(e) => {
+              const selectedOption = subcategoryOptions.find(opt => opt.value === e.target.value);
+              setSubcategory(selectedOption); // sets full { value, label }
+            }}
+            required
+            dropdownClassName='text-sm'
+            className='text-sm'
+          />
+        </div>
+      )}
 
       {/* Description Textarea */}
       <div className="mb-8">

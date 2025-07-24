@@ -190,16 +190,16 @@ const ProfileSetup = ({
                         onChange={handleServiceChange}
                         options={options}
                         placeholder="e.g., Plumbing, Cleaning, AC Repair"
-                       
+                        className="w-full"
                       />
-                      <SelectField
+                      {/* <SelectField
                         label="Years of experience"
                         value={selectedService}
                         onChange={handleServiceChange}
                         options={options}
                         placeholder="Select your years of experience"
                         
-                      />
+                      /> */}
                   </div>
                 </div>
                 <div className="mt-[44px]">

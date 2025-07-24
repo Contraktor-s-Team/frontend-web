@@ -12,7 +12,8 @@ const SuccessModal = ({
   primaryButtonText = 'View Job',
   secondaryButtonText = 'Back to Dashboard',
   onButtonClick,
-  onSecondaryButtonClick
+  onSecondaryButtonClick,
+  onPrimaryButtonClick
 }) => {
   if (!isOpen) return null;
 
@@ -56,7 +57,7 @@ const SuccessModal = ({
             variant="primary"
             size="large"
             className={`justify-center ${secondaryButtonText && onSecondaryButtonClick ? 'flex-1' : 'w-full'}`}
-            onClick={onButtonClick}
+            onClick={onPrimaryButtonClick}
           >
             {primaryButtonText}
           </Button>

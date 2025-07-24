@@ -68,83 +68,85 @@ const AppRoutes = () => {
 
   return (
     <>
-      <Routes location={backgroundLocation}>
-        {/* Public Routes */}
-        <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-code" element={<VerificationCode />} />
-        <Route path="/create-new-password" element={<CreateNewPassword />} />
+    <ErrorBoundary>
+        <Routes location={backgroundLocation}>
+          {/* Public Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-code" element={<VerificationCode />} />
+          <Route path="/create-new-password" element={<CreateNewPassword />} />
 
-        {/* Protected Routes with MainLayout */}
-        <Route element={<ProtectedLayout />}>
-          {/* Customer Routes */}
-          <Route path="/customer" element={<CustomerLayout />}>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<CustomerDashboard />} />
-            <Route path="artisans">
-              <Route index element={<Navigate to="all" replace />} />
-              <Route path=":tab" element={<CustomerFindArtisans />} />
-              <Route path=":tab/:artisanId" element={<CustomerArtisanDetails />} />
-            </Route>
-            {/* Nested hire-artisan routes within artisan details */}
-            <Route path="artisans/:tab/:artisanId/hire-artisan" element={<CustomerHireArtisanLayout />}>
-              <Route index element={<Navigate to="describe" replace />} />
-              <Route path="describe" element={<CustomerHireArtisanDescribeJob />} />
-              <Route path="time-location" element={<CustomerHireArtisanTimeLocation />} />
-              <Route path="review" element={<CustomerHireArtisanReviewSubmit />} />
-            </Route>
-            <Route path="jobs">
-              <Route index element={<Navigate to="ongoing" replace />} />
-              <Route path="ongoing" element={<CustomerMyJobs />} />
-              <Route path=":tab" element={<CustomerMyJobs />} />
-              <Route path=":tab/:jobId" element={<CustomerJobDetails />} />
-            </Route>
-            <Route path="messages" element={<CustomerMessages />} />
-            <Route path="settings" element={<CustomerProfileSettings />} />
-            <Route path="help" element={<CustomerHelpCentre />} />
+          {/* Protected Routes with MainLayout */}
+          <Route element={<ProtectedLayout />}>
+            {/* Customer Routes */}
+            <Route path="/customer" element={<CustomerLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<CustomerDashboard />} />
+              <Route path="artisans">
+                <Route index element={<Navigate to="all" replace />} />
+                <Route path=":tab" element={<CustomerFindArtisans />} />
+                <Route path=":tab/:artisanId" element={<CustomerArtisanDetails />} />
+              </Route>
+              {/* Nested hire-artisan routes within artisan details */}
+              <Route path="artisans/:tab/:artisanId/hire-artisan" element={<CustomerHireArtisanLayout />}>
+                <Route index element={<Navigate to="describe" replace />} />
+                <Route path="describe" element={<CustomerHireArtisanDescribeJob />} />
+                <Route path="time-location" element={<CustomerHireArtisanTimeLocation />} />
+                <Route path="review" element={<CustomerHireArtisanReviewSubmit />} />
+              </Route>
+              <Route path="jobs">
+                <Route index element={<Navigate to="ongoing" replace />} />
+                <Route path="ongoing" element={<CustomerMyJobs />} />
+                <Route path=":tab" element={<CustomerMyJobs />} />
+                <Route path=":tab/:jobId" element={<CustomerJobDetails />} />
+              </Route>
+              <Route path="messages" element={<CustomerMessages />} />
+              <Route path="settings" element={<CustomerProfileSettings />} />
+              <Route path="help" element={<CustomerHelpCentre />} />
 
-            {/* Post a Job multi-step nested routes */}
-            <Route path="post-job" element={<CustomerPostJobLayout />}>
-              <Route index element={<Navigate to="describe" replace />} />
-              <Route path="describe" element={<CustomerDescribeJob />} />
-              <Route path="time-location" element={<CustomerTimeLocation />} />
-              <Route path="review" element={<CustomerReviewPost />} />
+              {/* Post a Job multi-step nested routes */}
+              <Route path="post-job" element={<CustomerPostJobLayout />}>
+                <Route index element={<Navigate to="describe" replace />} />
+                <Route path="describe" element={<CustomerDescribeJob />} />
+                <Route path="time-location" element={<CustomerTimeLocation />} />
+                <Route path="review" element={<CustomerReviewPost />} />
+              </Route>
+            </Route>
+
+            {/* Artisan Routes */}
+            <Route path="/artisan" element={<ArtisanLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              {/* <Route path="dashboard" element={<ArtisanDashboard />} /> */}
+              <Route path="dashboard">
+                <Route index element={<Navigate to="new" replace />} />
+                <Route path=":tab" element={<ArtisanDashboard />} />
+              </Route>
+              <Route path="profile" element={<ArtisanProfile />} />
+              <Route path="my-jobs" element={<ArtisanMyJobs />} />
+              {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */} 
+              <Route path="find-jobs">
+                <Route index element={<Navigate to="listings" replace />} />
+                <Route path=":tab" element={<ArtisanFindJob />} />
+                <Route path=":tab/:jobId" element={<ArtisanJobDetails />} />
+              </Route>
+              <Route path="messages" element={<ArtisanMessages />} />
+              <Route path="payment-history" element={<ArtisanPaymentHistory />} />
+              <Route path="help" element={<ArtisanHelpCentre />} />
             </Route>
           </Route>
 
-          {/* Artisan Routes */}
-          <Route path="/artisan" element={<ArtisanLayout />}>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            {/* <Route path="dashboard" element={<ArtisanDashboard />} /> */}
-            <Route path="dashboard">
-              <Route index element={<Navigate to="new" replace />} />
-              <Route path=":tab" element={<ArtisanDashboard />} />
-            </Route>
-            <Route path="profile" element={<ArtisanProfile />} />
-            <Route path="my-jobs" element={<ArtisanMyJobs />} />
-            {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */} 
-            <Route path="find-jobs">
-              <Route index element={<Navigate to="listings" replace />} />
-              <Route path=":tab" element={<ArtisanFindJob />} />
-              <Route path=":tab/:jobId" element={<ArtisanJobDetails />} />
-            </Route>
-            <Route path="messages" element={<ArtisanMessages />} />
-            <Route path="payment-history" element={<ArtisanPaymentHistory />} />
-            <Route path="help" element={<ArtisanHelpCentre />} />
-          </Route>
-        </Route>
-
-        {/* 404 - Not Found */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-
-      {/* Modal Routes - shown on top of the main UI when URL matches */}
-      {location !== backgroundLocation && (
-        <Routes>
-          <Route path="/notifications" element={<NotificationsModal />} />
+          {/* 404 - Not Found */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
-      )}
+
+        {/* Modal Routes - shown on top of the main UI when URL matches */}
+        {location !== backgroundLocation && (
+          <Routes>
+            <Route path="/notifications" element={<NotificationsModal />} />
+          </Routes>
+        )}
+      </ErrorBoundary>
     </>
   );
 };
@@ -161,3 +163,23 @@ function App() {
 }
 
 export default App;
+
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('Caught by ErrorBoundary:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <h2>Something went wrong. Try refreshing the page.</h2>;
+    }
+    return this.props.children;
+  }
+}

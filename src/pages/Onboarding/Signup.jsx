@@ -130,7 +130,7 @@ const Signup = ({
             return;
         }
         try{
-            await validateEmail(emailToUse);
+            await validateEmail({email: emailToUse});
         }
         catch (error) {
             console.error('Registration failed:', error);

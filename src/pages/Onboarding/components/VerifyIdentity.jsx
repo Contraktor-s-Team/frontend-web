@@ -3,6 +3,8 @@ import Button from "../../../components/Button";
 import { TextInput } from "../../../components/Form";
 import { FaUpload } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { navigate } from "@storybook/addon-links";
 
 const VerifyIdentify = ({
     formData,
@@ -15,7 +17,7 @@ const VerifyIdentify = ({
     const [selectedIdType, setSelectedIdType] = useState('National ID Card');
     const [frontSideFile, setFrontSideFile] = useState(null);
     const [backSideFile, setBackSideFile] = useState(null);
-
+    const navigate = useNavigate();
     const idTypes = [
         { id: 'national-id', label: 'National ID Card', active: true },
         { id: 'nin-slip', label: 'NIN Slip', active: false },
@@ -50,6 +52,14 @@ const VerifyIdentify = ({
         />
         </div>
     );
+    
+    const handleContinue = () => {
+        navigate("/")
+    }
+    const handleSkip = () => {
+        navigate("/")
+    }
+
     return ( 
         <div className="">
             <div className="space-y-2">
@@ -105,10 +115,10 @@ const VerifyIdentify = ({
 
             {/* Action Buttons */}
             <div className="flex space-x-4">
-            <button className="flex-1 py-3 px-6 border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+            <button className="flex-1 py-3 px-6 border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors" onClick={handleSkip}>
                 Skip
             </button>
-            <button className="flex-2 py-3 px-6 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 transition-colors">
+            <button className="flex-2 py-3 px-6 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 transition-colors" onClick={handleContinue}>
                 Continue
             </button>
             </div>

@@ -29,11 +29,11 @@ const stats = [
   },
 ];
 
-const DashboardHeader = () => {
+const DashboardHeader = ({data}) => {
   return (
     <div className='font-inter font-medium'>
       <PageHeader
-        title="Good morning, Chika 👋"
+        title={`Good morning,${data?.data?.firstName || "Customer"}👋`}
         subtitle="Ready to get things done today?"
         buttonText="Post a Job"
         buttonVariant="secondary"

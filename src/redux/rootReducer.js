@@ -8,6 +8,7 @@ import { forgotPasswordReducer, loginReducer, resetPasswordReducer, validateRedu
 import { updateUserReducer, userEmailReducer, userReducer } from "./User/UserReducer";
 import { hireArtisanSlice } from "./slices/hireArtisanSlice";
 import { jobPostSlice } from "./slices/jobPostSlice";
+import { categoryReducer, jobpostReducer, jobReducer, subCategoryReducer } from "./Jobs/JobsReducer";
 
 const rootReducer = combineReducers({
     register: registerReducer,
@@ -20,6 +21,10 @@ const rootReducer = combineReducers({
     resetPassword: resetPasswordReducer,
     forgotPassword: forgotPasswordReducer,
     reValidate: validateReducer,
+    category: categoryReducer,
+    subcategory: subCategoryReducer,
+    jobs: jobReducer,
+    jobpost: jobpostReducer,
     hireArtisan: hireArtisanSlice.reducer,
     jobPost: jobPostSlice.reducer
 
