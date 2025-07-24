@@ -48,6 +48,7 @@ const Login = ({
       }
       await loginAction(userData, ()=>{
         console.log("i got here in login")
+        navigate("/customer/dashboard", {state: {email: userData.email} });
       },()=>{
         setErrors(true);
       });
@@ -82,12 +83,13 @@ const Login = ({
     }
 
     // Case 2: Email is confirmed (via token or nested user)
-    if (data?.token) {
-      navigate("/customer/dashboard");
-      return;
-    }
+    // if (data?.token) {
+    //   navigate("/customer/dashboard");
+    //   return;
+    // }  
 
   }, [data]);
+
   return (
     <div className="flex h-screen bg-white p-[27px] gap-14 font-manrope">
       <AuthSidePanel className="hidden md:flex gap-8" />
@@ -157,9 +159,8 @@ const Login = ({
               <Button
                 type="submit"
                 size='large'
-                variant="secondary"
+                variant="primary"
                 className="w-full mt-[33px] lg:mt-[20px] xl:mt-[20px] py-[14px] font-manrope font-semibold"
-             
               >
                 {isLoading ? (
                   <LoaderComp/>

@@ -5,7 +5,7 @@ import TextInput from '../Form/TextInput';
 import Button from '../Button/Button';
 import avatar from '/img/avatar1.jpg';
 
-const TopBar = ({ logout, userType = 'customer' }) => {
+const TopBar = ({ logout, userType = 'customer', data }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
   const [userLocation] = useState('Ikeja GRA, Lagos');
@@ -59,9 +59,9 @@ const TopBar = ({ logout, userType = 'customer' }) => {
                 <img className="h-8 w-8 rounded-full border border-gray-200" src={avatar} alt="User avatar" />
                 <div className="hidden sm:block text-left">
                   <p className="text-sm font-medium text-gray-900 leading-tight">
-                    {userType === 'artisan' ? 'Artisan' : 'Customer'} Name
+                    {data?.data?.firstName || "User"} {data?.data?.lastName || "User"}
                   </p>
-                  <p className="text-xs text-gray-500 leading-tight">user@example.com</p>
+                  <p className="text-xs text-gray-500 leading-tight">{data?.data?.email}</p>
                 </div>
               </div>
 
@@ -79,8 +79,8 @@ const TopBar = ({ logout, userType = 'customer' }) => {
                 }}
               >
                 <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">Muhamad Aharasa</p>
-                  <p className="text-xs text-gray-500 mt-1">muhamad@example.com</p>
+                  <p className="text-sm font-medium text-gray-900">{data?.data?.firstName || "User"} {data?.data?.lastName || "User"}</p>
+                  <p className="text-xs text-gray-500 mt-1">{data?.data?.email}</p>
                 </div>
                 <div className="py-1">
                   <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">

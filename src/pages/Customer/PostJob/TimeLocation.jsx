@@ -8,11 +8,13 @@ import {
   WorkflowButtons
 } from '../../../components/FormWorkflow';
 import Button from '../../../components/Button/Button';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const TimeLocation = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation(); 
   const jobData = useSelector((state) => state.jobPost);
-
   const [date, setDate] = useState(jobData.date);
   const [time, setTime] = useState(jobData.time);
   const [urgent, setUrgent] = useState(jobData.urgent);
@@ -155,7 +157,7 @@ const TimeLocation = () => {
         </div>
       </div>
 
-      <WorkflowButtons
+      {/* <WorkflowButtons
         previousPath="/post-job/describe"
         nextPath="/post-job/review"
         onNext={(navigate) => {
@@ -174,7 +176,13 @@ const TimeLocation = () => {
         className="mt-14"
         alignButtons="start"
         btnClassName="px-6 py-4.25"
-      />
+      /> */}
+       <Button
+          variant="primary" 
+          onClick={()=> navigate("/customer/post-job/review", { state: { jobData,date,time,formAddress, data: location.state.userData, file: location.state.files, category:location.state.subcategory } })}
+        >,
+            "Save & Continue"
+        </Button>
     </FormSection>
   );
 };

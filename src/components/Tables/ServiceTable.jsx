@@ -185,7 +185,7 @@ const ServiceTable = ({
                 </td>
               )}
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-gray-900">{item.date}</div>
+                <div className="text-gray-900">{item.postedAt}</div>
                 <div className="text-xs text-neu-dark-1">{item.time}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

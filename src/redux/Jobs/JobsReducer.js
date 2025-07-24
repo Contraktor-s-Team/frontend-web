@@ -1,4 +1,4 @@
-import { JOB_FALIURE, JOB_ID_FALIURE, JOB_ID_REQUEST, JOB_ID_SUCCESS, JOB_REQUEST, JOB_SUCCESS, POST_JOB_FALIURE, POST_JOB_REQUEST, POST_JOB_SUCCESS } from "./JobsType"
+import { CATEGORY_FALIURE, CATEGORY_REQUEST, CATEGORY_SUCCESS, JOB_FALIURE, JOB_ID_FALIURE, JOB_ID_REQUEST, JOB_ID_SUCCESS, JOB_REQUEST, JOB_SUCCESS, POST_JOB_FALIURE, POST_JOB_REQUEST, POST_JOB_SUCCESS, SUBCATEGORY_FALIURE, SUBCATEGORY_REQUEST, SUBCATEGORY_SUCCESS } from "./JobsType"
 
 const initialstate = {
     loading: false,
@@ -67,6 +67,52 @@ export const jobidReducer = (state=initialstate, action) => {
                 error: {}
             }
         case JOB_ID_FALIURE:
+            return{
+                loading:false,
+                data: {},
+                error: action.payload
+            }
+        default: return state   
+    }
+}
+
+export const categoryReducer = (state=initialstate, action) => {
+    switch (action.type){
+        case CATEGORY_REQUEST:
+            return{
+                ...state,
+                loading: true
+            }
+        case CATEGORY_SUCCESS:
+            return{
+                loading: false,
+                data: action.payload,
+                error: {}
+            }
+        case CATEGORY_FALIURE:
+            return{
+                loading:false,
+                data: {},
+                error: action.payload
+            }
+        default: return state   
+    }
+}
+
+export const subCategoryReducer = (state=initialstate, action) => {
+    switch (action.type){
+        case SUBCATEGORY_REQUEST:
+            return{
+                ...state,
+                loading: true
+            }
+        case SUBCATEGORY_SUCCESS:
+            return{
+                loading: false,
+                data: action.payload,
+                error: {}
+            }
+        case SUBCATEGORY_FALIURE:
             return{
                 loading:false,
                 data: {},

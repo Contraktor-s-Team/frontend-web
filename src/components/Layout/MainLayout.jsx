@@ -1,11 +1,11 @@
 import React from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, data } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import { logout } from '../../redux/Auth/Login/LoginAction';
 import { connect } from 'react-redux';
 
-const MainLayout = ({ logout }) => {
+const MainLayout = ({ logout, data }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -15,7 +15,7 @@ const MainLayout = ({ logout }) => {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/");ed 
+    navigate("/");
   };
 
   return (
@@ -29,6 +29,7 @@ const MainLayout = ({ logout }) => {
         <TopBar 
           logout={handleLogout}
           userType={userType}
+          data={data}
         />
 
         {/* Main Content Area */}
@@ -43,13 +44,17 @@ const MainLayout = ({ logout }) => {
 const mapStoreToProps = (state) => {
   console.log(state)
     return {
-        
+        loading: state?.userEmail?.loading,
+        error: state?.userEmail?.error,
+        data: state?.userEmail?.data,
     };
 };
 const mapDispatchToProps = (dispatch) => {
     return {
-        logout: () => dispatch(logout())
+        logout: () => dispatch(logout()),
+        getuser: (email) => dispatch(userEmailAction(email)),
     };
 };
 
 export default connect(mapStoreToProps,mapDispatchToProps)(MainLayout);
+
