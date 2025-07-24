@@ -156,8 +156,8 @@ const TimeLocation = () => {
       </div>
 
       <WorkflowButtons
-        previousPath="/post-job/describe"
-        nextPath="/post-job/review"
+        previousPath="/customer/post-job/describe"
+        nextPath="/customer/post-job/review"
         onNext={(navigate) => {
           saveFormData();
           if (isFormValid()) {

@@ -67,7 +67,7 @@ const DescribeJob = () => {
       {/* Navigation buttons */}
       <div className="mt-14">
         <WorkflowButtons
-          nextPath="/post-job/time-location"
+          nextPath="/customer/post-job/time-location"
           onNext={(navigate) => {
             saveFormData();
             if (isFormValid()) {

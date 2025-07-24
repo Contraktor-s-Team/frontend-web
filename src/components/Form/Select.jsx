@@ -57,7 +57,8 @@ const SelectField = ({
           onClick={() => !disabled && setIsOpen(!isOpen)}
           className={`
             flex items-center w-full px-4 py-4 text-left
-            bg-white border border-gray-300 rounded-lg
+            bg-white border border-gray-300
+            ${className?.includes('rounded-full') ? 'rounded-full' : 'rounded-lg'}
             ${disabled ? 'cursor-not-allowed bg-gray-50' : 'cursor-pointer hover:bg-gray-50'}
             ${error ? 'border-red-500' : ''}
             ${isOpen ? 'border-pri-dark-1' : ''}
