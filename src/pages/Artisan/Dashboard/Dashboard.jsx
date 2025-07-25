@@ -3,8 +3,15 @@ import DashboardHeader from './components/DashboardHeader';
 import RecentServices from './components/NewJobRequests';
 import { useParams } from 'react-router-dom';
 import TabNav from '../../../components/Navigation/TabNav';
+import { connect } from 'react-redux';
+import { userEmailAction } from '../../../redux/User/UserAction';
 
-const Dashboard = () => {
+const Dashboard = ({
+  loading,
+  error,
+  data,
+  getuser
+}) => {
   const { tab: activeTab = 'new' } = useParams();
   const [services, setServices] = useState([]);
 
@@ -36,7 +43,7 @@ const Dashboard = () => {
   
   return (
     <>
-      <DashboardHeader />
+      <DashboardHeader data={data}/>
       <TabNav 
         tabs={tabs} 
         activeTab={activeTab} 
@@ -50,4 +57,19 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+const mapStoreToProps = (state) => {
+  console.log(state)
+    return {
+        loading: state?.userEmail?.loading,
+        error: state?.userEmail?.error,
+        data: state?.userEmail?.data,
+    };
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getuser: (email) => dispatch(userEmailAction(email)),
+    };
+};
+
+
+export default connect(mapStoreToProps, mapDispatchToProps)(Dashboard);

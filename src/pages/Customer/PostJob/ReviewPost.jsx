@@ -17,7 +17,7 @@ const ReviewPost = () => {
 
   const handlePost = () => {
     // Simulate saving to localStorage list of jobs
-    const list = JSON.parse(localStorage.getItem('jobs') || '[]');
+    const list = JSON.parse (localStorage.getItem('jobs') || '[]');
     list.push({ id: Date.now(), ...jobData });
     localStorage.setItem('jobs', JSON.stringify(list));
     // clear draft
