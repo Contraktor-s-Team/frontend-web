@@ -86,6 +86,7 @@ const ServiceTable = ({
   
   // Determine if this is for new job requests
   const isArtisanRoute = location.pathname.startsWith('/artisan');
+  const isMyJobs = location.pathname.includes('/jobs')
   
   return (
     <div className={`overflow-x-auto ${containerClassName}`}>
@@ -96,7 +97,7 @@ const ServiceTable = ({
               scope="col"
               className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
             >
-              Service
+              {isMyJobs ? 'Job Title' : 'Service'}
             </th>
             <th
               scope="col"

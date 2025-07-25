@@ -24,7 +24,7 @@ const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
           <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'user' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
             <FiSearch className={`text-xl md:text-3xl ${selectedRole === 'user' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
           </div>
-          <p className="font-inter font-medium capitalize text-[#727A86] text-base lg:text-sm xl:text-lg">I want to Find an Artisan</p>
+          <p className="font-manrope font-semibold capitalize text-[#727A86] text-base lg:text-sm xl:text-lg">I want to Find an Artisan</p>
         </div>
         <div 
           onClick={() => setSelectedRole('artisan')} 
@@ -38,7 +38,7 @@ const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
           <div className={`w-[46px] h-[46px] md:w-[76px] md:h-[76px] rounded-full flex items-center justify-center ${selectedRole === 'artisan' ? 'bg-[#E6F4FE]' : 'bg-[#FDF1DC]'}`}>
             <TiSpanner className={`text-xl md:text-3xl ${selectedRole === 'artisan' ? 'text-[#006DB4]' : 'text-[#F3A218]'}`}/>
           </div>
-          <p className="font-inter font-medium capitalize text-[#727A86] text-base lg:text-sm xl:text-lg">I want to register as an artisan</p>
+          <p className="font-manrope font-semibold capitalize text-[#727A86] text-base lg:text-sm xl:text-lg">I want to register as an artisan</p>
         </div>
       </div>
       <Button 

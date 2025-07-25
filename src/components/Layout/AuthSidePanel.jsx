@@ -17,7 +17,7 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
   const slides = [
     {
       title: 'Verified Artisans, Always Within Reach',
-      description: 'Connect with skilled, locally vetted professionals - no more guesswork or scams.',
+      description: 'Connect with skilled, locally vetted professionals',
       image: '' // Would be replaced with actual image component
     },
     {

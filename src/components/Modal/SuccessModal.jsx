@@ -11,7 +11,6 @@ const SuccessModal = ({
   message = "You'll receive quotes from artisans shortly.",
   primaryButtonText = 'View Job',
   secondaryButtonText = 'Back to Dashboard',
-  onButtonClick,
   onSecondaryButtonClick,
   onPrimaryButtonClick
 }) => {

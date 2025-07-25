@@ -123,9 +123,9 @@ const Sidebar = ({ userType = 'customer' }) => {
       <div className="hidden lg:flex font-inter w-[280px] bg-white h-screen flex-col border-r border-gray-100">
         {/* Logo */}
         <div className="my-8 px-[30px]">
-          <div className="flex items-center">
+          <Link to={`/${userType}`} className="flex items-center">
             <img src={logo} alt="Contraktor" className="h-8 w-auto" />
-          </div>
+          </Link>
         </div>
 
         {/* Main Navigation */}

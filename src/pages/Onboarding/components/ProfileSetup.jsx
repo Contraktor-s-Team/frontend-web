@@ -249,8 +249,8 @@ const ProfileSetup = ({
               onClose={() => setShowSuccessModal(false)}
               title="You’re All Set!"
               message="You’ve successfully created your account and Ready to find the right artisan for the job"
-              buttonText="Browse Artisans"
-              onButtonClick={() => Navigate('/')}
+              primaryButtonText="Browse Artisans"
+              onPrimaryButtonClick={() => Navigate(`${formData.role === 'user' ? '/customer' : '/artisan'}`)}
             />
         </div>
     </div>
