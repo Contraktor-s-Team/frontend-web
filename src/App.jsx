@@ -66,6 +66,10 @@ const AppRoutes = () => {
   // Use the current location as the "under" location or the saved background location from state
   const backgroundLocation = location.state?.backgroundLocation || location;
 
+    // Determine user type based on the current route
+    const isArtisanRoute = location.pathname.startsWith('/artisan');
+    const userType = isArtisanRoute ? 'artisan' : 'customer';
+
   return (
     <>
     <ErrorBoundary>
@@ -102,7 +106,13 @@ const AppRoutes = () => {
                 <Route path=":tab/:jobId" element={<CustomerJobDetails />} />
               </Route>
               <Route path="messages" element={<CustomerMessages />} />
-              <Route path="settings" element={<CustomerProfileSettings />} />
+              {/* <Route path="profile&settings" element={<CustomerProfileSettings />} /> */}
+              <Route path="profile&settings">
+                <Route index element={<Navigate to="personalInfo" replace />} />
+                <Route path="personalInfo" element={<CustomerProfileSettings />} />
+                <Route path=":tab" element={<CustomerProfileSettings />} />
+                <Route path=":tab/edit" element={<CustomerProfileSettings />} />
+              </Route>
               <Route path="help" element={<CustomerHelpCentre />} />
 
               {/* Post a Job multi-step nested routes */}
@@ -122,7 +132,7 @@ const AppRoutes = () => {
                 <Route index element={<Navigate to="new" replace />} />
                 <Route path=":tab" element={<ArtisanDashboard />} />
               </Route>
-              <Route path="profile" element={<ArtisanProfile />} />
+              <Route path="profile&settings" element={<ArtisanProfile />} />
               <Route path="my-jobs" element={<ArtisanMyJobs />} />
               {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */} 
               <Route path="find-jobs">
@@ -137,7 +147,8 @@ const AppRoutes = () => {
           </Route>
 
           {/* 404 - Not Found */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to={`/${userType}/dashboard`} replace />} />
+ 
         </Routes>
 
         {/* Modal Routes - shown on top of the main UI when URL matches */}
