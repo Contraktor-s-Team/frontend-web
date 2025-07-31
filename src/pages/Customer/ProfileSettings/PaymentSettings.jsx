@@ -1,4 +1,4 @@
-import { Banknote, BanknoteArrowUp } from 'lucide-react';
+import { BadgeCheck, Banknote, BanknoteArrowUp, Download, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { FaDownload, FaTrash, FaUniversity, FaRegCreditCard } from 'react-icons/fa';
 import Button from '../../../components/Button/Button';
@@ -9,7 +9,7 @@ const paymentMethodsData = [
     type: 'card',
     label: 'Debit Card',
     logo: <FaRegCreditCard className="h-6 w-6 text-red-500" />,
-    details: '1234 •••• •••• ••45',
+    details: '1234 **** **** **45',
     subText: 'Expires on 17 / 2022',
     isDefault: true,
     verified: false
@@ -19,7 +19,7 @@ const paymentMethodsData = [
     type: 'bank',
     label: 'Bank Transfer',
     logo: <FaUniversity className="h-6 w-6 text-red-600" />,
-    details: '007 •••••• 43',
+    details: '007 ***** 43',
     subText: '',
     isDefault: false,
     verified: true
@@ -30,7 +30,7 @@ const transactionsData = [
   {
     id: 1,
     description: 'Payment for Plumbing Services',
-    method: 'Visa •••• 1234',
+    method: 'Visa **** 1234',
     status: 'Successful',
     amount: '₦25,000.00',
     date: '13 June, 2025',
@@ -39,7 +39,7 @@ const transactionsData = [
   {
     id: 2,
     description: 'Wallet Fund via Transfer',
-    method: 'GTBank •••• 0987',
+    method: 'GTBank **** 0987',
     status: 'Pending',
     amount: '₦10,000.00',
     date: '13 June, 2025',
@@ -48,7 +48,7 @@ const transactionsData = [
   {
     id: 3,
     description: 'Payment for Plumbing Services',
-    method: 'Visa •••• 1234',
+    method: 'Visa **** 1234',
     status: 'Successful',
     amount: '₦25,000.00',
     date: '13 June, 2025',
@@ -120,7 +120,7 @@ const PaymentSettings = () => {
           </div>
           <p className="text-2xl font-manrope font-semibold mt-4.5">₦24,000.00</p>
           <div className="flex justify-end">
-            <button className="mt-4 px-5 py-2 bg-white text-gray-950 rounded-full text-sm">Fund Wallet</button>
+            <button className="mt-4 px-5 py-2 bg-pri-light-1 text-gray-950 rounded-full text-sm">Fund Wallet</button>
           </div>
         </div>
 
@@ -131,89 +131,93 @@ const PaymentSettings = () => {
         </div>
       </div>
 
-      {/* Payment Methods */}
-      <div className="flex gap-4 flex-wrap">
-  {methods.map((m) => (
-    <div
-      key={m.id}
-      className="w-[280px] bg-white border border-gray-200 rounded-xl p-4 relative shadow-sm flex flex-col justify-between"
-    >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center space-x-2">
-          {m.logo}
-          <span className="font-medium text-gray-900">{m.label}</span>
-        </div>
-        {m.isDefault ? (
-          <span className="text-xs px-3 py-1 bg-gray-100 text-gray-400 rounded-full">Default</span>
-        ) : (
-          <button className="text-xs px-3 py-1 border border-gray-300 text-gray-600 rounded-full hover:bg-gray-50 transition">
-            Set as default
+      <div className="flex flex-col gap-5">
+        <h2 className="text-2xl font-manrope">Payment Methods</h2>
+        {/* Payment Methods */}
+        <div className="flex gap-4 flex-wrap">
+          {methods.map((m) => (
+            <div
+              key={m.id}
+              className="bg-white border border-gray-200 rounded-xl p-4 relative shadow-sm flex flex-col justify-between w-full max-w-98"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  {m.logo}
+                  <span className="font-medium text-gray-900">{m.label}</span>
+                </div>
+                {m.isDefault ? (
+                  <span className="text-xs px-3 py-1 bg-gray-100 text-gray-400 rounded-full">Default</span>
+                ) : (
+                  <button className="text-xs px-3 py-1 border border-gray-300 text-gray-600 rounded-full hover:bg-gray-50 transition">
+                    Set as default
+                  </button>
+                )}
+              </div>
+
+              <div className="text-sm text-gray-800 mt-7.5 mb-3">{m.details}</div>
+
+              <div className="flex items-center justify-between">
+                {m.verified && (
+                  <div className="flex items-center space-x-2.5">
+                    <span className="">
+                      <BadgeCheck className="text-green-500" size={20} />
+                    </span>
+
+                    <span className="flex items-center text-xs font-medium text-green-600">Verified</span>
+                  </div>
+                )}
+
+                {m.subText && <div className="text-xs text-gray">{m.subText}</div>}
+
+                <div className="flex items-center">
+                  <Button variant="text-pri">Edit</Button>
+                  <Button variant="text-destructive" iconOnly leftIcon={<Trash2 size={24} />}></Button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Add Payment Method Card */}
+          <button className="w-[180px]  border-2 border-dashed border-pri-norm-1 rounded-xl flex flex-col items-center justify-center text-pri-norm-1 hover:bg-blue-50 transition">
+            <span className="text-3xl leading-none mb-1">＋</span>
+            <span className="text-sm font-medium">Add Payment Method</span>
           </button>
-        )}
-      </div>
-
-      <div className="text-sm text-gray-800">{m.details}</div>
-      {m.subText && <div className="text-xs text-gray-500 mt-1">{m.subText}</div>}
-
-      <div className="flex items-center justify-between mt-4">
-        <div className="flex items-center space-x-2">
-          {m.verified && (
-            <span className="flex items-center text-xs font-medium text-green-600">
-              <span className="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span>
-              Verified
-            </span>
-          )}
-        </div>
-        <div className="flex items-center space-x-3">
-          <button className="text-sm text-pri-norm-1 font-medium">Edit</button>
-          <button className="text-red-600 hover:text-red-800">
-            <FaTrash />
-          </button>
         </div>
       </div>
-    </div>
-  ))}
-
-  {/* Add Payment Method Card */}
-  <button className="w-[180px] h-[145px] border-2 border-dashed border-pri-norm-1 rounded-xl flex flex-col items-center justify-center text-pri-norm-1 hover:bg-blue-50 transition">
-    <span className="text-3xl leading-none mb-1">＋</span>
-    <span className="text-sm font-medium">Add Payment Method</span>
-  </button>
-</div>
-
 
       {/* Transaction History */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Transaction History</h2>
-          <button className="flex items-center text-pri-norm-1 text-sm">
-            <FaDownload className="mr-1" />
-            Download History
-          </button>
+          <h2 className="">Transaction History</h2>
+          <Button variant="text-pri" rightIcon={<Download size={20} />}>Download History</Button>
         </div>
         <table className="w-full text-sm text-left border-collapse">
           <thead>
             <tr className="bg-gray-50">
-              <th className="py-3 px-4 text-gray-600">Description</th>
-              <th className="py-3 px-4 text-gray-600">Payment Method</th>
-              <th className="py-3 px-4 text-gray-600">Status</th>
-              <th className="py-3 px-4 text-gray-600">Amount</th>
-              <th className="py-3 px-4 text-gray-600">Date and Time</th>
+              <th className="py-3 px-4 text-neu-dark-1 font-medium">Description</th>
+              <th className="py-3 px-4 text-gray-600 font-medium">Payment Method</th>
+              <th className="py-3 px-4 text-gray-600 font-medium">Status</th>
+              <th className="py-3 px-4 text-gray-600 font-medium">Amount</th>
+              <th className="py-3 px-4 text-gray-600 font-medium">Date and Time</th>
             </tr>
           </thead>
           <tbody>
             {transactionsData.map((tx) => (
-              <tr key={tx.id} className="border-b last:border-b-0 hover:bg-gray-50">
-                <td className="py-3 px-4">{tx.description}</td>
+              <tr key={tx.id} className="border-b border-neu-light-3 last:border-b-0 hover:bg-gray-50">
+                <td className="py-3 px-4">
+                  <div className="w-full max-w-38.5">
+                  {tx.description}
+                  </div>
+                  </td>
                 <td className="py-3 px-4">{tx.method}</td>
                 <td className="py-3 px-4">
                   <span
-                    className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                    className={`inline-block px-7 py-2.5 text-sm font-medium rounded-full ${
                       tx.status === 'Successful'
-                        ? 'bg-green-100 text-green-700'
+                        ? 'bg-success-light-1 text-success-norm-1'
                         : tx.status === 'Pending'
-                        ? 'bg-yellow-100 text-yellow-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-warning-light-1 text-warning-dark-1'
+                        : 'bg-err-light-1 text-err-norm-1'
                     }`}
                   >
                     {tx.status}
@@ -233,16 +237,19 @@ const PaymentSettings = () => {
       {/* Toggle Settings */}
       <div className="space-y-6 w-full max-w-166.25">
         {toggleSettingsList.map((opt) => (
-          <div key={opt.id} className="flex items-start justify-between">
+          <div
+            key={opt.id}
+            className="flex items-start justify-between first:border-t py-6 border-b border-neu-light-3 last:border-b-0"
+          >
             <div className="max-w-md">
-              <h3 className="text-sm font-semibold text-gray-900 mb-1">{opt.label}</h3>
-              <p className="text-sm text-gray-500">{opt.description}</p>
+              <h3 className="text-gray-900 mb-1">{opt.label}</h3>
+              <p className="text-sm text-neu-dark-1 font-normal">{opt.description}</p>
             </div>
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => handleToggle(opt.id)}
                 className={`w-11 h-6 flex items-center ${
-                  toggles[opt.id] ? 'bg-green-500' : 'bg-gray-300'
+                  toggles[opt.id] ? 'bg-success-norm-1' : 'bg-neu-norm-1'
                 } rounded-full p-1 transition-colors duration-300`}
               >
                 <div
@@ -258,7 +265,7 @@ const PaymentSettings = () => {
       </div>
 
       {/* Save */}
-      <Button variant='primary' className='capitalize mt-15 px-6 py-3.25'>
+      <Button variant="primary" className="capitalize mt-15 px-6 py-3.25">
         save changes
       </Button>
     </div>

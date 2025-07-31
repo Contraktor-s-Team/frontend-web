@@ -71,7 +71,7 @@ const Notifications = () => {
             <button
               onClick={() => toggleSetting(index)}
               className={`w-11 h-6 flex items-center ${
-                settings[index] ? "bg-green-500" : "bg-gray-300"
+                settings[index] ? "bg-success-norm-1" : "bg-neu-norm-1"
               } rounded-full p-1 transition-colors duration-300`}
             >
               <div
