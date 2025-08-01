@@ -15,7 +15,8 @@ const CreateAccountForm = ({
   error, 
   formData,
   isError,
-  externalRegister
+  externalRegister,
+  setStep
 }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
@@ -223,7 +224,7 @@ const CreateAccountForm = ({
             variant="grey-sec"
             type="button"
             className="w-full justify-center gap-2 py-3 mb-[14px]"
-            onClick={() => externalRegister("Google")}
+            onClick={() => externalRegister("Google",() => {setStep(3)})}
           >
             <img src={google} alt="Google" className="w-5 h-5" />
             <span>Google</span>
@@ -233,7 +234,7 @@ const CreateAccountForm = ({
             variant="grey-sec"
             type="button"
             className="w-full justify-center gap-2 py-3 mb-[14px]"
-            onClick={() => externalRegister("Facebook")}  
+            onClick={() => externalRegister("Facebook",() => {setStep(3)})}  
           >
             <img src={facebook} alt="Facebook" className="w-5 h-5" />
             <span>Facebook</span>
@@ -255,7 +256,7 @@ const mapStoreToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
     return {
-      externalRegister: (providerName) => dispatch(externalRegister(providerName)),
+      externalRegister: (providerName, history) => dispatch(externalRegister(providerName, history)),
     };
 };
 

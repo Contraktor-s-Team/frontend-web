@@ -1,12 +1,14 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { FiUpload } from 'react-icons/fi';
 import Button from '../../../components/Button';
-import { TextInput } from '../../../components/Form';
+import { Select, TextInput } from '../../../components/Form';
 import SelectField from '../../../components/Form/Select';
 import profile from "../../../assets/profile.png"
 import SuccessModal from '../../../components/Modal/SuccessModal';
 import { useNavigate } from 'react-router-dom';
 import TextAreaInput from '../../../components/Form/TextAreaInput';
+import { connect } from 'react-redux';
+import { categoryAction, subCategoryAction } from '../../../redux/Jobs/JobsAction';
 
 
 const options = [
@@ -22,18 +24,24 @@ const ProfileSetup = ({
   onFormChange,
   formData,
   selectedServices = [],
-  onToggleService
+  onToggleService,
+  getCategory,
+  getSubCategory,
+  subcategoryData,
+  data
 }) => {
   const Navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = React.useState(false);
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+  const [category, setCategory] = React.useState( '');
+  const [subcategory, setSubcategory] = React.useState( '');
   const { firstName = '', lastName = '', phoneNumber = '' } = formData;
   console.log("ProfileSetup formData", formData);
   const [selectedService, setSelectedService] = React.useState('');
 
   const handleServiceChange = (e) => {
-    setSelectedService(e.target.value);
+    setCategory(e.target.value);
   };
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
@@ -77,6 +85,32 @@ const ProfileSetup = ({
     setShowSuccessModal(true);
     onNext();
   }
+
+
+  const categoryOptions =  data?.data?.map((item) => ({
+    value: item.id,
+    label: item.name
+  }))
+
+  const subcategoryOptions = subcategoryData?.data?.map(sub => ({
+      value: sub.id,
+      label: sub.name
+  })) 
+
+  useEffect(() => {
+      console.log("Fetching categories...");
+      try {
+        console.log("Fetching categories...");
+        getCategory();
+      } catch (err) {
+        console.error("Error in useEffect:", err);
+      }
+    },[])
+    useEffect(() => {
+      if (category) {
+        getSubCategory(category); // use prop function
+      }
+    }, [category]);
 
   return (
     <div className=''>
@@ -184,11 +218,11 @@ const ProfileSetup = ({
                     className="w-full mb-[43px]"
                   />
                   <div className='flex justify-between items-center gap-4'>
-                      <SelectField
+                      <Select
                         label="Service Category"
-                        value={selectedService}
+                        value={category}
                         onChange={handleServiceChange}
-                        options={options}
+                        options={categoryOptions}
                         placeholder="e.g., Plumbing, Cleaning, AC Repair"
                         className="w-full"
                       />
@@ -202,26 +236,28 @@ const ProfileSetup = ({
                       /> */}
                   </div>
                 </div>
+                {subcategoryOptions?.length > 0 && (
                 <div className="mt-[44px]">
                   <label className="block text-sm font-medium font-inter text-[#101928] mb-3">
                       Sub Categories
                   </label>
                   <div className="flex flex-wrap gap-3 mt-[35px]">
-                      {services.map((service) => (
+                      {subcategoryOptions?.map((service) => (
                       <button
                           key={service}
-                          onClick={() => onToggleService(service)}
+                          onClick={() => onToggleService(service.value)}
                           className={`px-[18px] py-[14px] rounded-full text-sm font-medium font-inter text-[#8992A1] border transition-colors ${
-                          selectedServices.includes(service)
+                          selectedServices.includes(service.value)
                               ? 'bg-[#E6F4FE]  border-[#0074C0]'
                               : 'bg-white border-[#DFE2E7] hover:border-[#F7D7BA]'
                           }`}
                       >
-                          {service}
+                          {service.label}
                       </button>
                       ))}
                   </div>
                 </div>
+                )}
                 <div className='mt-[44px]'>
                    <TextAreaInput
                     id="serviceDescription"
@@ -250,11 +286,27 @@ const ProfileSetup = ({
               title="You’re All Set!"
               message="You’ve successfully created your account and Ready to find the right artisan for the job"
               primaryButtonText="Browse Artisans"
-              onPrimaryButtonClick={() => Navigate(`${formData.role === 'user' ? '/customer' : '/artisan'}`)}
+              onPrimaryButtonClick={() => Navigate(`${formData.role === 'user' ? '/' : '/'}`)}
             />
         </div>
     </div>
   );
 };
-
-export default ProfileSetup;
+const mapStoreToProps = (state) => {
+  console.log(state)
+    return {
+        loading: state?.category?.loading,
+        error: state?.category?.error,
+        data: state?.category?.data,
+        subcategoryLoading: state?.subcategory?.loading,
+        subcategoryError: state?.subcategory?.error,  
+        subcategoryData: state?.subcategory?.data,
+    };
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getCategory: () => dispatch(categoryAction()),
+        getSubCategory: (id) => dispatch(subCategoryAction(id))
+    };
+};
+export default connect(mapStoreToProps, mapDispatchToProps)(ProfileSetup);

@@ -68,7 +68,7 @@ const JobDescriptionForm = ({
         />
       </div>
 
-      {subcategoryOptions.length > 0 && (
+      {subcategoryOptions?.length > 0 && (
         <div className="mb-6">
           <label htmlFor="subCategory" className="block text-sm font-medium text-gray-800 mb-2">
             Subcategory <span className="text-err-norm-1">*</span>

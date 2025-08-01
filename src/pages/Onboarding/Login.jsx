@@ -7,13 +7,14 @@ import facebook from "../../assets/facebook.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useGetUserEmailQuery, useLoginMutation } from "../../store/api/apiSlice";
 import LoaderComp from "../../assets/animation/loader";
-import { loginaction } from "../../redux/Auth/Login/LoginAction";
+import { externalLogin, loginaction } from "../../redux/Auth/Login/LoginAction";
 import { connect } from "react-redux";
 import { userAction } from "../../redux/User/UserAction";
 import { Info } from "lucide-react";
 
 const Login = ({
-  loginAction, 
+  loginAction,
+  LoginExternal, 
   userAction,
   userLoading,
   loading: isLoading,
@@ -186,6 +187,7 @@ const Login = ({
               variant="grey-sec"
               type="button"
               className="w-full justify-center gap-2 py-3"
+               onClick={() => LoginExternal("Google",() => {navigate("/customer/dashboard", {state: {email: data.email} });})}
             >
               <img src={google} alt="Google" className="h-5 w-5" />
               <span>Google</span>
@@ -239,6 +241,7 @@ const mapStoreToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         loginAction: (poststate, history,errors) => dispatch(loginaction(poststate, history, errors)),
+        LoginExternal: (providerName, history) => dispatch(externalLogin(providerName, history)),
         userAction: (id) => dispatch(userAction(id))
     };
 };

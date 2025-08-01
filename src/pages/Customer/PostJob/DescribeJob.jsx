@@ -58,15 +58,22 @@ const DescribeJob = ({
     setErrors(false)
     e.preventDefault();
     try{
-      const userData ={
-        title: jobTitle,
-        description: description,
-        artisanSubcategoryId: subcategory.value,
-      }
-      console.log("userData", userData)
-      await postJob(userData, ()=>{
+      const formData = new FormData();
+
+      formData.append('title', jobTitle);
+      formData.append('description', description);
+      formData.append('artisanSubcategoryId', subcategory?.value);
+      formData.append('ProposalRequiresPrice', true);
+
+      // Append each file
+      files.forEach((file, index) => {
+        formData.append('images', file); // key 'images' matches backend expectations
+      });
+
+      console.log("userData", formData)
+      await postJob(formData, ()=>{
         console.log("i got here in login")
-        navigate("/customer/post-job/time-location", { state: { userData, subcategory, files } })
+        navigate("/customer/post-job/time-location", { state: { jobTitle,description, subcategory, files } })
       },()=>{
         setErrors(true);
       });

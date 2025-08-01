@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDS6cOg_IotxSBLzfFHOtOeYLsXiVr58L8",
-  authDomain: "contractor-ccd80.firebaseapp.com",
-  projectId: "contractor-ccd80",
-  storageBucket: "contractor-ccd80.firebasestorage.app",
-  messagingSenderId: "1015371746180",
-  appId: "1:1015371746180:web:fa74a031a88f3c1c636bd1",
-  measurementId: "G-FHWWDQRER6"
+  apiKey: "AIzaSyCSTksGGbIRqWGBf3SncEqbpV9fgZIdSJY",
+  authDomain: "charged-genre-464907-b2.firebaseapp.com",
+  projectId: "charged-genre-464907-b2",
+  storageBucket: "charged-genre-464907-b2.firebasestorage.app",
+  messagingSenderId: "672566475672",
+  appId: "1:672566475672:web:4192280e0d9a2a25b509ed",
+  measurementId: "G-BZC8QFN1H2"
 };
 
 // Initialize Firebase
