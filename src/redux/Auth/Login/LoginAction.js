@@ -1,3 +1,5 @@
+import { signInWithPopup } from 'firebase/auth'
+import { auth, facebookProvider, googleProvider } from '../Register/Config'
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FALIURE, LOGOUT, RESET_PASSWORD_SUCCESS, RESET_PASSWORD_REQUEST, RESET_PASSWORD_FALIURE, FORGOT_PASSWORD_FALIURE, FORGOT_PASSWORD_SUCCESS, FORGOT_PASSWORD_REQUEST, VALIDATE_REQUEST, VALIDATE_FALIURE, VALIDATE_SUCCESS } from './LoginType'
 import axios from 'axios'
 export const loginrequest=()=>{
@@ -101,6 +103,43 @@ export const loginaction = (postState, history, errors) =>{
         }
     }
 }
+
+export const externalLogin = (providerName, history) => {
+    return async (dispatch) => {
+        let provider;
+        if (providerName === "Google") provider = googleProvider;
+        else if (providerName === "Facebook") provider = facebookProvider;
+        else throw new Error("Unsupported provider");
+        dispatch(loginrequest())
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const token = await result._tokenResponse.oauthIdToken;
+            console.log("External login successful", result, token);
+            // Optional: Generate a random password or ask the backend to ignore it
+            const password = crypto.randomUUID(); // you can generate or use a constant
+
+            const payload = {
+            provider: providerName,
+            token,
+            password,
+            };
+            const response = await axios.post(`${baseUrl}/external-login`, payload);
+            console.log("login successful", response);
+            if(response.status === 200){
+                history()
+                localStorage.setItem("auth", JSON.stringify(response.data));
+                dispatch(loginsuccess({response:response.data, email:result.user.email}))
+            }
+            
+            return response.data;
+        } catch (error) {
+            dispatch(loginfaliure(error))
+            console.error("External registration failed:", error);
+            throw error;
+        }
+    }
+};
+
 
 export const forgotPasswordAction = (postState, history, errors) =>{
     return async (dispatch) => {

@@ -2,7 +2,7 @@ import React, { use, useEffect } from 'react';
 import DashboardHeader from './components/DashboardHeader';
 import RecentServices from './components/RecentServices';
 import { userEmailAction } from '../../../redux/User/UserAction';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Dashboard = ({
@@ -14,11 +14,12 @@ const Dashboard = ({
   const navigate = useNavigate();
   const location = useLocation();
   const email = location?.state?.email;
+  const userEmail = useSelector((state) => state.login.data?.email || state.user?.data?.email);
   console.log("email from location state", email);
   useEffect(()=>{
     console.log("email from location state", email);
-    if (email) {
-      getuser(email);
+    if (email || userEmail) {
+      getuser(email || userEmail);
     }
   },[email])
 

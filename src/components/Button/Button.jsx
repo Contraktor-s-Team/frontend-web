@@ -109,7 +109,7 @@ const Button = ({
     'text-destructive': `
       bg-transparent
       text-err-norm-1
-      hover:text-err-light-3
+      hover:text-err-norm-3
       active:text-err-dark-1
        disabled:text-[#D0D5DD]
     `,

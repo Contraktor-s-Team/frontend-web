@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import PageHeader from '../../../components/PageHeader/PageHeader';
 import SearchFilters from './searchFilters';
 import TabNav from '../../../components/Navigation/TabNav';
 import { useParams } from 'react-router-dom';
+import { artisanJobAction } from '../../../redux/Jobs/JobsAction';
+import { connect } from 'react-redux';
 // import JobCard from './jobCard';
 // import JobCard from './jobCard';
 
-const FindJob = () => {
+const FindJob = ({
+  getJob,
+  jobLoading,
+  jobsData,
+  jobError,
+  id
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
@@ -24,28 +32,39 @@ const FindJob = () => {
     { id: 'requests', label: 'Direct Job Requests' },
   ];
    // Fetch jobs data
+  // useEffect(() => {
+  //   const fetchJobs = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await fetch('/jobScenarios.json');
+  //       if (!response.ok) {
+  //         throw new Error('Failed to fetch jobs');
+  //       }
+  //       const data = await response.json();
+  //       setJobs(data);
+  //       setFilteredJobs(data); // Initially show all jobs
+  //     } catch (err) {
+  //       setError(err.message);
+  //       console.error('Error fetching jobs:', err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchJobs();
+  // }, []);
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/jobScenarios.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch jobs');
-        }
-        const data = await response.json();
-        setJobs(data);
-        setFilteredJobs(data); // Initially show all jobs
-      } catch (err) {
-        setError(err.message);
-        console.error('Error fetching jobs:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJobs();
-  }, []);
-
+    if (jobsData && jobsData.length > 0) {
+      setJobs(jobsData);
+      setFilteredJobs(jobsData);
+      setLoading(false);
+    }
+  }, [jobsData]);
+  useEffect(()=>{
+    if (id) {
+      getJob(id);
+    }
+  }, [id, getJob]);
   // Filter jobs based on search and filters
   useEffect(() => {
     let result = [...jobs];
@@ -110,7 +129,7 @@ const FindJob = () => {
             </div>
 
             <div className="mt-6">
-              {loading ? (
+              {jobLoading ? (
                 <div className="text-center py-10">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
                   <p className="mt-2 text-gray-600">Loading jobs...</p>
@@ -168,5 +187,19 @@ const FindJob = () => {
     </div>
   )
 }
+const mapStoreToProps = (state) => {
+  console.log(state);
+  return {
+    jobLoading: state?.jobs?.loading,
+    jobsData: state?.jobs?.data,
+    error: state?.jobs?.error,
+    id:state?.userEmail?.data?.data?.id
+  };
+};
 
-export default FindJob
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getJob: (id) => dispatch(artisanJobAction(id)),
+  };
+};
+export default connect(mapStoreToProps, mapDispatchToProps)(FindJob);

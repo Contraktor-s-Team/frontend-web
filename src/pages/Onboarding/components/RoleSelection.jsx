@@ -48,7 +48,7 @@ const RoleSelection = ({ selectedRole, setSelectedRole, onNext }) => {
         onClick={onNext}
         disabled={!selectedRole}
       >
-        proceed
+        Proceed
       </Button>
     </div>
   );

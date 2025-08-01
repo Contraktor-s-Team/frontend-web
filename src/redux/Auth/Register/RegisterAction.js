@@ -2,6 +2,7 @@ import { REGISTER_REQUEST, REGISTER_SUCCESS, REGISTER_FALIURE, VALIDATE_EMAIL_RE
 import {auth, googleProvider, facebookProvider} from "./Config";
 import {signInWithPopup} from "firebase/auth";
 import axios from 'axios'
+import { data } from "react-router-dom";
 
 // this is for /api/Auth/register endpoint
 export const registerRequest=()=>{
@@ -87,7 +88,7 @@ export const registerAction = (postState, history, errors) =>{
     }
 }
 
-export const externalRegister = (providerName) => {
+export const externalRegister = (providerName, history) => {
     return async (dispatch) => {
         let provider;
         if (providerName === "Google") provider = googleProvider;
@@ -96,7 +97,7 @@ export const externalRegister = (providerName) => {
         dispatch(registerRequest())
         try {
             const result = await signInWithPopup(auth, provider);
-            const token = await result.user.accessToken;
+            const token = await result._tokenResponse.oauthIdToken;
             console.log("External registration successful", result, token);
             // Optional: Generate a random password or ask the backend to ignore it
             const password = crypto.randomUUID(); // you can generate or use a constant
@@ -106,11 +107,14 @@ export const externalRegister = (providerName) => {
             token,
             password,
             };
-
             const response = await axios.post(`${baseUrl}/external-register`, payload);
-
-            console.log("Registration successful", response.data);
-            // dispatch(registerSuccess(response.data))
+            console.log("Registration successful", response);
+            if(response.status === 200){
+                history()
+                localStorage.setItem("auth", JSON.stringify(response.data));
+                dispatch(registerSuccess({response:response.data, email:result.user.email}))
+            }
+            
             return response.data;
         } catch (error) {
             dispatch(registerFaliure(error))

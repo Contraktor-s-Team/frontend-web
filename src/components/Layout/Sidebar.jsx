@@ -46,7 +46,7 @@ const Sidebar = ({ userType = 'customer' }) => {
     {
     icon: <Disc size={20} strokeWidth={isActive('/customer/profile') ? 2.5 : 2} />,
     label: 'Profile & Settings',
-    path: '/customer/profile'
+    path: '/customer/profile&settings'
   },
   {
     icon: <Headset size={20} strokeWidth={isActive('/customer/help') ? 2.5 : 2} />,
@@ -86,7 +86,7 @@ const Sidebar = ({ userType = 'customer' }) => {
     {
       icon: <Disc size={20} strokeWidth={isActive('/artisan/profile') ? 2.5 : 2} />,
       label: 'Profile & Settings',
-      path: '/artisan/profile'
+      path: '/artisan/profile&settings'
     },
     {
       icon: <Headset size={20} strokeWidth={isActive('/artisan/help') ? 2.5 : 2} />,
