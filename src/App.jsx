@@ -93,7 +93,7 @@ const AppRoutes = () => {
                 <Route path=":tab/:artisanId" element={<CustomerArtisanDetails />} />
               </Route>
               {/* Nested hire-artisan routes within artisan details */}
-              <Route path="artisans/:tab/:artisanId/hire-artisan" element={<CustomerHireArtisanLayout />}>
+              <Route path="hire-artisan/:tab/:artisanId" element={<CustomerHireArtisanLayout />}>
                 <Route index element={<Navigate to="describe" replace />} />
                 <Route path="describe" element={<CustomerHireArtisanDescribeJob />} />
                 <Route path="time-location" element={<CustomerHireArtisanTimeLocation />} />
@@ -154,7 +154,7 @@ const AppRoutes = () => {
         {/* Modal Routes - shown on top of the main UI when URL matches */}
         {location !== backgroundLocation && (
           <Routes>
-            <Route path="/notifications" element={<NotificationsModal />} />
+            <Route path={`/${userType}/notifications`} element={<NotificationsModal />} />
           </Routes>
         )}
       </ErrorBoundary>

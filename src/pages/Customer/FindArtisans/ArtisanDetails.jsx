@@ -68,7 +68,7 @@ const ArtisanDetails = () => {
     }
     
     // Navigate to the hire artisan workflow with the new route structure
-    navigate(`/artisans/${tab}/${artisanId}/hire-artisan/describe`);
+    navigate(`/customer/hire-artisan/${tab}/${artisanId}/describe`);
   };
 
   if (loading) {

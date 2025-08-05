@@ -180,8 +180,8 @@ const TimeLocation = () => {
        <Button
           variant="primary" 
           onClick={()=> navigate("/customer/post-job/review", { state: { jobData,date,time,formAddress, data: location.state.userData, file: location.state.files, category:location.state.subcategory } })}
-        >,
-            "Save & Continue"
+        >
+            Save & Continue
         </Button>
     </FormSection>
   );
