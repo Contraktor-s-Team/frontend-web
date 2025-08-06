@@ -16,7 +16,7 @@ const MyJobs = ({
   jobsData,
   error
 }) => {
-  const { tab: activeTab = 'ongoing' } = useParams();
+  const { tab: activeTab = 'posted' } = useParams();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,10 +107,11 @@ const MyJobs = ({
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const tabs = [
+    { id: 'posted', label: 'Posted Jobs' },
     { id: 'ongoing', label: 'Ongoing Jobs' },
     { id: 'scheduled', label: 'Scheduled Jobs' },
     { id: 'pending', label: 'Pending Jobs' },
-    { id: 'posted', label: 'Posted Jobs' },
+   
     { id: 'completed', label: 'Completed Jobs' },
     { id: 'cancelled', label: 'Cancelled Jobs' }
   ];
@@ -279,7 +280,7 @@ const MyJobs = ({
         {allJobs?.length > 0 ? (
           <ServiceTable 
             items={allJobs} 
-            onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.title)}`)}
+            onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.id)}`)}
             activeTab={activeTab} 
             formatItemSlug={formatJobSlug}
           />

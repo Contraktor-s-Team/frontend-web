@@ -179,9 +179,9 @@ const TimeLocation = () => {
       /> */}
        <Button
           variant="primary" 
-          onClick={()=> navigate("/customer/post-job/review", { state: { jobData,date,time,formAddress, data: location.state.userData, file: location.state.files, category:location.state.subcategory } })}
-        >
-            Save & Continue
+          onClick={()=> navigate("/customer/post-job/review", { state: { jobData,date,time,formAddress, data:{ jobtitle: location.state.jobTitle, description:location.state.description}, file: location.state.files, category:location.state.subcategory } })}
+        >,
+            "Save & Continue"
         </Button>
     </FormSection>
   );

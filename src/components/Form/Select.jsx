@@ -37,7 +37,7 @@ const SelectField = ({
     setIsOpen(false);
   };
 
-  const selectedOption = options.find(opt => opt.value === value);
+  const selectedOption = options?.find(opt => opt.value === value);
 
   return (
     <div className="w-full" ref={dropdownRef}>

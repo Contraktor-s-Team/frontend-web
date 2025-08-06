@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { FiUpload } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { IoCheckmarkDone } from "react-icons/io5";
@@ -33,6 +33,7 @@ const Signup = ({
     confirmLoading,
     isUpdateLoading,
     error,
+    data,
     confirmError,
     updateError,
     confirmData, 
@@ -107,7 +108,7 @@ const Signup = ({
         try{
             const userData ={
                 code: formData.code.join(''),
-                email: formData.email || user?.data?.email,
+                email: formData.email || user?.data?.email || data?.email,
             }
             await confirmEmail(userData, ()=>{
                 // refetchUser();
@@ -124,7 +125,7 @@ const Signup = ({
     }
     const handleResendCode = async (e) => {
         e.preventDefault();
-        const emailToUse = formData?.email || user?.data?.email;
+        const emailToUse = formData?.email || user?.data?.email|| data?.email;
         if (!emailToUse) {
             console.error('No email found to resend code');
             return;
@@ -144,7 +145,7 @@ const Signup = ({
                 lastName: formData.lastName,
                 address: formData.location,     
             }
-            const userToUse = user?.data?.id || userEmail?.data?.id
+            const userToUse = user?.data?.id || userEmail?.data?.id 
             await updateUser( userToUse, data,()=>{
                 nextStep();
             },()=>{
@@ -284,7 +285,7 @@ const Signup = ({
     //     }
     // }, [user]);
     useEffect(()=>{
-        const emailToUse = formData.email || user?.data?.email
+        const emailToUse = formData.email || user?.data?.email || data?.email
         if(step === 4){
             userEmailAction(emailToUse)
         }
@@ -314,6 +315,7 @@ const Signup = ({
                             loading = {loading}
                             error={error}
                             isError={errors}
+                            setStep={setStep}
                         />
                     )}
 
