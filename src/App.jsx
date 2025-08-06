@@ -38,7 +38,7 @@ import CustomerJobDetails from './pages/Customer/MyJobs/JobDetails';
 
 // Artisan Pages
 import ArtisanDashboard from './pages/Artisan/Dashboard/Dashboard';
-import ArtisanProfile from './pages/Artisan/ProfileSettings/ProfileSettings';
+import ArtisanProfileSettings from './pages/Artisan/ProfileSettings/ProfileSettings';
 import ArtisanMyJobs from './pages/Artisan/MyJobs/MyJobs';
 import ArtisanMyJobDetails from './pages/Artisan/MyJobs/MyJobDetails';
 import ArtisanMessages from './pages/Artisan/Messages/Messages';
@@ -133,7 +133,12 @@ const AppRoutes = () => {
                 <Route index element={<Navigate to="new" replace />} />
                 <Route path=":tab" element={<ArtisanDashboard />} />
               </Route>
-              <Route path="profile&settings" element={<ArtisanProfile />} />
+              <Route path="profile&settings">
+                <Route index element={<Navigate to="personalInfo" replace />} />
+                <Route path="personalInfo" element={<ArtisanProfileSettings />} />
+                <Route path=":tab" element={<ArtisanProfileSettings />} />
+                <Route path=":tab/edit" element={<ArtisanProfileSettings />} />
+              </Route>
               <Route path="my-jobs">
                 <Route index element={<Navigate to="newRequests" replace />} />
                 <Route path="newRequests" element={<ArtisanMyJobs />} />
