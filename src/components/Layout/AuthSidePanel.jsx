@@ -18,17 +18,17 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
     {
       title: 'Verified Artisans, Always Within Reach',
       description: 'Connect with skilled, locally vetted professionals',
-      image: '' // Would be replaced with actual image component
+      image: '/Verified Arts.png'
     },
     {
       title: 'Post a Job in Just a Few Clicks',
       description: "Easily describe your need, choose a time, and get connected with trusted artisans",
-      image: '' // Would be replaced with actual image component
+      image: '/post-a-job.png' // Would be replaced with actual image component
     },
     {
       title: 'Your Money is Protected',
       description: 'With escrow payments, funds are only released when the job is done to your satisfaction.',
-      image: '' // Would be replaced with actual image component
+      image: '/money-protected.png' // Would be replaced with actual image component
     }
   ];
 
@@ -50,7 +50,9 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
       {/* Slider Content */}
       <div className="flex flex-col items-center space-y-6">
         {/* Image Placeholder - Replace with actual image component */}
-        <div className="w-[168px] h-[96px] bg-gray-300 rounded"></div>
+        {/* <div className="w-[168px] h-[96px] bg-gray-300 rounded"></div> */}
+        <img src={slides[currentSlide]?.image} alt={slides[currentSlide]?.title} className="w-70" />
+
 
         {/* Current Slide Content */}
         <h2 className="font-manrope font-bold md:text-2xl text-center text-white">
