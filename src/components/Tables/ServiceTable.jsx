@@ -82,14 +82,15 @@ const ServiceTable = ({
   formatItemSlug = (title) => title,
   actionButton,
   containerClassName = "",
+  showLocation = false,
 }) => {
   
   // Determine if this is for new job requests
   const isArtisanRoute = location.pathname.startsWith('/artisan');
-  const isMyJobs = location.pathname.includes('/jobs')
+  const isMyJobs = location.pathname.includes('/my-jobs')
   
   return (
-    <div className={`overflow-x-auto ${containerClassName}`}>
+    <div className={`overflow-x-auto font-inter font-medium ${containerClassName}`}>
       <table className="min-w-full divide-y divide-neu-light-1">
         <thead className="bg-neu-light-1">
           <tr className="h-12">
@@ -105,7 +106,7 @@ const ServiceTable = ({
             >
               {isArtisanRoute ? "Customer" : "Artisan"}
             </th>
-            {!isArtisanRoute && (
+            {!showLocation && (
               <th
                 scope="col"
                 className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
@@ -113,7 +114,7 @@ const ServiceTable = ({
                 Status
               </th>
             )}
-            {isArtisanRoute && (
+            {showLocation && (
               <th
                 scope="col"
                 className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
@@ -175,18 +176,18 @@ const ServiceTable = ({
                   </div>
                 </div>
               </td>
-              {!isArtisanRoute && (
+              {!showLocation && (
                 <td className="px-6 py-4 whitespace-nowrap">
                   <StatusBadge status={item.status} />
                 </td>
-              )}
-              {isArtisanRoute && (
+              )} 
+              {showLocation && (
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{item.location}</div>
+                  <div className="text-sm text-gray-900 truncate max-w-[200px]">{item.jobDetails.jobLocation.address}</div>
                 </td>
               )}
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-gray-900">{item.postedAt}</div>
+                <div className="text-gray-900">{item.postedAt || item.date}</div>
                 <div className="text-xs text-neu-dark-1">{item.time}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
