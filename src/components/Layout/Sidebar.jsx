@@ -48,11 +48,11 @@ const Sidebar = ({ userType = 'customer' }) => {
     label: 'Profile & Settings',
     path: '/customer/profile&settings'
   },
-  {
-    icon: <Headset size={20} strokeWidth={isActive('/customer/help') ? 2.5 : 2} />,
-    label: 'Help Centre',
-    path: '/customer/help'
-  }
+  // {
+  //   icon: <Headset size={20} strokeWidth={isActive('/customer/help') ? 2.5 : 2} />,
+  //   label: 'Help Centre',
+  //   path: '/customer/help'
+  // }
   ];
 
   // Artisan specific navigation
@@ -72,11 +72,11 @@ const Sidebar = ({ userType = 'customer' }) => {
       label: 'My Jobs',
       path: '/artisan/my-jobs'
     },
-    {
-      icon: <Banknote size={20} strokeWidth={isActive('/artisan/payment-history') ? 2.5 : 2} />,
-      label: 'Payment History',
-      path: '/artisan/payment-history'
-    },
+    // {
+    //   icon: <Banknote size={20} strokeWidth={isActive('/artisan/payment-history') ? 2.5 : 2} />,
+    //   label: 'Payment History',
+    //   path: '/artisan/payment-history'
+    // },
     {
       icon: <MessageSquareText size={20} strokeWidth={isActive('/artisan/messages') ? 2.5 : 2} />,
       label: 'Messages',
@@ -88,11 +88,11 @@ const Sidebar = ({ userType = 'customer' }) => {
       label: 'Profile & Settings',
       path: '/artisan/profile&settings'
     },
-    {
-      icon: <Headset size={20} strokeWidth={isActive('/artisan/help') ? 2.5 : 2} />,
-      label: 'Help Centre',
-      path: '/artisan/help'
-    }
+    // {
+    //   icon: <Headset size={20} strokeWidth={isActive('/artisan/help') ? 2.5 : 2} />,
+    //   label: 'Help Centre',
+    //   path: '/artisan/help'
+    // }
   ];
 
   // Use appropriate navigation items based on user type
@@ -132,7 +132,7 @@ const Sidebar = ({ userType = 'customer' }) => {
         <nav className="">{navItems.map(renderNavItem)}</nav>
 
         {/* Gradient Decoration */}
-        <div className="h-[264px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mt-3 m-3"></div>
+        {/* <div className="h-[264px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mt-3 m-3"></div> */}
       </div>
 
       {/* Responsive Bottom Navigation */}
