@@ -9,6 +9,8 @@ import { updateUserReducer, userEmailReducer, userReducer } from "./User/UserRed
 import { hireArtisanSlice } from "./slices/hireArtisanSlice";
 import { jobPostSlice } from "./slices/jobPostSlice";
 import { categoryReducer, jobidReducer, jobpostReducer, jobReducer, subCategoryReducer } from "./Jobs/JobsReducer";
+import { allArtisanReducer, artisanAssignmentReducer, artisanReducer } from "./Artisan/ArtisanReducer";
+import { artisanProposalReducer, jobProposalReducer, negotiateProposalReducer, negotiateReducer, proposalPostReducer } from "./Proposals/ProposalReducer";
 
 const rootReducer = combineReducers({
     register: registerReducer,
@@ -26,9 +28,16 @@ const rootReducer = combineReducers({
     jobs: jobReducer,
     jobpost: jobpostReducer,
     singleJob: jobidReducer,
+    artisan: artisanReducer,
+    artisanAssignment: artisanAssignmentReducer,
+    artisanProposal: artisanProposalReducer,
+    proposal: proposalPostReducer,
+    jobProposals: jobProposalReducer,
+    negotiateProposal: negotiateProposalReducer,
+    negotiate:negotiateReducer,
+    allArtisan: allArtisanReducer,
     hireArtisan: hireArtisanSlice.reducer,
     jobPost: jobPostSlice.reducer
-
 })
 
 export default rootReducer;

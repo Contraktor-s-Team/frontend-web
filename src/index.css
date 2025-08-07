@@ -151,6 +151,7 @@
   .scrollbar::-webkit-scrollbar-thumb:hover {
     background: #c0a0b9;
      display: none;
+     color: #2c2c2c60;
   }
 }
 

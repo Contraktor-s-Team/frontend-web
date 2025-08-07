@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import TextAreaInput from '../../../components/Form/TextAreaInput';
 import { connect } from 'react-redux';
 import { categoryAction, subCategoryAction } from '../../../redux/Jobs/JobsAction';
+import { postArtisanAssignmentAction } from '../../../redux/Artisan/ArtisanAction';
+import LoaderComp from '../../../assets/animation/loader';
 
 
 const options = [
@@ -28,7 +30,14 @@ const ProfileSetup = ({
   getCategory,
   getSubCategory,
   subcategoryData,
-  data
+  data,
+  user,
+  postAssignment,
+  assignmentLoading,
+  assignmentError,
+  profileUser,
+  profileLoading,
+  profileError
 }) => {
   const Navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -36,6 +45,8 @@ const ProfileSetup = ({
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
   const [category, setCategory] = React.useState( '');
   const [subcategory, setSubcategory] = React.useState( '');
+  const [imageUploaded, setImageUploaded] = React.useState(false);
+  const [error, setError] = React.useState(false);
   const { firstName = '', lastName = '', phoneNumber = '' } = formData;
   console.log("ProfileSetup formData", formData);
   const [selectedService, setSelectedService] = React.useState('');
@@ -81,11 +92,64 @@ const ProfileSetup = ({
     onFormChange(name, value);
   };
 
-  const handleSuccess = (e) => {
-    setShowSuccessModal(true);
-    onNext();
-  }
+  // const handleSuccess = (e) => {
+  //   e.preventDefault();
+  //   const postState = {
+  //     artisanId: user?.id,
+  //     subCategoryIds: formData?.selectedServices,
+  //   };
+  //   postAssignment(postState, ()=>{
+  //     setShowSuccessModal(true);
+  //     onNext();
+  //   },() => {
+  //     setError(true);
+  //   });
+  // }
+ const handleSuccess = async (e) => {
+    e.preventDefault();
+    
+    try {
+      // First, upload the profile image if one exists
+      if (formData.profileImage && !imageUploaded) {
+        const formDataImage = new FormData();
+        formDataImage.append('image', formData.profileImage);
+        formDataImage.append('UserId', user?.id);
+        
+        await new Promise((resolve, reject) => {
+          profileUser(formDataImage, () => {
+            setImageUploaded(true);
+            resolve();
+          }, (error) => {
+            console.error('Image upload failed:', error);
+            reject(error);
+          });
+        });
+      }
 
+      // Then proceed with assignment creation (for artisans)
+      if (formData.role === 'artisan' || user?.role === "Artisan") {
+        const postState = {
+          artisanId: user?.id,
+          subCategoryIds: formData?.selectedServices,
+        };
+        
+        postAssignment(postState, () => {
+          // setShowSuccessModal(true);
+          onNext();
+        }, () => {
+          setError(true);
+        });
+      } else {
+        // For regular users, just show success
+        setShowSuccessModal(true);
+        onNext();
+      }
+      
+    } catch (error) {
+      console.error('Profile setup failed:', error);
+      setError(true);
+    }
+  };
 
   const categoryOptions =  data?.data?.map((item) => ({
     value: item.id,
@@ -179,8 +243,23 @@ const ProfileSetup = ({
                     </div>
                     </div>
                 </div>
+                {profileLoading && (
+                  <div className="mt-2 text-sm text-blue-600">
+                    Uploading image...
+                  </div>
+                )}
+                {imageUploaded && (
+                  <div className="mt-2 text-sm text-green-600">
+                    ✓ Image uploaded successfully
+                  </div>
+                )}
+                {profileError && (
+                  <div className="mt-2 text-sm text-red-600">
+                    Image upload failed. Please try again.
+                  </div>
+                )}
             </div>
-            {formData.role === 'user' && (
+            {formData?.role === 'user' || user?.role === "User" ? (
               <div className="mt-[59px]">
                   <label className="block text-sm font-medium font-inter text-[#101928] mb-3">
                       Service Interests
@@ -202,8 +281,8 @@ const ProfileSetup = ({
                       ))}
                   </div>
               </div>
-            )}
-            {formData.role === 'artisan' && (
+            ): null}
+            {formData?.role === 'artisan' || user?.role === "Artisan" ? (
               <div className="mt-[59px]">
                 <div>
                   <TextInput
@@ -272,13 +351,18 @@ const ProfileSetup = ({
                   />
                 </div>
               </div>
-            )}
+            ): null}
             <Button 
                 variant="primary" Add commentMore actions
                 className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]" 
                 onClick={(e)=> handleSuccess(e)}
+                disabled={profileLoading || assignmentLoading}
             >
-                Create Account
+                {(assignmentLoading || profileLoading) ? (
+                  <LoaderComp/>
+                ) : (
+                  "Create Account"
+                )}  
             </Button>
             <SuccessModal
               isOpen={showSuccessModal}
@@ -286,7 +370,7 @@ const ProfileSetup = ({
               title="You’re All Set!"
               message="You’ve successfully created your account and Ready to find the right artisan for the job"
               primaryButtonText="Browse Artisans"
-              onPrimaryButtonClick={() => Navigate(`${formData.role === 'user' ? '/' : '/'}`)}
+              onPrimaryButtonClick={() => Navigate(`${formData.role === 'user' ? '/' : '/'}`, {state: {message: "Signup Successful! Please log in to continue."} })}
             />
         </div>
     </div>
@@ -301,12 +385,16 @@ const mapStoreToProps = (state) => {
         subcategoryLoading: state?.subcategory?.loading,
         subcategoryError: state?.subcategory?.error,  
         subcategoryData: state?.subcategory?.data,
+        user: state?.userEmail?.data?.data,
+        assignmentLoading: state?.artisanAssignment?.loading,
+        assignmentError: state?.artisanAssignment?.error,
     };
 };
 const mapDispatchToProps = (dispatch) => {
     return {
         getCategory: () => dispatch(categoryAction()),
-        getSubCategory: (id) => dispatch(subCategoryAction(id))
+        getSubCategory: (id) => dispatch(subCategoryAction(id)),
+        postAssignment: (postState, history, errors) => dispatch(postArtisanAssignmentAction(postState, history, errors))
     };
 };
 export default connect(mapStoreToProps, mapDispatchToProps)(ProfileSetup);

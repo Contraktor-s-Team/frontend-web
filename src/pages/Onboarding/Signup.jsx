@@ -21,21 +21,24 @@ import { connect, useDispatch } from "react-redux";
 import { useConfirmEmailMutation, useGetUserEmailQuery, useRegisterMutation, useUpdateUserMutation, useValidateEmailMutation } from "../../store/api/apiSlice";
 import VerifyIdentify from "./components/VerifyIdentity";
 import { ConfirmEmailAction, registerAction, ValidateEmailAction } from "../../redux/Auth/Register/RegisterAction";
-import { updateUserAction, userEmailAction } from "../../redux/User/UserAction";
+import { updateUserAction, userEmailAction, userIdAction, UserProfileImageAction } from "../../redux/User/UserAction";
 
 const Signup = ({
     register, 
     validateEmail,
     confirmEmail,
     userEmailAction,
+    useridAction,
     updateUser,
     loading,
     confirmLoading,
     isUpdateLoading,
     error,
     data,
+    loginData,
     confirmError,
     updateError,
+    profileUser,
     confirmData, 
     validateEmailerror,
     user,
@@ -108,7 +111,7 @@ const Signup = ({
         try{
             const userData ={
                 code: formData.code.join(''),
-                email: formData.email || user?.data?.email || data?.email,
+                email: formData.email || user?.data?.email || data?.email || userEmail?.data?.email ,
             }
             await confirmEmail(userData, ()=>{
                 // refetchUser();
@@ -146,6 +149,7 @@ const Signup = ({
                 address: formData.location,     
             }
             const userToUse = user?.data?.id || userEmail?.data?.id 
+            console.log("userToUse:", userToUse);
             await updateUser( userToUse, data,()=>{
                 nextStep();
             },()=>{
@@ -219,7 +223,7 @@ const Signup = ({
     };
 
     const nextStep = (e) => {
-        if (step < 6 || formData.role === 'artisan') {
+        if (step < 6 || formData.role === 'artisan' || user?.data?.role === "Artisan") {
             setStep(step + 1);
         }
     };
@@ -274,18 +278,20 @@ const Signup = ({
         // TODO: Implement map location selection
     };
     const isFormValid = formData.selectedServices.length > 0;
+
     useEffect(() => {
-        if (user && user?.data && !user?.data?.emailConfirmed) {
+        if (loginData?.userId) {
+            useridAction(loginData?.userId);
+        }
+    },[loginData])
+    useEffect(() => {
+        console.log("user:", user);
+        if (user && user?.data && !user?.data?.emailConfirmed ) {
             setStep(3);
         }
     }, [user]);
-    //  useEffect(() => {
-    //     if (user?.data?.firstName === null) {
-    //         setStep(4);
-    //     }
-    // }, [user]);
     useEffect(()=>{
-        const emailToUse = formData.email || user?.data?.email || data?.email
+        const emailToUse = formData.email || user?.data?.email || data?.email || userEmail?.data?.email
         if(step === 4){
             userEmailAction(emailToUse)
         }
@@ -315,6 +321,7 @@ const Signup = ({
                             loading = {loading}
                             error={error}
                             isError={errors}
+                            setErrors={setErrors}
                             setStep={setStep}
                         />
                     )}
@@ -378,11 +385,16 @@ const Signup = ({
                             onBack={prevStep}
                             isFormValid={isFormValid}
                             selectedServices={formData.selectedServices}
+                            profileUser={profileUser}
+                            profileLoading={isUpdateLoading}
+                            profileError={updateError}
                         />
                     )}
 
                     {step === 7 && (
-                        <VerifyIdentify/>
+                        <VerifyIdentify
+                            user={user}
+                        />
                     )}
                     {/* Step 6: Success Message */}
                     {/* {step === 6 && (
@@ -402,6 +414,7 @@ const mapStoreToProps = (state) => {
         loading: state?.register?.loading,
         error: state?.register?.error,
         data: state?.register?.data,
+        loginData: state?.login?.data,
         user: state?.user?.data,
         userEmail: state?.userEmail?.data,
         validateEmailerror: state?.validateEmail?.error,
@@ -418,7 +431,9 @@ const mapDispatchToProps = (dispatch) => {
         validateEmail: (poststate, history,errors) => dispatch(ValidateEmailAction(poststate, history, errors)),
         confirmEmail: (poststate, history,errors) => dispatch(ConfirmEmailAction(poststate, history, errors)),
         userEmailAction:(email) => dispatch(userEmailAction(email)),
+        useridAction:(email) => dispatch(userIdAction(email)),
         updateUser: (id, poststate, history,errors) => dispatch(updateUserAction(id, poststate, history, errors)),
+        profileUser: (poststate, history,errors) => dispatch(UserProfileImageAction(poststate, history, errors)),
     };
 };
 

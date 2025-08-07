@@ -15,22 +15,31 @@ const SearchFilters = ({
   setPriceFilter,
   searchQuery,
   setSearchQuery,
+  availableCategories = [], // New prop for dynamic categories
 }) => {
-  // Category (Specialty) options based on artisans.json
+  // Dynamic category options based on actual API data
   const categoryOptions = [
     { value: 'category', label: 'Category' },
-    { value: 'plumbing', label: 'Plumbing' },
-    { value: 'ac-installation', label: 'AC Installation' },
-    { value: 'painting', label: 'Painting' },
-    { value: 'carpentry', label: 'Carpentry' },
-    { value: 'tiling', label: 'Tiling' },
-    { value: 'roofing', label: 'Roofing' },
-    { value: 'masonry', label: 'Masonry' },
-    { value: 'welding', label: 'Welding' },
-    { value: 'generator-repairs', label: 'Generator Repairs' },
+    ...availableCategories.map(cat => ({
+      value: cat.toLowerCase().replace(/\s+/g, '-'),
+      label: cat
+    })),
+    // Fallback static options if no API data
+    ...(availableCategories.length === 0 ? [
+      { value: 'mechanic', label: 'Mechanic' },
+      { value: 'plumbing', label: 'Plumbing' },
+      { value: 'ac-installation', label: 'AC Installation' },
+      { value: 'painting', label: 'Painting' },
+      { value: 'carpentry', label: 'Carpentry' },
+      { value: 'tiling', label: 'Tiling' },
+      { value: 'roofing', label: 'Roofing' },
+      { value: 'masonry', label: 'Masonry' },
+      { value: 'welding', label: 'Welding' },
+      { value: 'generator-repairs', label: 'Generator Repairs' },
+    ] : [])
   ];
 
-  // Location options based on artisans.json
+  // Location options - you might want to make this dynamic too based on artisan addresses
   const locationOptions = [
     { value: 'location', label: 'Location' },
     { value: 'ikeja', label: 'Ikeja, Lagos' },
@@ -42,6 +51,7 @@ const SearchFilters = ({
     { value: 'oshodi', label: 'Oshodi, Lagos' },
     { value: 'ikorodu', label: 'Ikorodu, Lagos' },
     { value: 'apapa', label: 'Apapa, Lagos' },
+    { value: 'not-specified', label: 'Location not specified' },
   ];
 
   // Availability options
@@ -57,6 +67,7 @@ const SearchFilters = ({
     { value: '5', label: '5 Stars' },
     { value: '4.5', label: '4.5+ Stars' },
     { value: '4', label: '4+ Stars' },
+    { value: '3.5', label: '3.5+ Stars' },
   ];
 
   // Price range options
@@ -69,19 +80,19 @@ const SearchFilters = ({
   ];
 
   return (
-    <div className="flex items-center gap-4.25">
-      <div className="flex-1">
+    <div className="flex items-center gap-4.25 flex-wrap">
+      <div className="flex-1 min-w-[200px]">
         <TextInput
           leadingIcon={<Search size={20} />}
           inputClassName="rounded-full pr-6"
-          placeholder="Search artisans"
+          placeholder="Search artisans by name, email, or specialty"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
       {/* Category Filter */}
-      <div className="">
+      <div className="min-w-[120px]">
         <Select
           value={categoryFilter || categoryOptions[0].value}
           onChange={(e) => setCategoryFilter?.(e.target.value)}
@@ -92,7 +103,7 @@ const SearchFilters = ({
       </div>
 
       {/* Location Filter */}
-      <div className="">
+      <div className="min-w-[120px]">
         <Select
           value={locationFilter || locationOptions[0].value}
           onChange={(e) => setLocationFilter?.(e.target.value)}
@@ -103,7 +114,7 @@ const SearchFilters = ({
       </div>
 
       {/* Availability Filter */}
-      <div className="">
+      <div className="min-w-[120px]">
         <Select
           value={availabilityFilter || availabilityOptions[0].value}
           onChange={(e) => setAvailabilityFilter?.(e.target.value)}
@@ -114,7 +125,7 @@ const SearchFilters = ({
       </div>
 
       {/* Rating Filter */}
-      <div className="">
+      <div className="min-w-[120px]">
         <Select
           value={ratingFilter || ratingOptions[0].value}
           onChange={(e) => setRatingFilter?.(e.target.value)}
@@ -125,7 +136,7 @@ const SearchFilters = ({
       </div>
 
       {/* Price Range Filter */}
-      <div className="">
+      <div className="min-w-[120px]">
         <Select
           value={priceFilter || priceOptions[0].value}
           onChange={(e) => setPriceFilter?.(e.target.value)}

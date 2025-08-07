@@ -1,4 +1,4 @@
-import { FORGOT_PASSWORD_FALIURE, FORGOT_PASSWORD_REQUEST, FORGOT_PASSWORD_SUCCESS, LOGIN_FALIURE, LOGIN_REQUEST, LOGIN_SUCCESS, RESET_PASSWORD_FALIURE, RESET_PASSWORD_REQUEST, RESET_PASSWORD_SUCCESS, VALIDATE_FALIURE, VALIDATE_REQUEST, VALIDATE_SUCCESS } from "./LoginType"
+import { FORGOT_PASSWORD_FALIURE, FORGOT_PASSWORD_REQUEST, FORGOT_PASSWORD_SUCCESS, LOGIN_FALIURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, RESET_PASSWORD_FALIURE, RESET_PASSWORD_REQUEST, RESET_PASSWORD_SUCCESS, VALIDATE_FALIURE, VALIDATE_REQUEST, VALIDATE_SUCCESS } from "./LoginType"
 
 const initialstate = {
     loading: false,
@@ -32,6 +32,14 @@ export const loginReducer = (state=initialstate, action) => {
                 error: action.payload,
                 isAuthenticated: false,
                 token: null
+            }
+        case LOGOUT:
+            return {
+                ...state,
+                isAuthenticated: false,
+                token: null,
+                data: {},
+                error: {}
             }
         default: return state   
     }

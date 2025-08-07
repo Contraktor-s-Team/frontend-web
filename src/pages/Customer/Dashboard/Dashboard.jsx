@@ -1,7 +1,7 @@
 import React, { use, useEffect } from 'react';
 import DashboardHeader from './components/DashboardHeader';
 import RecentServices from './components/RecentServices';
-import { userEmailAction } from '../../../redux/User/UserAction';
+import { userAction, userEmailAction } from '../../../redux/User/UserAction';
 import { connect, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -17,11 +17,8 @@ const Dashboard = ({
   const userEmail = useSelector((state) => state.login.data?.email || state.user?.data?.email);
   console.log("email from location state", email);
   useEffect(()=>{
-    console.log("email from location state", email);
-    if (email || userEmail) {
-      getuser(email || userEmail);
-    }
-  },[email])
+    getuser();
+  },[])
 
   useEffect(() => {
     if(!loading){
@@ -48,7 +45,7 @@ const Dashboard = ({
     <>
       <DashboardHeader data={data}/>
       <div className="mt-8">
-        <RecentServices />
+        <RecentServices/>
       </div>
     </>
   );
@@ -57,14 +54,14 @@ const Dashboard = ({
 const mapStoreToProps = (state) => {
   console.log(state)
     return {
-        loading: state?.userEmail?.loading,
-        error: state?.userEmail?.error,
-        data: state?.userEmail?.data,
+        loading: state?.user?.loading,
+        error: state?.user?.error,
+        data: state?.user?.data,
     };
 };
 const mapDispatchToProps = (dispatch) => {
     return {
-        getuser: (email) => dispatch(userEmailAction(email)),
+        getuser: () => dispatch(userAction()),
     };
 };
 

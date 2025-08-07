@@ -5,9 +5,11 @@ import { FaUpload } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { navigate } from "@storybook/addon-links";
+import SuccessModal from "../../../components/Modal/SuccessModal";
 
 const VerifyIdentify = ({
     formData,
+    user,
     onFormChange,
     onNext, 
     userData,
@@ -15,9 +17,10 @@ const VerifyIdentify = ({
     error
 }) => {
     const [selectedIdType, setSelectedIdType] = useState('National ID Card');
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [frontSideFile, setFrontSideFile] = useState(null);
     const [backSideFile, setBackSideFile] = useState(null);
-    const navigate = useNavigate();
+    const Navigate = useNavigate();
     const idTypes = [
         { id: 'national-id', label: 'National ID Card', active: true },
         { id: 'nin-slip', label: 'NIN Slip', active: false },
@@ -54,10 +57,10 @@ const VerifyIdentify = ({
     );
     
     const handleContinue = () => {
-        navigate("/")
+        setShowSuccessModal(true);
     }
     const handleSkip = () => {
-        navigate("/")
+        setShowSuccessModal(true);
     }
 
     return ( 
@@ -122,6 +125,14 @@ const VerifyIdentify = ({
                 Continue
             </button>
             </div>
+            <SuccessModal
+              isOpen={showSuccessModal}
+              onClose={() => setShowSuccessModal(false)}
+              title="You’re All Set!"
+              message="You’ve successfully created your account and Ready to find the right artisan for the job"
+              primaryButtonText="Browse Artisans"
+              onPrimaryButtonClick={() => Navigate(`${formData?.role === 'user' || user?.data?.role === "User" ? '/' : '/'}`, {state: {message: "Signup Successful! Please log in to continue."} })}
+            />
         </div>
     );
 }

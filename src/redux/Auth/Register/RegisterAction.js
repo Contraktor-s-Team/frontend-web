@@ -3,6 +3,7 @@ import {auth, googleProvider, facebookProvider} from "./Config";
 import {signInWithPopup} from "firebase/auth";
 import axios from 'axios'
 import { data } from "react-router-dom";
+import { LOGOUT } from "../Login/LoginType";
 
 // this is for /api/Auth/register endpoint
 export const registerRequest=()=>{
@@ -50,6 +51,11 @@ export const confirmEmailRequest=()=>{
         type: CONFIRM_EMAIL_REQUEST
     }
 }
+export const clearLogin=()=>{
+    return{
+        type: LOGOUT,
+    }
+}
 export const confirmEmailSuccess=(response)=>{
     return{
         type: CONFIRM_EMAIL_SUCCESS,
@@ -88,7 +94,7 @@ export const registerAction = (postState, history, errors) =>{
     }
 }
 
-export const externalRegister = (providerName, history) => {
+export const externalRegister = (providerName, history, errors) => {
     return async (dispatch) => {
         let provider;
         if (providerName === "Google") provider = googleProvider;
@@ -117,8 +123,9 @@ export const externalRegister = (providerName, history) => {
             
             return response.data;
         } catch (error) {
-            dispatch(registerFaliure(error))
-            console.error("External registration failed:", error);
+            dispatch(registerFaliure(error.response.data.message))
+            errors()
+            console.error("External registration failed:", error.response.data.message);
             throw error;
         }
     }
@@ -166,6 +173,8 @@ export const ConfirmEmailAction = (postState, history, errors) =>{
             dispatch(confirmEmailSuccess(data))
             if(res.status){
                 history()
+                dispatch(clearLogin())
+                localStorage.removeItem("auth");
             }
         }
         catch(error){
