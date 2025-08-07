@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import SuccessModal from './SuccessModal';
 
 export default function NegotiationModal({ 
   isOpen, 
@@ -9,15 +10,19 @@ export default function NegotiationModal({
   negotiateProposal,
   proposals,
   negotiations = [], // Array of negotiations from API
+  negotiateSuccess,
   negotiationsLoading = false, // Loading state for negotiations
   currentUserId, // Current user's ID to determine sender/receiver
-  currentUserRole = "User" // Current user's role (User/Artisan)
+  currentUserRole = "User", // Current user's role (User/Artisan)
+  errors
 }) {
   const [currentView, setCurrentView] = useState('list'); // 'list', 'typing', 'sent'
   const [negotiationData, setNegotiationData] = useState({
     message: '',
     proposedPrice: ''
   });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalError, setModalError] = useState(false);
 
   // Reset form when modal opens/closes or proposal changes
   useEffect(() => {
@@ -62,12 +67,14 @@ export default function NegotiationModal({
         negotiationPayload,
         () => {
           // Success callback - move to sent view
+          setShowSuccessModal(true)
           setCurrentView('sent');
           setNegotiationData({ message: '', proposedPrice: '' });
         },
-        (error) => {
+        () => {
           // Error callback
-          console.error('Failed to send negotiation:', error);
+          setModalError(true)
+          console.error('Failed to send negotiation:', errors);
         }
       );
     }
@@ -80,7 +87,10 @@ export default function NegotiationModal({
     console.log('Accepting offer:', latestNegotiation);
     closeModal();
   };
-
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    
+  };
   const handleRenegotiate = () => {
     setCurrentView('typing');
   };
@@ -102,11 +112,26 @@ export default function NegotiationModal({
     'Artisan';
 
   if (!isOpen) return null;
-
+  console.log("this is negotiation error", modalError, errors)
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-hidden">
-        
+          {modalError && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <div className="text-sm text-red-700">
+                    <p>{errors}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         {/* List View - Shows negotiation history */}
         {currentView === 'list' && (
           <>
@@ -125,7 +150,7 @@ export default function NegotiationModal({
                 <X size={24} />
               </button>
             </div>
-
+          
             {/* Content */}
             <div className="px-6 pb-6">
               {/* Initial Budget */}
@@ -352,6 +377,16 @@ export default function NegotiationModal({
           </>
         )}
       </div>
+      {showSuccessModal && (
+        <SuccessModal
+          isOpen={showSuccessModal}
+          onClose={handleCloseSuccessModal}
+          title="Negotiation Sent Successfully!"
+          message="Your negotiation has been sent to the artisan. You'll receive a response shortly."
+          primaryButtonText="Continue"
+          onPrimaryButtonClick={handleCloseSuccessModal}
+        />
+      )}
     </div>
   );
 }

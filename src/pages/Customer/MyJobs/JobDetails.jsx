@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { jobIdAction } from '../../../redux/Jobs/JobsAction';
 import { jobProposalAction, negotiateAction, negotiateProposalAction } from '../../../redux/Proposals/ProposalAction';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
+import SuccessModal from '../../../components/Modal/SuccessModal'; 
 
 const JobDetails = ({
   getJobId,
@@ -21,7 +22,8 @@ const JobDetails = ({
   negotiateProposal,
   getNegotiations,        
   negotiations,          
-  negotiationsLoading  
+  negotiationsLoading,
+  negotiationsError
 }) => {
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
@@ -32,7 +34,8 @@ const JobDetails = ({
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [selectedProposal, setSelectedProposal] = useState(null);
-
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalError, setModalError] = useState('');
   // Handle star click
   const handleStarClick = (star) => {
     if (star === rating) {
@@ -44,8 +47,6 @@ const JobDetails = ({
     }
   };
 
-  // const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     getJobId(jobId);
     getJobProposals(jobId);
@@ -56,6 +57,7 @@ const JobDetails = ({
       setJob(data);
     }
   },[data]);
+
   // Handle back navigation while preserving tab state
   const handleBack = () => {
     navigate(-1);
@@ -438,6 +440,8 @@ const JobDetails = ({
         negotiateProposal={negotiateProposal}
         negotiations={negotiations?.data || []}        // Pass negotiations from Redux state
         negotiationsLoading={negotiationsLoading}     // Pass loading state
+        negotiateSuccess = {negotiations?.isSuccess}
+        errors = {negotiationsError}
         currentUserId={userData?.id}// Replace with actual current user ID from Redux
         currentUserRole="User" // Replace with actual current user role from Redux
       />  
@@ -454,6 +458,7 @@ const mapStoreToProps = (state) => {
     proposals: state?.jobProposals?.data?.data,
     negotiations: state?.negotiate?.data,           
     negotiationsLoading: state?.negotiate?.loading,
+    negotiationsError: state?.negotiateProposal?.error,
   };
 };
 
