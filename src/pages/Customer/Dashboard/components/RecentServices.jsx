@@ -4,7 +4,7 @@ import Button from '../../../../components/Button/Button';
 import ServiceTable from '../../../../components/Tables/ServiceTable';
 import { connect } from 'react-redux';
 import { jobAction } from '../../../../redux/Jobs/JobsAction';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const services = [
   {
@@ -48,81 +48,86 @@ const services = [
 
 
 const RecentServices = ({
-  getJob,
-  loading,
-  jobsData,
-  error
+  services,
+  activeTab,
+  formatJobSlug,
+  // getJob,
+  // loading,
+  // jobsData,
+  // error,
 }) => {
-  const { tab: activeTab = 'posted' } = useParams();
-  const formatJobSlug = (title) => {
-    return title
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]/g, '');
-  };
+  const navigate = useNavigate();
+  // const { tab: activeTab = 'posted' } = useParams();
+  // const formatJobSlug = (title) => {
+  //   return title
+  //     .toLowerCase()
+  //     .replace(/\s+/g, '-')
+  //     .replace(/[^\w-]/g, '');
+  // };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-
-  const transformJobData = (apiJob) => {
-    return {
-      id: apiJob.id,
-      title: apiJob.title.trim(), // Remove any trailing whitespace
-      description: apiJob.description,
-      postedAt: formatDate(apiJob.postedAt),
-      userId: apiJob.userId,
-      userFullName: apiJob.userFullName || 'Unknown User',
-      artisanSubcategoryId: apiJob.artisanSubcategoryId,
-      subcategoryName: apiJob.subcategoryName || 'General',
-      proposals: apiJob.proposals || [],
-      proposalCount: apiJob.proposals?.length || 0,
-      // Add tab classification based on your business logic
-      tab: determineJobTab(apiJob),
-      // Add artisan field if needed by your table
-      artisan: apiJob.userFullName || 'N/A'
-    };
-  };
-
-   const determineJobTab = (job) => {
-    // This is where you'd implement your business logic
-    // For now, we'll categorize based on proposals or other criteria
-    if (job.proposals && job.proposals.length > 0) {
-      return 'ongoing';
-    }
-    return 'posted'; // Default to posted if no proposals
-  };
+  // const formatDate = (dateString) => {
+  //   return new Date(dateString).toLocaleDateString('en-US', {
+  //     year: 'numeric',
+  //     month: 'short',
+  //     day: 'numeric'
+  //   });
+  // };
 
 
-  const allJobs = jobsData
-  ? jobsData?.data?.map(transformJobData)
-  : [];
+  // const transformJobData = (apiJob) => {
+  //   return {
+  //     id: apiJob.id,
+  //     title: apiJob.title.trim(), // Remove any trailing whitespace
+  //     description: apiJob.description,
+  //     postedAt: formatDate(apiJob.postedAt),
+  //     userId: apiJob.userId,
+  //     userFullName: apiJob.userFullName || 'Unknown User',
+  //     artisanSubcategoryId: apiJob.artisanSubcategoryId,
+  //     subcategoryName: apiJob.subcategoryName || 'General',
+  //     proposals: apiJob.proposals || [],
+  //     proposalCount: apiJob.proposals?.length || 0,
+  //     // Add tab classification based on your business logic
+  //     tab: determineJobTab(apiJob),
+  //     // Add artisan field if needed by your table
+  //     artisan: apiJob.userFullName || 'N/A'
+  //   };
+  // };
 
-  useEffect(() => {
-    getJob();
-  }, []);
+  //  const determineJobTab = (job) => {
+  //   // This is where you'd implement your business logic
+  //   // For now, we'll categorize based on proposals or other criteria
+  //   if (job.proposals && job.proposals.length > 0) {
+  //     return 'ongoing';
+  //   }
+  //   return 'posted'; // Default to posted if no proposals
+  // };
+
+
+  // const allJobs = jobsData
+  // ? jobsData?.data?.map(transformJobData)
+  // : [];
+
+  // useEffect(() => {
+  //   getJob();
+  // }, []);
+  
   return (
     <div className="font-inter bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
       <div className="px-6 py-5 border-b border-neu-light-1 flex items-center justify-between">
-        <h2 className="font-manrope text-xl font-semibold text-gray-900">Recent Job Listing</h2>
+        <h2 className="font-manrope text-xl font-semibold text-gray-900 capitalize">{activeTab} jobs</h2>
         <Button
           variant="secondary"
-          to="/services"
+          onClick={() => navigate(`/customer/jobs/${activeTab}`)}
           rightIcon={<ChevronRight size={20} />}
           className=""
         >
           View All
         </Button>
       </div>
-      {allJobs?.length > 0 ? (
+      {/* {allJobs?.length > 0 ? (
           <ServiceTable 
             items={allJobs} 
-            onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.id)}`)}
+            // onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.id)}`)}
             activeTab={activeTab}
             formatItemSlug={formatJobSlug}
           />
@@ -135,8 +140,13 @@ const RecentServices = ({
               </>
             </div>
           </div>
-        )}
-      {/* <ServiceTable items={services} /> */}
+        )} */}
+          <ServiceTable 
+            items={services} 
+            // onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.id)}`)}
+            activeTab={activeTab}
+            formatItemSlug={formatJobSlug}
+          />
     </div>
   );
 };
