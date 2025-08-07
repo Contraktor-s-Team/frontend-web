@@ -7,22 +7,35 @@ import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
 import { connect } from 'react-redux';
 import { jobIdAction } from '../../../redux/Jobs/JobsAction';
+import { jobProposalAction, negotiateAction, negotiateProposalAction } from '../../../redux/Proposals/ProposalAction';
+import NegotiationModal from '../../../components/Modal/NegotiateModal';
+import SuccessModal from '../../../components/Modal/SuccessModal'; 
 
 const JobDetails = ({
   getJobId,
+  userData,
   loading,
   data,
   error,
+  getJobProposals,
+  proposals,
+  negotiateProposal,
+  getNegotiations,        
+  negotiations,          
+  negotiationsLoading,
+  negotiationsError
 }) => {
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState(data);
-
+  const [isOpen, setIsOpen] = useState(false);
   // Star rating state
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
-
+  const [selectedProposal, setSelectedProposal] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalError, setModalError] = useState('');
   // Handle star click
   const handleStarClick = (star) => {
     if (star === rating) {
@@ -34,38 +47,31 @@ const JobDetails = ({
     }
   };
 
-  // const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    const fetchJobDetails = async () => {
-      try {
-        // const response = await fetch('/jobs.json');
-        // const jobs = await response.json();
-        getJobId(jobId);
-        // Find the job with matching ID
-        // const foundJob = jobs
-        //   .filter((job) => job.tab.toLowerCase() === tab)
-        //   .find((j) => j.title.toLowerCase().replaceAll(' ', '-') === jobId);
-
-        console.log(jobId, tab);
-        setJob(data);
-      } catch (error) {
-        console.error('Error fetching job details:', error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-    fetchJobDetails();
+    getJobId(jobId);
+    getJobProposals(jobId);
   }, [jobId]);
+
+  useEffect(()=>{
+    if (data) {
+      setJob(data);
+    }
+  },[data]);
+
   // Handle back navigation while preserving tab state
   const handleBack = () => {
     navigate(-1);
   };
   console.log("Job not found for ID:", job);
+
+  const openModal = (proposal) => {
+    setSelectedProposal(proposal);
+    getNegotiations(proposal.id);
+    setIsOpen(true)
+  };
   if (loading) {
     return <div className="p-6">Loading job details...</div>;
   }
-
   if (!job) {
     console.log("Job not found for ID:", job);
     return (
@@ -301,80 +307,78 @@ const JobDetails = ({
               </ul>
             </div>
           )}
-
-      {job?.proposals && (
-  <>
-    <div className="bg-white rounded-xl p-7 h-fit">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="font-manrope text-xl font-semibold mb-2.5">Quotes</h1>
-        <p className="text-neu-dark-1">
-          You've received {job?.jobDetails?.quotes?.length || 0} quotes for this job
-        </p>
-      </div>
-
-      {/* No Quotes Message */}
-      {(!job?.jobDetails?.quotes || job.jobDetails.quotes.length === 0) ? (
-        <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Quotes yet</h3>
-      ) : (
-        <div className="space-y-4">
-          {job.jobDetails.quotes.map((quote) => (
-            <div key={quote.artisan} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-              {/* Artisan Info Header */}
-              <div className="flex items-start gap-4 mb-4">
-                <div className="relative">
-                  <img
-                    src={quote.avatar || Avatar}
-                    alt={quote.artisan}
-                    className="w-42.5 h-42.5 rounded-lg object-cover"
-                  />
-                  <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
-                    <GoStarFill size={12} className="text-warning-norm-1" />
-                    <span className="text-xs font-medium text-gray-900">{quote.rating}</span>
-                  </div>
+          {proposals && (
+            <>
+              <div className="bg-white rounded-xl p-7 h-fit">
+                {/* Header */}
+                <div className="mb-6">
+                  <h1 className="font-manrope text-xl font-semibold mb-2.5">Quotes</h1>
+                  <p className="text-neu-dark-1">
+                    You've received {proposals?.length || 0} quotes for this job
+                  </p>
                 </div>
 
-                <div className="flex-1 space-y-4.25">
-                  <div>
-                    <h3 className="font-semibold mb-1">{quote.artisan}</h3>
-                    <p className="text-neu-dark-1 text-sm mb-2">{quote.category}</p>
+                {/* No Quotes Message */}
+                {(!proposals || proposals?.length === 0) ? (
+                  <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Quotes yet</h3>
+                ) : (
+                  <div className="space-y-4">
+                    {proposals?.map((quote) => (
+                      <div key={quote.artisan} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                        {/* Artisan Info Header */}
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="relative">
+                            <img
+                              src={quote?.avatar || Avatar}
+                              alt={quote?.artisan}
+                              className="w-42.5 h-42.5 rounded-lg object-cover"
+                            />
+                            <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
+                              <GoStarFill size={12} className="text-warning-norm-1" />
+                              <span className="text-xs font-medium text-gray-900">{quote?.rating}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex-1 space-y-4.25">
+                            <div>
+                              <h3 className="font-semibold mb-1">{quote?.artisan?.firstName}  {quote?.artisan?.lastName}</h3>
+                              <p className="text-neu-dark-1 text-sm mb-2">{quote?.category}</p>
+                            </div>
+
+                            <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
+                              <Banknote size={20} className="text-pri-norm-1" />
+                              <p className="font-semibold">{quote?.proposedPrice}</p>
+                            </div>
+
+                            <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
+                              <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
+                              <span className="text-sm text-success-norm-3 font-medium">{quote?.availability ? quote?.availability : "always available"}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Message */}
+                        <div className="mb-4">
+                          <p className="text-sm text-neu-dark-1 mb-2">Message From artisan</p>
+                          <p className="leading-relaxed">{quote?.message}</p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-4">
+                          <Button variant="secondary" rightIcon={<Check size={20} />}>
+                            Accept Quote
+                          </Button>
+                          <Button variant="grey-sec" rightIcon={<MessageSquareText size={20} />} onClick={() => openModal(quote)}>
+                            Negotiate Quote
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-
-                  <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
-                    <Banknote size={20} className="text-pri-norm-1" />
-                    <p className="font-semibold">{quote.price}</p>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
-                    <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
-                    <span className="text-sm text-success-norm-3 font-medium">{quote.availability}</span>
-                  </div>
-                </div>
+                )}
               </div>
-
-              {/* Message */}
-              <div className="mb-4">
-                <p className="text-sm text-neu-dark-1 mb-2">Message From artisan</p>
-                <p className="leading-relaxed">{quote.message}</p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-4">
-                <Button variant="secondary" rightIcon={<Check size={20} />}>
-                  Accept Quote
-                </Button>
-                <Button variant="grey-sec" rightIcon={<MessageSquareText size={20} />}>
-                  Chat with artisan
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  </>
-)}
-
+            </>
+          )}
           {tab === 'completed' && (
             <div className="mt-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100 space-y-4.5">
               <h3 className="font-manrope text-xl font-semibold text-gray-900">
@@ -424,21 +428,46 @@ const JobDetails = ({
           )}
         </div>
       </div>
+      <NegotiationModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        closeModal={() => {
+          setIsOpen(false);
+          setSelectedProposal(null); 
+        }}
+        selectedProposal={selectedProposal}
+        proposals={proposals}
+        negotiateProposal={negotiateProposal}
+        negotiations={negotiations?.data || []}        // Pass negotiations from Redux state
+        negotiationsLoading={negotiationsLoading}     // Pass loading state
+        negotiateSuccess = {negotiations?.isSuccess}
+        errors = {negotiationsError}
+        currentUserId={userData?.id}// Replace with actual current user ID from Redux
+        currentUserRole="User" // Replace with actual current user role from Redux
+      />  
     </div>
   );
 };
 const mapStoreToProps = (state) => {
   console.log(state);
   return {
+    userData: state?.user?.data?.data,
     loading: state?.singleJob?.loading,
     data: state?.singleJob?.data?.data,
     error: state?.singleJob?.error,
+    proposals: state?.jobProposals?.data?.data,
+    negotiations: state?.negotiate?.data,           
+    negotiationsLoading: state?.negotiate?.loading,
+    negotiationsError: state?.negotiateProposal?.error,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getJobId: (id) => dispatch(jobIdAction(id)),
+    getJobProposals: (id) => dispatch(jobProposalAction(id)),
+    negotiateProposal: (id, postState, history, errors) => dispatch(negotiateProposalAction(id, postState, history, errors)),
+    getNegotiations: (proposalId) => dispatch(negotiateAction(proposalId)),
   };
 };
 export default connect(mapStoreToProps, mapDispatchToProps)(JobDetails);

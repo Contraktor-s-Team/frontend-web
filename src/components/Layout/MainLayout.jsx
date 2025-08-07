@@ -1,23 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useNavigate, useLocation, data } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import { logout } from '../../redux/Auth/Login/LoginAction';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
+import { getArtisanIdAction } from '../../redux/Artisan/ArtisanAction';
+import { userAction, userEmailAction } from '../../redux/User/UserAction';
 
-const MainLayout = ({ logout, data }) => {
+const MainLayout = ({ logout, data, getArtisanDiscovery, getuser }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   // Determine user type based on the current route
   const isArtisanRoute = location.pathname.startsWith('/artisan');
   const userType = isArtisanRoute ? 'artisan' : 'customer';
-
+  const email = location?.state?.email;
+  const userEmail = useSelector((state) => state.login.data?.email || state.user?.data?.email);
+ 
   const handleLogout = async () => {
     await logout();
     navigate("/");
   };
-
+  useEffect(()=>{
+    getuser();
+  },[])
+  // useEffect(()=>{
+  //   if (data?.data?.id) {
+  //     getArtisanDiscovery(data?.data?.id);
+  //   }
+  // },[data])
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
@@ -44,15 +55,16 @@ const MainLayout = ({ logout, data }) => {
 const mapStoreToProps = (state) => {
   console.log(state)
     return {
-        loading: state?.userEmail?.loading,
-        error: state?.userEmail?.error,
-        data: state?.userEmail?.data,
+        loading: state?.user?.loading,
+        error: state?.user?.error,
+        data: state?.user?.data,
     };
 };
 const mapDispatchToProps = (dispatch) => {
     return {
         logout: () => dispatch(logout()),
-        getuser: (email) => dispatch(userEmailAction(email)),
+        getuser: () => dispatch(userAction()),
+        getArtisanDiscovery: (id) => dispatch(getArtisanIdAction(id)),
     };
 };
 

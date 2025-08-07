@@ -77,9 +77,26 @@ export const userEmailAction = (email) =>{
 }
 
 // this is for /api/Users/{id} endpoint
-export const userAction = (id) =>{
+export const userAction = () =>{
     return async (dispatch) => {
         dispatch(userRequest())
+        let datas = JSON.parse(localStorage.getItem("auth"))
+        await axios.get(`${baseUrl}/GetCurrentUser`,{headers: {
+            Authorization: `Bearer ${datas?.token}`
+        }})
+        .then(response=>{
+            const data = response.data;
+            dispatch(userSuccess(data))
+        }).catch(error=>{
+            dispatch(userFaliure(error.response.data.message))
+        })
+    }
+}
+
+export const userIdAction = (id) =>{
+    return async (dispatch) => {
+        dispatch(userRequest())
+        let datas = JSON.parse(localStorage.getItem("auth"))
         await axios.get(`${baseUrl}/${id}`)
         .then(response=>{
             const data = response.data;
@@ -95,6 +112,26 @@ export const updateUserAction = (id, postState, history, errors) =>{
         dispatch(updateUserRequest())
         try{
             const res = await axios.post(`${baseUrl}/${id}/update`, postState)
+            const {data} = res 
+            console.log(data)
+            console.log(res)
+            dispatch(updateUserSuccess(data))
+            if(res.status){
+                history()
+            }
+        }
+        catch(error){
+            dispatch(updateUserFaliure(error.response.data.message))
+            errors()
+        }
+    }
+}
+
+export const UserProfileImageAction = (postState, history, errors) =>{
+    return async (dispatch) => {
+        dispatch(updateUserRequest())
+        try{
+            const res = await axios.post(`${baseUrl}/upload-picture`, postState)
             const {data} = res 
             console.log(data)
             console.log(res)

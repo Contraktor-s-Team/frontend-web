@@ -34,7 +34,11 @@ const JobDescriptionForm = ({
   maxFiles = 3,
   subcategoryOptions = [],
   subcategory,
-  setSubcategory
+  setSubcategory,
+  budgetType = false,
+  setBudgetType = () => {},
+  budgetAmount = '',
+  setBudgetAmount = () => {}
 }) => {
   return (
     <>
@@ -114,6 +118,65 @@ const JobDescriptionForm = ({
           maxFiles={maxFiles}
         />
       </div>
+      <div className="mb-6">
+        <div className="space-y-4 flex items-center justify-between">
+          {/* Set a Budget Option */}
+          <div className="flex items-start space-x-3">
+            <input
+              type="radio"
+              id="setBudget"
+              name="budgetType"
+              value="budget"
+              checked={budgetType === true}
+              onChange={() => setBudgetType(true)}
+              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+            />
+            <div className="flex-1">
+              <label htmlFor="setBudget" className="block text-sm font-medium text-gray-800 cursor-pointer">
+                Set a Budget
+              </label>
+              <p className="text-xs text-gray-500 mt-1">Add how much you're willing to pay.</p>
+            </div>
+          </div>
+
+          {/* Requires Consultation First Option */}
+          <div className="flex items-start space-x-3">
+            <input
+              type="radio"
+              id="requiresConsultation"
+              name="budgetType"
+              value="consultation"
+              checked={budgetType === false}
+              onChange={() => setBudgetType(false)}
+              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+            />
+            <div className="flex-1">
+              <label htmlFor="requiresConsultation" className="block text-sm font-medium text-gray-800 cursor-pointer">
+                Requires Consultation First
+              </label>
+              <p className="text-xs text-gray-500 mt-1">Artisan will inspect first, then send a quote.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* CHANGE 7: Conditional Budget Input Field */}
+        {budgetType === true && (
+          <div className="mt-4">
+            <label htmlFor="budgetAmount" className="block text-sm font-medium text-gray-800 mb-2">
+              Budget<span className="text-err-norm-1">*</span>
+            </label>
+            <div className="relative">
+              <TextInput
+                id="budgetAmount"
+                placeholder="e.g ₦20,000 - ₦25,000"
+                value={budgetAmount}
+                onChange={(e) => setBudgetAmount(e.target.value)}
+                required={budgetType === 'budget'}
+              />
+            </div>
+          </div>
+        )}
+      </div> 
     </>
   );
 };

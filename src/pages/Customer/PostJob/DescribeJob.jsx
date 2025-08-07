@@ -29,6 +29,8 @@ const DescribeJob = ({
   const [subcategory, setSubcategory] = useState(jobData.subcategory || '');
   const [description, setDescription] = useState(jobData.description || '');
   const [files, setFiles] = useState([]);
+  const [budgetType, setBudgetType] = useState(jobData.budgetType ?? false); // 'budget' or 'consultation'
+  const [budgetAmount, setBudgetAmount] = useState(jobData.budgetAmount || '');
   const navigate = useNavigate();
 
   // Track if form is valid
@@ -63,7 +65,10 @@ const DescribeJob = ({
       formData.append('title', jobTitle);
       formData.append('description', description);
       formData.append('artisanSubcategoryId', subcategory?.value);
-      formData.append('ProposalRequiresPrice', true);
+      formData.append('ProposalRequiresPrice', budgetType);
+      if (budgetType === true  && budgetAmount) {
+        formData.append('Budget', budgetAmount);
+      }
 
       // Append each file
       files.forEach((file, index) => {
@@ -73,7 +78,7 @@ const DescribeJob = ({
       console.log("userData", formData)
       await postJob(formData, ()=>{
         console.log("i got here in login")
-        navigate("/customer/post-job/time-location", { state: { jobTitle,description, subcategory, files } })
+        navigate("/customer/post-job/time-location", { state: { jobTitle,description, subcategory, files, budgetType, budgetAmount } })
       },()=>{
         setErrors(true);
       });
@@ -140,6 +145,10 @@ const DescribeJob = ({
           label: sub.name
         })) || []}
         maxFiles={3}
+        budgetType={budgetType}
+        setBudgetType={setBudgetType}
+        budgetAmount={budgetAmount}
+        setBudgetAmount={setBudgetAmount}
       />
 
       {/* Navigation buttons */}

@@ -15,7 +15,7 @@ const EmailVerification = ({
 }) => {
   const [countdown, setCountdown] = useState(40);
   const [canResend, setCanResend] = useState(false);
-  console.log('EmailVerification component rendered with code:', confirmError);
+
   const handleSubmit = (e) => {
     e.preventDefault(); 
     if (isCodeComplete) {
@@ -54,7 +54,7 @@ const EmailVerification = ({
             </div>
             <div className="ml-3">
                 <div className="text-sm text-red-700">
-                  <p>{confirmError}</p>
+                  {/* <p>{confirmError}</p> */}
                 </div>  
             </div>
           </div>

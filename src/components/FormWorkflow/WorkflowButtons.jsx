@@ -24,7 +24,7 @@ const WorkflowButtons = ({
   showNext = true,
   nextLabel = 'Continue',
   previousLabel = 'Previous',
-  onNext = null,
+  onNext,
   onPrevious = null,
   disableNext = false,
   className = '',
@@ -32,12 +32,8 @@ const WorkflowButtons = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleNext = () => {
-    if (onNext) {
-      onNext(() => navigate(nextPath));
-    } else {
-      navigate(nextPath);
-    }
+  const handleNext = (e) => {
+    onNext(e);
   };
 
   const handlePrevious = () => {
@@ -63,7 +59,7 @@ const WorkflowButtons = ({
       {showNext && (
         <Button 
           variant="primary" 
-          onClick={handleNext}
+          onClick={(e)=>{handleNext(e)}}
           disabled={disableNext}
           className={btnClassName}
         >

@@ -4,13 +4,14 @@ import { TextInput } from "../../components/Form";
 import AuthSidePanel from "../../components/Layout/AuthSidePanel";
 import google from "../../assets/google.png";
 import facebook from "../../assets/facebook.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useGetUserEmailQuery, useLoginMutation } from "../../store/api/apiSlice";
 import LoaderComp from "../../assets/animation/loader";
 import { externalLogin, loginaction } from "../../redux/Auth/Login/LoginAction";
 import { connect } from "react-redux";
 import { userAction } from "../../redux/User/UserAction";
 import { Info } from "lucide-react";
+import SuccessPopup from "../../components/Modal/SuccessPopup";
 
 const Login = ({
   loginAction,
@@ -23,10 +24,14 @@ const Login = ({
   error
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [errors, setErrors] = useState(false)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -38,6 +43,9 @@ const Login = ({
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
+  };
+  const handleClosePopup = () => {
+    setShowPopup(false);
   };
 
   const handleSubmit = async (e) => {
@@ -60,10 +68,8 @@ const Login = ({
     }
   };
   useEffect(() => {
-    if (data && data.userId) {
-      userAction(data.userId);
-    }
-  }, [data]);
+      userAction();
+  }, []);
   // useEffect(() => {
   //   if(data.userId){
   //     if (user && user?.data) {
@@ -91,9 +97,21 @@ const Login = ({
     // }  
 
   }, [data]);
-
+  useEffect(() => {
+      if (location.state?.message) {
+        setPopupMessage(location.state.message);
+        setShowPopup(true);
+        // Clear the state to prevent showing popup on refresh
+        window.history.replaceState({}, document.title);
+      }
+    }, [location.state]);
   return (
     <div className="flex h-screen bg-white p-[27px] gap-14 font-manrope">
+      <SuccessPopup
+        message={popupMessage}
+        isVisible={showPopup}
+        onClose={handleClosePopup}
+      />
       <AuthSidePanel className="hidden md:flex gap-8" />
       <div className="px-2 py-6 lg:px-8 lg:py-[24px] w-full md:w-[45%] overflow-y-scroll custom-scrollbar-hide">
         <div> 
@@ -242,7 +260,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         loginAction: (poststate, history,errors) => dispatch(loginaction(poststate, history, errors)),
         LoginExternal: (providerName, history) => dispatch(externalLogin(providerName, history)),
-        userAction: (id) => dispatch(userAction(id))
+        userAction: () => dispatch(userAction())
     };
 };
 

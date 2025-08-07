@@ -38,8 +38,9 @@ import CustomerJobDetails from './pages/Customer/MyJobs/JobDetails';
 
 // Artisan Pages
 import ArtisanDashboard from './pages/Artisan/Dashboard/Dashboard';
-import ArtisanProfile from './pages/Artisan/ProfileSettings/ProfileSettings';
+import ArtisanProfileSettings from './pages/Artisan/ProfileSettings/ProfileSettings';
 import ArtisanMyJobs from './pages/Artisan/MyJobs/MyJobs';
+import ArtisanMyJobDetails from './pages/Artisan/MyJobs/MyJobDetails';
 import ArtisanMessages from './pages/Artisan/Messages/Messages';
 import ArtisanHelpCentre from './pages/Artisan/HelpCentre/HelpCentre';
 import ArtisanPaymentHistory from './pages/Artisan/PaymentHistory/PaymentHistory';
@@ -93,7 +94,7 @@ const AppRoutes = () => {
                 <Route path=":tab/:artisanId" element={<CustomerArtisanDetails />} />
               </Route>
               {/* Nested hire-artisan routes within artisan details */}
-              <Route path="artisans/:tab/:artisanId/hire-artisan" element={<CustomerHireArtisanLayout />}>
+              <Route path="hire-artisan/:tab/:artisanId" element={<CustomerHireArtisanLayout />}>
                 <Route index element={<Navigate to="describe" replace />} />
                 <Route path="describe" element={<CustomerHireArtisanDescribeJob />} />
                 <Route path="time-location" element={<CustomerHireArtisanTimeLocation />} />
@@ -132,8 +133,18 @@ const AppRoutes = () => {
                 <Route index element={<Navigate to="new" replace />} />
                 <Route path=":tab" element={<ArtisanDashboard />} />
               </Route>
-              <Route path="profile&settings" element={<ArtisanProfile />} />
-              <Route path="my-jobs" element={<ArtisanMyJobs />} />
+              <Route path="profile&settings">
+                <Route index element={<Navigate to="personalInfo" replace />} />
+                <Route path="personalInfo" element={<ArtisanProfileSettings />} />
+                <Route path=":tab" element={<ArtisanProfileSettings />} />
+                <Route path=":tab/edit" element={<ArtisanProfileSettings />} />
+              </Route>
+              <Route path="my-jobs">
+                <Route index element={<Navigate to="newRequests" replace />} />
+                <Route path="newRequests" element={<ArtisanMyJobs />} />
+                <Route path=":tab" element={<ArtisanMyJobs />} />
+                <Route path=":tab/:jobId" element={<ArtisanMyJobDetails />} />
+              </Route>
               {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */} 
               <Route path="find-jobs">
                 <Route index element={<Navigate to="listings" replace />} />
@@ -154,7 +165,7 @@ const AppRoutes = () => {
         {/* Modal Routes - shown on top of the main UI when URL matches */}
         {location !== backgroundLocation && (
           <Routes>
-            <Route path="/notifications" element={<NotificationsModal />} />
+            <Route path={`/${userType}/notifications`} element={<NotificationsModal />} />
           </Routes>
         )}
       </ErrorBoundary>
