@@ -94,7 +94,8 @@ const ArtisanDetails = ({
       }));
     }
     
-    navigate(`/customer/artisans/${tab}/${artisanId}/hire-artisan/describe`);
+    // Navigate to the hire artisan workflow with the new route structure
+    navigate(`/customer/hire-artisan/${tab}/${artisanId}/describe`);
   };
 
   if (artisanLoading) {

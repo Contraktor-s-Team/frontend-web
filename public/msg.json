@@ -1,0 +1,210 @@
+{
+  "messages": [
+    {
+      "contact": "Chinedu Okafor",
+      "avatar": "/img/avatar1.jpg",
+      "online": true,
+      "unreadCount": 1,
+      "thread": [
+        {
+          "timestamp": "2025-08-05T10:00:00Z",
+          "message": "Hi, I saw your post about the light fixture. I can fix that tomorrow morning.",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T10:02:00Z",
+          "message": "Hi Chinedu, thanks for reaching out. What time works for you tomorrow?",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T10:05:00Z",
+          "message": "Around 10 AM works for me. I’ll bring the necessary tools. My rate is ₦12,000.",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T10:07:00Z",
+          "message": "That sounds good. Can you confirm if that includes the cost of any replacement parts?",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T10:10:00Z",
+          "message": "The rate covers labor. If we need a new bulb or wiring, that’s extra—probably ₦2,000-₦3,000.",
+          "isRead": false,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T10:12:00Z",
+          "message": "Got it. Can you check the fixture type before coming? It’s a ceiling mount, about 30cm wide.",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T10:15:00Z",
+          "message": "Sure, I’ll bring tools for a standard ceiling mount. Can you send a photo to confirm?",
+          "isRead": false,
+          "fromUser": false
+        }
+      ]
+    },
+    {
+      "contact": "Mary Johnson",
+      "avatar": "/img/avatar2.jpg",
+      "online": false,
+      "unreadCount": 2,
+      "thread": [
+        {
+          "timestamp": "2025-08-05T09:30:00Z",
+          "message": "Good morning! I’m available tomorrow for the plumbing fix you posted about.",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T09:32:00Z",
+          "message": "Hi Mary, great to hear. Can you make it by 11 AM tomorrow?",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T09:35:00Z",
+          "message": "Yes, 11 AM works perfectly! Should I bring any specific parts?",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T09:37:00Z",
+          "message": "Please check if you have a 1-inch PVC pipe. The leak is in the kitchen sink.",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T09:40:00Z",
+          "message": "Got it. I have some PVC pipes, but I’ll confirm the size. Is it a single or double sink?",
+          "isRead": false,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T09:42:00Z",
+          "message": "It’s a double sink. Also, the water pressure seems low—can you check that too?",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T09:45:00Z",
+          "message": "Sure, I’ll bring a pressure gauge to test it. My rate for the job is ₦15,000, okay?",
+          "isRead": false,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T09:50:00Z",
+          "message": "I can do ₦10,000 for labor and parts. Any chance you can match that?",
+          "isRead": false,
+          "fromUser": false
+        }
+      ]
+    },
+    {
+      "contact": "Abdul Bello",
+      "avatar": "/img/avatar3.jpg",
+      "online": true,
+      "unreadCount": 1,
+      "thread": [
+        {
+          "timestamp": "2025-08-05T08:00:00Z",
+          "message": "I’ve worked on similar electrical issues before. I can assist you this weekend.",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T08:05:00Z",
+          "message": "Thanks, Abdul! Can you do Saturday at 9 AM?",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T08:10:00Z",
+          "message": "Saturday 9 AM is fine. What’s the issue? Is it wiring or a breaker problem?",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T08:12:00Z",
+          "message": "The lights in the living room keep flickering. Might be the breaker.",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T08:15:00Z",
+          "message": "Okay, I’ll bring a multimeter to test the breaker. Could also be loose wiring.",
+          "isRead": false,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T08:18:00Z",
+          "message": "Sounds good. How much do you charge for this kind of job?",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T08:20:00Z",
+          "message": "For diagnostics and repair, it’s ₦18,000. Parts are extra if needed.",
+          "isRead": false,
+          "fromUser": false
+        }
+      ]
+    },
+    {
+      "contact": "Emeka Chibuzor",
+      "avatar": "/img/avatar4.jpg",
+      "online": false,
+      "unreadCount": 0,
+      "thread": [
+        {
+          "timestamp": "2025-08-05T07:30:00Z",
+          "message": "Can you share a photo of the issue before I come over?",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T07:35:00Z",
+          "message": "Sure, I’ll send it shortly. It’s a cracked tile in the bathroom.",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T07:40:00Z",
+          "message": "Thanks for the photo. Looks like a ceramic tile. Do you want just one replaced or the whole section?",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T07:45:00Z",
+          "message": "Just the one tile for now. I have a spare that matches.",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T07:50:00Z",
+          "message": "Perfect. I can do it tomorrow afternoon. My rate is ₦8,000 for the job.",
+          "isRead": true,
+          "fromUser": false
+        },
+        {
+          "timestamp": "2025-08-05T07:55:00Z",
+          "message": "That works. Can you confirm the time? Around 2 PM?",
+          "isRead": true,
+          "fromUser": true
+        },
+        {
+          "timestamp": "2025-08-05T08:00:00Z",
+          "message": "2 PM is good. I’ll text you when I’m on my way.",
+          "isRead": false,
+          "fromUser": false
+        }
+      ]
+    }
+  ]
+}

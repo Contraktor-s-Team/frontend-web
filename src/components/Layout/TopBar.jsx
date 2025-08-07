@@ -35,7 +35,7 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
           {/* Notifications */}
           <div className="relative">
             <Link
-              to="/notifications"
+              to={`/${userType}/notifications`}
               state={{ backgroundLocation: location }}
               className="cursor-pointer relative p-1.5 rounded-full ring-2 ring-gray-200 hover:ring-gray-300 transition-colors block"
               onClick={() => {
@@ -52,7 +52,7 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
           {/* Profile Dropdown */}
           <div className="relative">
             <button
-              className="flex items-center justify-between gap-2 p-1.5 w-[269px] pr-2 rounded-lg hover:bg-gray-100 focus:outline-none transition-colors"
+              className="flex items-center justify-between gap-2 p-1.5 w-[269px] pr-2 rounded-lg bg-gray-200 hover:bg-gray-300 focus:outline-none transition-colors"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
               <div className="flex items-center gap-4">
@@ -73,7 +73,7 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
             {/* Dropdown menu */}
             {isProfileOpen && (
               <div
-                className="origin-top-right absolute right-0 mt-1 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 py-1"
+                className="origin-top-right absolute right-0 mt-1 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 py-1"
                 style={{
                   boxShadow: '0px 4px 6px -2px rgba(16, 24, 40, 0.03), 0px 12px 16px -4px rgba(16, 24, 40, 0.08)'
                 }}
