@@ -17,10 +17,10 @@
 //           View All
 //         </Button>
 //       </div>
-      
-//       <ServiceTable 
-//           items={services} 
-//           activeTab={activeTab} 
+
+//       <ServiceTable
+//           items={services}
+//           activeTab={activeTab}
 //           formatItemSlug={formatJobSlug}
 //         />
 //     </div>
@@ -35,7 +35,6 @@ import ServiceTable from '../../../../components/Tables/ServiceTable';
 import { useNavigate } from 'react-router-dom';
 
 const NewJobRequests = ({ services, activeTab, formatJobSlug, isProposalsTab, proposalLoading }) => {
-  
   const getHeaderTitle = () => {
     switch (activeTab) {
       case 'new':
@@ -50,10 +49,10 @@ const NewJobRequests = ({ services, activeTab, formatJobSlug, isProposalsTab, pr
         return 'Job Requests';
     }
   };
-  const navigate = useNavigate()
-  const handlenav = ()=>{
-    navigate("/artisan/find-jobs/listings")
-  }
+  const navigate = useNavigate();
+  const handlenav = () => {
+    navigate('/artisan/find-jobs/listings');
+  };
   const getViewAllPath = () => {
     switch (activeTab) {
       case 'proposals':
@@ -77,9 +76,9 @@ const NewJobRequests = ({ services, activeTab, formatJobSlug, isProposalsTab, pr
     // Show data in table format for all tabs
     if (services.length > 0) {
       return (
-        <ServiceTable 
-          items={services} 
-          activeTab={activeTab} 
+        <ServiceTable
+          items={services}
+          activeTab={activeTab}
           formatItemSlug={formatJobSlug}
           isProposalsTab={isProposalsTab}
           handlenav={handlenav}
@@ -92,25 +91,26 @@ const NewJobRequests = ({ services, activeTab, formatJobSlug, isProposalsTab, pr
       <div className="text-center py-10">
         <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
           <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 005.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9.172 16.172a4 4 0 005.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-1">
-          No {isProposalsTab ? 'proposals' : 'jobs'} available
-        </h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">No {isProposalsTab ? 'proposals' : 'jobs'} available</h3>
         <p className="text-gray-500">
-          {isProposalsTab 
-            ? 'You haven\'t sent any proposals yet. Browse available jobs to get started.' 
+          {isProposalsTab
+            ? "You haven't sent any proposals yet. Browse available jobs to get started."
             : 'There are currently no jobs available in this category. Please check back later.'}
         </p>
         {isProposalsTab && (
-          <Button
-            variant="primary"
-            to="/artisan/find-jobs"
-            className="mt-4"
-          >
-            Browse Jobs
-          </Button>
+          <div className="flex justify-center mt-4">
+            <Button variant="primary" to="/artisan/find-jobs">
+              Browse Jobs
+            </Button>
+          </div>
         )}
       </div>
     );
@@ -119,9 +119,7 @@ const NewJobRequests = ({ services, activeTab, formatJobSlug, isProposalsTab, pr
   return (
     <div className="font-inter bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
       <div className="px-6 py-5 border-b border-neu-light-1 flex items-center justify-between">
-        <h2 className="font-manrope text-xl font-semibold text-gray-900">
-          {getHeaderTitle()}
-        </h2>
+        <h2 className="font-manrope text-xl font-semibold text-gray-900">{getHeaderTitle()}</h2>
         <Button
           variant="secondary"
           to={getViewAllPath()}
@@ -132,7 +130,7 @@ const NewJobRequests = ({ services, activeTab, formatJobSlug, isProposalsTab, pr
           View All
         </Button>
       </div>
-      
+
       {renderContent()}
     </div>
   );
