@@ -83,12 +83,13 @@ const ServiceTable = ({
   actionButton,
   containerClassName = "",
   showLocation = false,
+  handlenav
 }) => {
   
   // Determine if this is for new job requests
   const isArtisanRoute = location.pathname.startsWith('/artisan');
   const isMyJobs = location.pathname.includes('/my-jobs')
-  
+  console.log("this is items", items)
   return (
     <div className={`overflow-x-auto font-inter font-medium ${containerClassName}`}>
       <table className="min-w-full divide-y divide-neu-light-1">
@@ -162,16 +163,16 @@ const ServiceTable = ({
                       <div
                         className={`h-full w-full flex items-center justify-center font-medium text-white ${getColorFromString(isArtisanRoute ? item.customer : item.artisan)}`}
                       >
-                        {isArtisanRoute 
-                          ? (item.customer ? item.customer.charAt(0).toUpperCase() : 'C')
-                          : (item.artisan ? item.artisan.charAt(0).toUpperCase() : 'A')
-                        }
+                        {/* {isArtisanRoute 
+                          ? (item?.customer ? item?.customer?.charAt(0)?.toUpperCase() : 'C')
+                          : (item?.artisan ? item?.artisan?.charAt(0)?.toUpperCase() : 'A')
+                        } */}
                       </div>
                     )}
                   </div>
                   <div className="">
                     <div className="font-medium text-gray-900">
-                      {isArtisanRoute ? item.customer : item.artisan}
+                      {/* {isArtisanRoute ? item.customer : item.artisan} */}
                     </div>
                   </div>
                 </div>
@@ -187,8 +188,20 @@ const ServiceTable = ({
                 </td>
               )}
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-gray-900">{item.postedAt || item.date}</div>
-                <div className="text-xs text-neu-dark-1">{item.time}</div>
+                <div className="text-gray-900">
+                  {item.postedAt ? new Date(item.postedAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short', 
+                    day: 'numeric'
+                  }) : item.date || 'N/A'}
+                </div>
+                <div className="text-xs text-neu-dark-1">
+                  {item.postedAt ? new Date(item.postedAt).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  }) : item.time || 'N/A'}
+                </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end gap-3">

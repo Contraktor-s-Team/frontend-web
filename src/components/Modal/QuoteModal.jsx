@@ -142,7 +142,10 @@ export default function QuoteModal({
       console.log('Submitting proposal:', proposalData);
 
       // Call the postProposal action
-      await postProposal(proposalData, ()=>{}, (errors) => {
+      await postProposal(proposalData, ()=>{
+        // Show success toast instead of alert
+        setShowSuccessToast(true);
+      }, (errors) => {
         console.error('Proposal submission errors:', errors);
         // Handle errors here
         alert('Failed to submit proposal. Please try again.');
@@ -157,8 +160,7 @@ export default function QuoteModal({
       
       setIsOpen(false);
       
-      // Show success toast instead of alert
-      setShowSuccessToast(true);
+      
 
     } catch (error) {
       console.error('Error submitting proposal:', error);
@@ -208,7 +210,18 @@ export default function QuoteModal({
                 <p className="text-sm text-gray-600">
                   Please read requirements and breakdown so that we can negotiate cost on fair
                 </p>
-
+                {job?.budget!=null?(
+                   <div class="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
+                    <span class="text-[#005790]">Customer Budget: </span>
+                    <span class="font-bold text-[#005790]"> {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(job?.budget || 0)}</span>
+                  </div>
+                ):(
+                  <div class="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
+                    <span class="text-[#005790]">Consultation Fee: </span>
+                    <span class="font-bold text-[#005790]">₦18,000</span>
+                  </div>
+                )}
+               
                 {/* Top Estimated Cost */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">

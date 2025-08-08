@@ -6,10 +6,12 @@ import { GoStarFill } from 'react-icons/go';
 import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
 import { connect } from 'react-redux';
-import { jobIdAction } from '../../../redux/Jobs/JobsAction';
+import { deleteJobAction, jobIdAction } from '../../../redux/Jobs/JobsAction';
 import { jobProposalAction, negotiateAction, negotiateProposalAction } from '../../../redux/Proposals/ProposalAction';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
 import SuccessModal from '../../../components/Modal/SuccessModal'; 
+import ConfirmationModal from '../../../components/Modal/ComfirmationModal';
+import SuccessPopup from '../../../components/Modal/SuccessPopup';
 
 const JobDetails = ({
   getJobId,
@@ -23,7 +25,11 @@ const JobDetails = ({
   getNegotiations,        
   negotiations,          
   negotiationsLoading,
-  negotiationsError
+  negotiationsError,
+  deleteJob,
+  deleteLoading,
+  deleteSuccess,
+  deleteError,
 }) => {
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
@@ -36,6 +42,8 @@ const JobDetails = ({
   const [selectedProposal, setSelectedProposal] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [modalError, setModalError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   // Handle star click
   const handleStarClick = (star) => {
     if (star === rating) {
@@ -69,6 +77,40 @@ const JobDetails = ({
     getNegotiations(proposal.id);
     setIsOpen(true)
   };
+
+  const handleDeleteJob = () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteJob = () => {
+    deleteJob(jobId,()=>{
+      setShowDeleteModal(false);
+      setShowSuccessPopup(true);
+      navigate('/customer/jobs/posted');
+    });
+  };
+
+  // Handle delete success
+  useEffect(() => {
+    if (deleteSuccess) {
+      // setShowDeleteModal(false);
+      // setShowSuccessPopup(true);
+      
+      // // Navigate after showing success message
+      // setTimeout(() => {
+      //   navigate('/customer/jobs/posted');
+      // }, 2000);
+    }
+  }, [deleteSuccess]);
+
+  // Handle delete error
+  useEffect(() => {
+    if (deleteError) {
+      setShowDeleteModal(false);
+      // You can show an error toast here if you have one
+      console.error('Failed to delete job:', deleteError);
+    }
+  }, [deleteError]);
   if (loading) {
     return <div className="p-6">Loading job details...</div>;
   }
@@ -111,7 +153,13 @@ const JobDetails = ({
             <Button variant="secondary" rightIcon={<Pencil size={20} />}>
               Edit Job
             </Button>
-            <Button variant="grey-sec">Cancel Job</Button>
+             <Button 
+              variant="grey-sec" 
+              onClick={handleDeleteJob}
+              disabled={deleteLoading}
+            >
+              {deleteLoading ? 'Deleting...' : 'Delete Job'}
+            </Button>
           </div>
         )}
 
@@ -445,6 +493,24 @@ const JobDetails = ({
         currentUserId={userData?.id}// Replace with actual current user ID from Redux
         currentUserRole="User" // Replace with actual current user role from Redux
       />  
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDeleteJob}
+        title="Delete Job"
+        message="Are you sure you want to delete this job? This action cannot be undone and will remove all associated proposals."
+        confirmText="Delete Job"
+        cancelText="Cancel"
+        isLoading={deleteLoading}
+      />
+
+      {showSuccessPopup && (
+        <SuccessPopup
+          message="Job deleted successfully!"
+          isVisible={showSuccessPopup}
+          onClose={() => setShowSuccessPopup(false)}
+        />
+      )}
     </div>
   );
 };
@@ -459,12 +525,16 @@ const mapStoreToProps = (state) => {
     negotiations: state?.negotiate?.data,           
     negotiationsLoading: state?.negotiate?.loading,
     negotiationsError: state?.negotiateProposal?.error,
+    deleteLoading: state?.deleteJob?.loading,
+    deleteSuccess: state?.deleteJob?.data?.isSuccess,
+    deleteError: state?.deleteJob?.error,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getJobId: (id) => dispatch(jobIdAction(id)),
+    deleteJob: (id, history) => dispatch(deleteJobAction(id, history)),
     getJobProposals: (id) => dispatch(jobProposalAction(id)),
     negotiateProposal: (id, postState, history, errors) => dispatch(negotiateProposalAction(id, postState, history, errors)),
     getNegotiations: (proposalId) => dispatch(negotiateAction(proposalId)),
