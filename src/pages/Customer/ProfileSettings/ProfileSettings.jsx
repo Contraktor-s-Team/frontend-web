@@ -13,7 +13,7 @@ const tabComponents = {
   addressLocation: AddressLocation,
   securityLogin: SecurityAndLogin,
   notifications: Notifications,
-  paymentSettings: PaymentSettings,
+  paymentSettings: PaymentSettings
 };
 
 const ProfileSettings = () => {
@@ -24,16 +24,16 @@ const ProfileSettings = () => {
     { id: 'addressLocation', label: 'Address & Location' },
     { id: 'securityLogin', label: 'Security & Login' },
     { id: 'notifications', label: 'Notifications' },
-    { id: 'paymentSettings', label: 'Payment Settings' },
+    { id: 'paymentSettings', label: 'Payment Settings' }
   ];
 
   const ActiveComponent = tabComponents[activeTab];
 
   return (
-    <div className='font-inter font-medium'>
-      <h1 className="font-manrope text-2xl font-semibold text-gray-900">Profile & Settings</h1>
+    <div className="font-inter font-medium px-2 sm:px-4 md:px-8">
+      <h1 className="font-manrope text-2xl font-semibold text-gray-900 mb-4">Profile & Settings</h1>
 
-      <div className="w-full max-w-236.25">
+      <div className="w-full max-w-full md:max-w-4xl">
         <TabNav
           tabs={tabs}
           activeTab={activeTab}
@@ -42,7 +42,7 @@ const ProfileSettings = () => {
         />
       </div>
 
-      <div className="mt-8">
+      <div className="mt-6 md:mt-8">
         <ActiveComponent />
       </div>
     </div>

@@ -3,7 +3,7 @@ import { MapPin, Bell, ChevronDown, Search } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import TextInput from '../Form/TextInput';
 import Button from '../Button/Button';
-import avatar from '/img/avatar1.jpg';
+import avatar from '/img/avatarnew.png';
 
 const TopBar = ({ logout, userType = 'customer', data }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -11,29 +11,30 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
   const [userLocation] = useState('Ikeja GRA, Lagos');
   const location = useLocation();
 
-
   return (
-    <header className="font-inter bg-white border-b border-gray-100 px-6 py-5">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        {/* Search Bar */}
-        <div className="w-full sm:max-w-md">
+    <header className="font-inter bg-white border-b border-gray-100 px-2 sm:px-4 md:px-6 py-4 sm:py-5">
+      <div className="flex w-full items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 justify-between">
+        {/* Search Bar aligned left */}
+        <div className="w-full max-w-full sm:w-72 md:w-96 lg:w-[420px]">
           <TextInput
-            placeholder={userType === 'artisan' ? 'Search for jobs, clients, etc' : 'Search for artisans, services, etc'}
+            placeholder={
+              userType === 'artisan' ? 'Search for jobs, clients, etc' : 'Search for artisans, services, etc'
+            }
             leadingIcon={<Search className="h-4 w-4 text-gray-400" />}
             className="w-full"
             inputClassName="pr-10 rounded-full"
           />
         </div>
-
-        <div className="flex items-center gap-9 w-full sm:w-auto">
-            <div className="">
-              <Button variant="secondary" leftIcon={<MapPin size={20} />} className='px-4 py-3.5'>
-                {userLocation}
-              </Button>
-            </div>
-
-          {/* Notifications */}
-          <div className="relative">
+        {/* Right group: location, notification, profile */}
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8">
+          <Button
+            variant="secondary"
+            className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3.5 text-xs sm:text-base"
+          >
+            <MapPin size={20} />
+            <span className="hidden sm:inline">{userLocation}</span>
+          </Button>
+          <div className="relative flex-shrink-0">
             <Link
               to={`/${userType}/notifications`}
               state={{ backgroundLocation: location }}
@@ -48,28 +49,22 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
               )}
             </Link>
           </div>
-
-          {/* Profile Dropdown */}
-          <div className="relative">
+          <div className="relative flex-shrink-0">
             <button
-              className="flex items-center justify-between gap-2 p-1.5 w-[269px] pr-2 rounded-lg bg-gray-200 hover:bg-gray-300 focus:outline-none transition-colors"
+              className="flex items-center p-1.5 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none transition-colors"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
+              style={{ minWidth: '40px', minHeight: '40px' }}
             >
-              <div className="flex items-center gap-4">
-                <img className="h-8 w-8 rounded-full border border-gray-200" src={avatar} alt="User avatar" />
-                <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium text-gray-900 leading-tight">
-                    {data?.data?.firstName || "User"} {data?.data?.lastName || "User"}
-                  </p>
-                  <p className="text-xs text-gray-500 leading-tight">{data?.data?.email}</p>
-                </div>
-              </div>
-
-              <ChevronDown
-                className={`h-4 w-4 text-gray-400 transition-transform ${isProfileOpen ? 'transform rotate-180' : ''}`}
+              <img
+                className="h-8 w-8 min-w-[2rem] min-h-[2rem] rounded-full border border-gray-200 object-cover"
+                src={data?.data?.imageUrl || avatar}
+                alt="User avatar"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = avatar;
+                }}
               />
             </button>
-
             {/* Dropdown menu */}
             {isProfileOpen && (
               <div
@@ -79,11 +74,16 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
                 }}
               >
                 <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">{data?.data?.firstName || "User"} {data?.data?.lastName || "User"}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {data?.data?.firstName || 'User'} {data?.data?.lastName || 'User'}
+                  </p>
                   <p className="text-xs text-gray-500 mt-1">{data?.data?.email}</p>
                 </div>
                 <div className="py-1">
-                  <a href={`/${userType}/profile&settings`} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <a
+                    href={userType === 'artisan' ? '/artisan/profile&settings' : '/customer/profile&settings'}
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
                     <svg className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
@@ -94,26 +94,9 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
                     </svg>
                     Profile
                   </a>
-                  <a href={`/${userType}/profile&settings/paymentSettings`} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                    <svg className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                    Settings
-                  </a>
                 </div>
-                <div className="py-1 border-t border-gray-100" onClick={()=> logout()}>
-                  <a href="#" className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-50" >
+                <div className="py-1 border-t border-gray-100" onClick={() => logout()}>
+                  <a href="#" className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
                     <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"

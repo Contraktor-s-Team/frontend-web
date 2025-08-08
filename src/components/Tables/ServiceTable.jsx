@@ -6,23 +6,23 @@ import { HiOutlineCalendar } from 'react-icons/hi';
 import { BsCircleFill } from 'react-icons/bs';
 
 // Status Badge component that can be reused
-export const StatusBadge = ({ status }) => {
+export const StatusBadge = ({ status, isArtisanRoute }) => {
   if (status === 'Completed') {
     return (
       <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-success-light-1 text-success-dark-1">
         {status}
       </div>
     );
-  } 
-  
+  }
+
   if (status === 'Cancelled') {
     return (
       <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-err-light-1 text-err-dark-1">
         {status}
       </div>
     );
-  } 
-  
+  }
+
   if (status === 'Pending') {
     return (
       <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-warning-light-1 text-warning-dark-1">
@@ -30,8 +30,8 @@ export const StatusBadge = ({ status }) => {
         {status}
       </div>
     );
-  } 
-  
+  }
+
   if (status === 'Quotes Received') {
     return (
       <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-pri-light-1 text-pri-dark-1">
@@ -39,8 +39,8 @@ export const StatusBadge = ({ status }) => {
         {status}
       </div>
     );
-  } 
-  
+  }
+
   if (status === 'Awaiting Quotes') {
     return (
       <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-warning-light-1 text-warning-dark-1">
@@ -48,8 +48,8 @@ export const StatusBadge = ({ status }) => {
         {status}
       </div>
     );
-  } 
-  
+  }
+
   if (status === 'Scheduled') {
     return (
       <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-pri-light-1 text-pri-dark-1">
@@ -57,8 +57,8 @@ export const StatusBadge = ({ status }) => {
         {status}
       </div>
     );
-  } 
-  
+  }
+
   if (status === 'In Progress') {
     return (
       <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-warning-light-1 text-warning-dark-1">
@@ -66,51 +66,53 @@ export const StatusBadge = ({ status }) => {
       </div>
     );
   }
-  
+
   // Default case for new job requests (no status)
   return (
     <div className="inline-flex items-center gap-2 px-4 py-[10px] rounded-full font-medium bg-neu-light-1 text-neu-dark-1">
-      New Request
+      {isArtisanRoute ? 'New Request' : 'New Listing'}
     </div>
   );
 };
 
-const ServiceTable = ({ 
-  items = [], 
-  onRowClick, 
-  activeTab, 
+const ServiceTable = ({
+  items = [],
+  onRowClick,
+  activeTab,
   formatItemSlug = (title) => title,
   actionButton,
-  containerClassName = "",
+  containerClassName = '',
   showLocation = false,
   handlenav
 }) => {
-  
   // Determine if this is for new job requests
   const isArtisanRoute = location.pathname.startsWith('/artisan');
-  const isMyJobs = location.pathname.includes('/my-jobs')
-  console.log("this is items", items)
+  const isMyJobs = location.pathname.includes('/my-jobs');
+  console.log('this is items', items);
   return (
-    <div className={`overflow-x-auto font-inter font-medium ${containerClassName}`}>
-      <table className="min-w-full divide-y divide-neu-light-1">
+    <div className={`w-full overflow-x-auto font-inter font-medium ${containerClassName}`}>
+      <table
+        className="min-w-[600px] sm:min-w-full divide-y divide-neu-light-1 text-xs sm:text-sm"
+        style={{ tableLayout: 'auto' }}
+      >
         <thead className="bg-neu-light-1">
-          <tr className="h-12">
+          <tr className="h-10 sm:h-12">
             <th
               scope="col"
-              className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
+              className="px-2 sm:px-4 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider whitespace-nowrap"
             >
               {isMyJobs ? 'Job Title' : 'Service'}
             </th>
-            <th
+            {/* <th
               scope="col"
-              className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
+              className="px-2 sm:px-4 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider whitespace-nowrap"
             >
-              {isArtisanRoute ? "Customer" : "Artisan"}
-            </th>
+              {isArtisanRoute ? 'Customer' : 'Artisan'}
+            </th> */}
             {!showLocation && (
               <th
                 scope="col"
-                className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
+                className="px-2 sm:px-4 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider whitespace-nowrap"
               >
                 Status
               </th>
@@ -118,18 +120,18 @@ const ServiceTable = ({
             {showLocation && (
               <th
                 scope="col"
-                className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
+                className="px-2 sm:px-4 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider whitespace-nowrap"
               >
                 Location
               </th>
             )}
             <th
               scope="col"
-              className="px-6 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider"
+              className="px-2 sm:px-4 py-0 text-left text-xs font-medium text-neu-dark-1 uppercase tracking-wider whitespace-nowrap"
             >
               Date & Time
             </th>
-            <th scope="col" className="relative px-6 py-0">
+            <th scope="col" className="relative px-2 sm:px-4 py-0">
               <span className="sr-only">Actions</span>
             </th>
           </tr>
@@ -139,12 +141,12 @@ const ServiceTable = ({
             <tr
               key={item.id}
               className="hover:bg-gray-50 cursor-pointer"
-              onClick={() => onRowClick ? onRowClick(item, activeTab, formatItemSlug) : null}
+              onClick={() => (onRowClick ? onRowClick(item) : null)}
             >
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">{item.title || item.service}</div>
+              <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                <div className="text-xs sm:text-sm font-medium text-gray-900">{item.title || item.service}</div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              {/* <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
                 <div className="flex items-center gap-2">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                     {item.image || item.customerImage ? (
@@ -161,49 +163,57 @@ const ServiceTable = ({
                       </>
                     ) : (
                       <div
-                        className={`h-full w-full flex items-center justify-center font-medium text-white ${getColorFromString(isArtisanRoute ? item.customer : item.artisan)}`}
+                        className={`h-full w-full flex items-center justify-center font-medium text-white ${getColorFromString(
+                          isArtisanRoute ? item.customer : item.artisan
+                        )}`}
                       >
-                        {/* {isArtisanRoute 
+                        {isArtisanRoute 
                           ? (item?.customer ? item?.customer?.charAt(0)?.toUpperCase() : 'C')
                           : (item?.artisan ? item?.artisan?.charAt(0)?.toUpperCase() : 'A')
-                        } */}
+                        }
                       </div>
                     )}
                   </div>
                   <div className="">
                     <div className="font-medium text-gray-900">
-                      {/* {isArtisanRoute ? item.customer : item.artisan} */}
+                      {isArtisanRoute ? item.customer : item.artisan}
                     </div>
                   </div>
                 </div>
-              </td>
+              </td> */}
               {!showLocation && (
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <StatusBadge status={item.status} />
-                </td>
-              )} 
-              {showLocation && (
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900 truncate max-w-[200px]">{item.jobDetails.jobLocation.address}</div>
+                <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                  <StatusBadge status={item.status} isArtisanRoute={isArtisanRoute} />
                 </td>
               )}
-              <td className="px-6 py-4 whitespace-nowrap">
+              {showLocation && (
+                <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                  <div className="text-sm text-gray-900 truncate max-w-[200px]">
+                    {item.jobDetails.jobLocation.address}
+                  </div>
+                </td>
+              )}
+              <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
                 <div className="text-gray-900">
-                  {item.postedAt ? new Date(item.postedAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short', 
-                    day: 'numeric'
-                  }) : item.date || 'N/A'}
+                  {item.postedAt
+                    ? new Date(item.postedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })
+                    : item.date || 'N/A'}
                 </div>
                 <div className="text-xs text-neu-dark-1">
-                  {item.postedAt ? new Date(item.postedAt).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                  }) : item.time || 'N/A'}
+                  {item.postedAt
+                    ? new Date(item.postedAt).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                      })
+                    : item.time || 'N/A'}
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
                 <div className="flex items-center justify-end gap-3">
                   {actionButton ? (
                     actionButton(item)

@@ -40,19 +40,19 @@ const AddressLocation = () => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg">
+    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg">
       <div className="">
         {isEditing ? (
-          <div className="flex items-start gap-28">
-            <div className="w-full max-w-132 space-y-10">
-            <TextInput
-              className="text-sm"
-              label="Street Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Enter your street address"
-            />
+          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-20 lg:gap-28">
+            <div className="w-full max-w-full md:max-w-2xl space-y-6 md:space-y-10">
+              <TextInput
+                className="text-sm"
+                label="Street Address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="Enter your street address"
+              />
               <TextInput
                 className="text-sm"
                 label="City"
@@ -94,8 +94,8 @@ const AddressLocation = () => {
                 onChange={handleChange}
                 placeholder="Enter postal code"
               />
-            <div className="flex gap-4 pt-8">
-              {/* <Button 
+              <div className="flex flex-col sm:flex-row gap-4 pt-6 sm:pt-8">
+                {/* <Button 
                 onClick={() => {
                   setIsEditing(false);
                   navigate(-1);
@@ -105,27 +105,20 @@ const AddressLocation = () => {
               >
                 Cancel
               </Button> */}
-              <Button 
-                onClick={handleSave} 
-                variant="primary" 
-                className="px-6 py-3.25"
-              >
-                Save Changes
-              </Button>
-            </div>
-           
+                <Button onClick={handleSave} variant="primary" className="px-6 py-3.25">
+                  Save Changes
+                </Button>
+              </div>
             </div>
 
-            <div className="">
-          <Button 
-            variant="secondary"
-            className='w-92.5 capitalize py-4'
-            rightIcon={<Map />}
-            >set location on map</Button>
-        </div>
+            <div className="mt-6 md:mt-0">
+              <Button variant="secondary" className="w-full md:w-60 capitalize py-4" rightIcon={<Map />}>
+                set location on map
+              </Button>
+            </div>
           </div>
         ) : (
-          <div className="w-full max-w-132">
+          <div className="w-full max-w-full md:max-w-2xl">
             <InfoRow label="Street Address" value={formData.address} />
             <InfoRow label="City" value={formData.city} />
             <InfoRow label="State/Province" value={formData.state} />
