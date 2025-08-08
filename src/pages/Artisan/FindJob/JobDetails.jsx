@@ -138,7 +138,7 @@ const JobDetails = ({
       return (
         <div className="flex items-center gap-5">
           <Button variant="secondary" onClick={openQuoteModal} className="px-4 py-3.75">
-            Send Quote
+            Send Proposal
           </Button>
           <Button variant="destructive-sec" className="px-4 py-3.75">
             Report Issue
