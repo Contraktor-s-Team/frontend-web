@@ -17,6 +17,7 @@ const SearchFilters = ({
 }) => {
   const categoryOptions = [
     { value: '', label: 'Category' },
+    { value: 'mechanic', label: 'Mechanic' },
     { value: 'plumbing', label: 'Plumbing' },
     { value: 'ac-installation', label: 'AC Installation' },
     { value: 'painting', label: 'Painting' },

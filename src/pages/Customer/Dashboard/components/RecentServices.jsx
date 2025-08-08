@@ -4,7 +4,8 @@ import Button from '../../../../components/Button/Button';
 import ServiceTable from '../../../../components/Tables/ServiceTable';
 import { connect } from 'react-redux';
 import { jobAction } from '../../../../redux/Jobs/JobsAction';
-import { useNavigate, useParams } from 'react-router-dom';
+
+import {  Link, useNavigate, useParams } from 'react-router-dom';
 
 const services = [
   {
@@ -114,7 +115,8 @@ const RecentServices = ({
   return (
     <div className="font-inter bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
       <div className="px-6 py-5 border-b border-neu-light-1 flex items-center justify-between">
-        <h2 className="font-manrope text-xl font-semibold text-gray-900 capitalize">{activeTab} jobs</h2>
+        <h2 className="font-manrope text-xl font-semibold text-gray-900">Recent Job Listing</h2>
+        <Link to="/customer/jobs/ongoing">
         <Button
           variant="secondary"
           onClick={() => navigate(`/customer/jobs/${activeTab}`)}
@@ -123,6 +125,7 @@ const RecentServices = ({
         >
           View All
         </Button>
+        </Link>
       </div>
       {/* {allJobs?.length > 0 ? (
           <ServiceTable 

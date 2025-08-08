@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Search, Calendar, Plus, ChevronDown, AlertCircle } from 'lucide-react';
 import { Select, TextInput } from '../../../components/Form';
 import Button from '../../../components/Button/Button';
@@ -18,21 +18,178 @@ const MyJobs = ({
 }) => {
   const { tab: activeTab = 'posted' } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('status');
-  const [dateRange, setDateRange] = useState('date-range');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [jobsPerPage] = useState(5);
+  // State for filters - initialize from URL params
+  const [filters, setFilters] = useState({
+    searchTerm: searchParams.get('search') || '',
+    status: searchParams.get('status') || '',
+    dateRange: searchParams.get('dateRange') || '',
+    pageNumber: parseInt(searchParams.get('page')) || 1,
+    pageSize: parseInt(searchParams.get('pageSize')) || 10
+  });
 
-  // Update current page when URL changes
+  // Debounced search to avoid too many API calls
+  const [searchQuery, setSearchQuery] = useState(filters.searchTerm);
+  const [debouncedSearch, setDebouncedSearch] = useState(filters.searchTerm);
+
+  // Debounce search input
   useEffect(() => {
-    setCurrentPage(1);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Update filters when debounced search changes
+  useEffect(() => {
+    if (debouncedSearch !== filters.searchTerm) {
+      handleFilterChange('searchTerm', debouncedSearch);
+    }
+  }, [debouncedSearch]);
+
+  // Sync URL params with filters
+  const updateUrlParams = useCallback((newFilters) => {
+    const params = new URLSearchParams();
+    
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value && value !== '' && value !== 'all' && value !== 'date-range') {
+        if (key === 'pageNumber') {
+          params.set('page', value.toString());
+        } else if (key === 'pageSize') {
+          params.set('pageSize', value.toString());
+        } else if (key === 'searchTerm') {
+          params.set('search', value);
+        } else {
+          params.set(key, value);
+        }
+      }
+    });
+
+    setSearchParams(params, { replace: true });
+  }, [setSearchParams]);
+
+  // Handle filter changes
+  const handleFilterChange = useCallback((filterName, value) => {
+    const newFilters = {
+      ...filters,
+      [filterName]: value,
+      // Reset to page 1 when filters change (except pagination)
+      ...(filterName !== 'pageNumber' && filterName !== 'pageSize' ? { pageNumber: 1 } : {})
+    };
+
+    setFilters(newFilters);
+    updateUrlParams(newFilters);
+  }, [filters, updateUrlParams]);
+
+  // Build filters for API call based on current tab and filters
+  const buildApiFilters = useCallback(() => {
+    const apiFilters = {
+      pageNumber: filters.pageNumber,
+      pageSize: filters.pageSize,
+    };
+
+    // Add search term if present
+    if (filters.searchTerm && filters.searchTerm.trim()) {
+      apiFilters.searchTerm = filters.searchTerm.trim();
+    }
+
+    // Map UI status to API status
+    if (filters.status && filters.status !== 'status') {
+      apiFilters.status = mapStatusToApi(filters.status);
+    }
+
+    // Handle date range
+    if (filters.dateRange && filters.dateRange !== 'date-range') {
+      const dateFilters = getDateRangeFilters(filters.dateRange);
+      Object.assign(apiFilters, dateFilters);
+    }
+
+    // Add tab-specific filters if needed
+    const tabFilters = getTabSpecificFilters(activeTab);
+    Object.assign(apiFilters, tabFilters);
+
+    return apiFilters;
+  }, [filters, activeTab]);
+
+  // Map UI status values to API status values
+  const mapStatusToApi = (uiStatus) => {
+    const statusMap = {
+      'in-progress': 'InProgress',
+      'completed': 'Completed',
+      'cancelled': 'Cancelled',
+      'pending': 'Pending',
+      'posted': 'Posted'
+    };
+    return statusMap[uiStatus] || uiStatus;
+  };
+
+  // Get date range filters
+  const getDateRangeFilters = (dateRange) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    switch (dateRange) {
+      case 'today':
+        return {
+          fromDate: today.toISOString(),
+          toDate: new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1).toISOString()
+        };
+      case 'week':
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        return {
+          fromDate: weekStart.toISOString(),
+          toDate: now.toISOString()
+        };
+      case 'month':
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        return {
+          fromDate: monthStart.toISOString(),
+          toDate: now.toISOString()
+        };
+      default:
+        return {};
+    }
+  };
+
+  // Get tab-specific filters (customize based on your API)
+  const getTabSpecificFilters = (tab) => {
+    const tabFilters = {
+      posted: { status: 'Posted' },
+      ongoing: { status: 'InProgress' },
+      scheduled: { status: 'Scheduled' },
+      pending: { status: 'Pending' },
+      completed: { status: 'Completed' },
+      cancelled: { status: 'Cancelled' }
+    };
+    
+    return tabFilters[tab] || {};
+  };
+
+  // Fetch jobs when filters change
+  useEffect(() => {
+    const apiFilters = buildApiFilters();
+    console.log('Fetching jobs with filters:', apiFilters);
+    getJob(apiFilters);
+  }, [buildApiFilters, getJob]);
+
+  // Reset filters when tab changes
+  useEffect(() => {
+    const resetFilters = {
+      searchTerm: '',
+      status: '',
+      dateRange: '',
+      pageNumber: 1,
+      pageSize: filters.pageSize
+    };
+    
+    setFilters(resetFilters);
+    setSearchQuery('');
+    setDebouncedSearch('');
+    updateUrlParams(resetFilters);
   }, [activeTab]);
-
-  useEffect(() => {
-    getJob();
-  }, []);
 
   // Format job title to URL-friendly slug
   const formatJobSlug = (title) => {
@@ -55,7 +212,7 @@ const MyJobs = ({
   const transformJobData = (apiJob) => {
     return {
       id: apiJob.id,
-      title: apiJob.title.trim(), // Remove any trailing whitespace
+      title: apiJob.title.trim(),
       description: apiJob.description,
       postedAt: formatDate(apiJob.postedAt),
       userId: apiJob.userId,
@@ -64,54 +221,36 @@ const MyJobs = ({
       subcategoryName: apiJob.subcategoryName || 'General',
       proposals: apiJob.proposals || [],
       proposalCount: apiJob.proposals?.length || 0,
-      // Add tab classification based on your business logic
-      tab: determineJobTab(apiJob),
-      // Add artisan field if needed by your table
-      artisan: apiJob.userFullName || 'N/A'
+      tab: activeTab, // Use current active tab
+      artisan: apiJob.userFullName || 'N/A',
+      status: apiJob.status
     };
   };
 
-  // Determine which tab a job belongs to based on its properties
-  const determineJobTab = (job) => {
-    // This is where you'd implement your business logic
-    // For now, we'll categorize based on proposals or other criteria
-    if (job.proposals && job.proposals.length > 0) {
-      return 'ongoing';
-    }
-    return 'posted'; // Default to posted if no proposals
+  // Get transformed jobs data
+  const transformedJobs = jobsData?.data?.map(transformJobData) || [];
+  const totalPages = jobsData?.totalPages || 0;
+  const totalRecords = jobsData?.totalRecords || 0;
+
+  console.log("Transformed Jobs:", transformedJobs);
+  console.log("Jobs Data:", jobsData);
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    handleFilterChange('pageNumber', pageNumber);
   };
 
-  // Get jobs from Redux store or fallback to empty array
-  const allJobs = jobsData
-    ? jobsData?.data?.map(transformJobData)
-    : [];
-
-  console.log("All Jobs:", allJobs);
-  // Filter jobs based on active tab and search query
-  const filteredJobs = allJobs?.filter((job) => {
-    const matchesCategory = job.tab.toLowerCase() === activeTab;
-    const matchesSearch =
-      searchQuery === '' ||
-      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.artisan.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  // Get current jobs for pagination
-  const indexOfLastJob = currentPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = filteredJobs?.slice(indexOfFirstJob, indexOfLastJob);
-
-  console.log("Current Jobs:", currentJobs);
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  // Handle page size change
+  const handlePageSizeChange = (newPageSize) => {
+    handleFilterChange('pageSize', newPageSize);
+    handleFilterChange('pageNumber', 1); // Reset to first page
+  };
 
   const tabs = [
     { id: 'posted', label: 'Posted Jobs' },
     { id: 'ongoing', label: 'Ongoing Jobs' },
     { id: 'scheduled', label: 'Scheduled Jobs' },
     { id: 'pending', label: 'Pending Jobs' },
-   
     { id: 'completed', label: 'Completed Jobs' },
     { id: 'cancelled', label: 'Cancelled Jobs' }
   ];
@@ -167,40 +306,45 @@ const MyJobs = ({
     );
   }
 
-  // // Error state
-  // if (error) {
-  //   return (
-  //     <div className="space-y-6">
-  //       <PageHeader
-  //         title="My Jobs"
-  //         subtitle="Manage your posted jobs and track their progress"
-  //         buttonText="Post a Job"
-  //         buttonVariant="secondary"
-  //         buttonHref="/customer/post-job/describe"
-  //         buttonIcon={<Plus size={18} />}
-  //       />
+  // Error state
+   const hasError = error && (
+    error.message || 
+    error.error || 
+    (typeof error === 'string' && error.length > 0)
+  );
+  if (hasError) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="My Jobs"
+          subtitle="Manage your posted jobs and track their progress"
+          buttonText="Post a Job"
+          buttonVariant="secondary"
+          buttonHref="/customer/post-job/describe"
+          buttonIcon={<Plus size={18} />}
+        />
 
-  //       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-  //         <div className="p-6 text-center">
-  //           <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
-  //           <h3 className="mt-2 text-sm font-medium text-gray-900">Error Loading Jobs</h3>
-  //           <p className="mt-1 text-sm text-gray-500">
-  //             {error.message || 'There was an error loading your jobs. Please try again.'}
-  //           </p>
-  //           <div className="mt-6">
-  //             <Button 
-  //               onClick={() => getJob()} 
-  //               variant="primary"
-  //               className="inline-flex items-center"
-  //             >
-  //               Try Again
-  //             </Button>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div className="p-6 text-center">
+            <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Error Loading Jobs</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {typeof error === 'string' ? error : 'There was an error loading your jobs. Please try again.'}
+            </p>
+            <div className="mt-6">
+              <Button 
+                onClick={() => getJob(buildApiFilters())} 
+                variant="primary"
+                className="inline-flex items-center"
+              >
+                Try Again
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -245,13 +389,15 @@ const MyJobs = ({
             <div className="flex gap-4">
               <div className="">
                 <Select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  value={filters.status || 'status'}
+                  onChange={(e) => handleFilterChange('status', e.target.value)}
                   options={[
-                    { value: 'status', label: 'Status' },
+                    { value: 'status', label: 'All Status' },
+                    { value: 'posted', label: 'Posted' },
                     { value: 'in-progress', label: 'In Progress' },
                     { value: 'completed', label: 'Completed' },
-                    { value: 'cancelled', label: 'Cancelled' }
+                    { value: 'cancelled', label: 'Cancelled' },
+                    { value: 'pending', label: 'Pending' }
                   ]}
                   trailingIcon={<ChevronDown className="h-5 w-5 text-gray-400" />}
                   className="text-sm rounded-full"
@@ -260,10 +406,10 @@ const MyJobs = ({
 
               <div className="">
                 <Select
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
+                  value={filters.dateRange || 'date-range'}
+                  onChange={(e) => handleFilterChange('dateRange', e.target.value)}
                   options={[
-                    { value: 'date-range', label: 'Date Range' },
+                    { value: 'date-range', label: 'All Dates' },
                     { value: 'today', label: 'Today' },
                     { value: 'week', label: 'This Week' },
                     { value: 'month', label: 'This Month' }
@@ -276,10 +422,12 @@ const MyJobs = ({
           </div>
         </div>
 
+        
+
         {/* Table or Empty State */}
-        {allJobs?.length > 0 ? (
+        {transformedJobs.length > 0 ? (
           <ServiceTable 
-            items={allJobs} 
+            items={transformedJobs} 
             onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.id)}`)}
             activeTab={activeTab} 
             formatItemSlug={formatJobSlug}
@@ -287,9 +435,9 @@ const MyJobs = ({
         ) : (
           <div className="p-6 text-center">
             <div className="text-gray-500">
-              {searchQuery ? (
+              {filters.searchTerm ? (
                 <>
-                  <p>No jobs found matching "{searchQuery}"</p>
+                  <p>No jobs found matching "{filters.searchTerm}"</p>
                   <p className="text-sm mt-1">Try adjusting your search criteria</p>
                 </>
               ) : (
@@ -302,16 +450,36 @@ const MyJobs = ({
           </div>
         )}
       </div>
-
+        {/* Results summary */}
+      {!loading && transformedJobs.length > 0 && (
+        <div className="px-4 py-3 border-b border-gray-200 text-sm text-gray-600">
+          Showing {((filters.pageNumber - 1) * filters.pageSize) + 1} to {Math.min(filters.pageNumber * filters.pageSize, totalRecords)} of {totalRecords} jobs
+        </div>
+      )}
       {/* Pagination - only show if there are jobs */}
-      {filteredJobs?.length > 0 && (
-        <div className="">
+      {transformedJobs.length > 0 && totalPages > 1 && (
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-700">Items per page:</span>
+            <Select
+              value={filters.pageSize.toString()}
+              onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
+              options={[
+                { value: '5', label: '5' },
+                { value: '10', label: '10' },
+                { value: '20', label: '20' },
+                { value: '50', label: '50' }
+              ]}
+              className="text-sm w-20"
+            />
+          </div>
+          
           <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(filteredJobs.length / jobsPerPage)}
-            totalResults={filteredJobs.length}
-            onPageChange={paginate}
-            resultsPerPage={jobsPerPage}
+            currentPage={filters.pageNumber}
+            totalPages={totalPages}
+            totalResults={totalRecords}
+            onPageChange={handlePageChange}
+            resultsPerPage={filters.pageSize}
           />
         </div>
       )}
@@ -330,7 +498,7 @@ const mapStoreToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getJob: () => dispatch(jobAction()),
+    getJob: (filters) => dispatch(jobAction(filters)),
   };
 };
 
