@@ -83,7 +83,7 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
                   <p className="text-xs text-gray-500 mt-1">{data?.data?.email}</p>
                 </div>
                 <div className="py-1">
-                  <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <a href={`/${userType}/profile&settings`} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                     <svg className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
@@ -94,7 +94,7 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
                     </svg>
                     Profile
                   </a>
-                  <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <a href={`/${userType}/profile&settings/paymentSettings`} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                     <svg className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"

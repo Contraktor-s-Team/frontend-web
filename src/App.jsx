@@ -87,7 +87,10 @@ const AppRoutes = () => {
             {/* Customer Routes */}
             <Route path="/customer" element={<CustomerLayout />}>
               <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<CustomerDashboard />} />
+              <Route path="dashboard">
+                <Route index element={<Navigate to="posted" replace />} />
+                <Route path=":tab" element={<CustomerDashboard />} />
+              </Route>
               <Route path="artisans">
                 <Route index element={<Navigate to="all" replace />} />
                 <Route path=":tab" element={<CustomerFindArtisans />} />
