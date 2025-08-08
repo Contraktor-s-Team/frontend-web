@@ -50,12 +50,12 @@
 
 //   const saveFormData = async (e) => {
 //     // const { urls, types } = getFileData();
-//     // dispatch(updateJobData({ 
-//     //   jobTitle, 
-//     //   category, 
-//     //   description, 
-//     //   fileUrls: urls, 
-//     //   fileTypes: types 
+//     // dispatch(updateJobData({
+//     //   jobTitle,
+//     //   category,
+//     //   description,
+//     //   fileUrls: urls,
+//     //   fileTypes: types
 //     // }));
 //     setErrors(false)
 //     e.preventDefault();
@@ -93,7 +93,6 @@
 //     label: item.name
 //   }))
 
- 
 //   useEffect(() => {
 //     console.log("Fetching categories...");
 //     try {
@@ -162,7 +161,7 @@
 //           btnClassName="px-6 py-4"
 //         /> */}
 //         <Button
-//           variant="primary" 
+//           variant="primary"
 //           onClick={(e)=> saveFormData(e)}
 //           disabled={jobLoading}
 //         >
@@ -170,8 +169,8 @@
 //             <LoaderComp/>
 //           ) : (
 //             "Save & Continue"
-//           )}  
-         
+//           )}
+
 //         </Button>
 //       </div>
 //       </div>
@@ -185,7 +184,7 @@
 //         error: state?.category?.error,
 //         data: state?.category?.data,
 //         subcategoryLoading: state?.subcategory?.loading,
-//         subcategoryError: state?.subcategory?.error,  
+//         subcategoryError: state?.subcategory?.error,
 //         subcategoryData: state?.subcategory?.data,
 //         jobDatas: state?.jobpost?.data,
 //         jobLoading: state?.jobpost?.loading,
@@ -200,7 +199,6 @@
 //     };
 // };
 // export default connect(mapStoreToProps, mapDispatchToProps)(DescribeJob);
-
 
 import React, { useEffect, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
@@ -218,12 +216,12 @@ const DescribeJob = ({
   data,
   subcategoryLoading,
   subcategoryError,
-  subcategoryData,
+  subcategoryData
 }) => {
   const dispatch = useDispatch();
   const jobData = useSelector((state) => state.jobPost);
   const navigate = useNavigate();
-  
+
   const [jobTitle, setJobTitle] = useState(jobData.jobTitle || '');
   const [category, setCategory] = useState(jobData.category || '');
   const [subcategory, setSubcategory] = useState(jobData.subcategory || '');
@@ -243,28 +241,30 @@ const DescribeJob = ({
   // CHANGE 1: Modified saveFormData to only save to Redux state, not submit to API
   const saveFormData = (e) => {
     e.preventDefault();
-    
+
     // Save all form data to Redux state for later submission
-    dispatch(updateJobData({ 
-      jobTitle, 
-      category, 
-      subcategory,
-      description, 
-      files, // Store actual files for later FormData creation
-      budgetType,
-      budgetAmount
-    }));
+    dispatch(
+      updateJobData({
+        jobTitle,
+        category,
+        subcategory,
+        description,
+        files, // Store actual files for later FormData creation
+        budgetType,
+        budgetAmount
+      })
+    );
 
     // Navigate to next step with current form data
-    navigate("/customer/post-job/time-location", { 
-      state: { 
+    navigate('/customer/post-job/time-location', {
+      state: {
         jobTitle,
-        description, 
-        subcategory, 
-        files, 
-        budgetType, 
-        budgetAmount 
-      } 
+        description,
+        subcategory,
+        files,
+        budgetType,
+        budgetAmount
+      }
     });
   };
 
@@ -274,11 +274,11 @@ const DescribeJob = ({
   }));
 
   useEffect(() => {
-    console.log("Fetching categories...");
+    console.log('Fetching categories...');
     try {
       getCategory();
     } catch (err) {
-      console.error("Error in useEffect:", err);
+      console.error('Error in useEffect:', err);
     }
   }, []);
 
@@ -289,10 +289,10 @@ const DescribeJob = ({
   }, [category]);
 
   return (
-    <div className="bg-white p-6">
-      <div className="max-w-[637px]">
+    <div className="bg-white p-4 sm:p-6">
+      <div className="max-w-full sm:max-w-[637px]">
         <h1 className="font-manrope text-2xl font-medium mb-8">What do you need done?</h1>
-        
+
         <JobDescriptionForm
           jobTitle={jobTitle}
           setJobTitle={setJobTitle}
@@ -305,10 +305,12 @@ const DescribeJob = ({
           categoryOptions={categoryOptions}
           subcategory={subcategory}
           setSubcategory={setSubcategory}
-          subcategoryOptions={subcategoryData?.data?.map(sub => ({
-            value: sub.id,
-            label: sub.name
-          })) || []}
+          subcategoryOptions={
+            subcategoryData?.data?.map((sub) => ({
+              value: sub.id,
+              label: sub.name
+            })) || []
+          }
           maxFiles={3}
           budgetType={budgetType}
           setBudgetType={setBudgetType}
@@ -318,11 +320,7 @@ const DescribeJob = ({
 
         {/* Navigation buttons */}
         <div className="mt-14">
-          <Button
-            variant="primary" 
-            onClick={(e) => saveFormData(e)}
-            disabled={!isFormValid()}
-          >
+          <Button variant="primary" onClick={(e) => saveFormData(e)} disabled={!isFormValid()}>
             Save & Continue
           </Button>
         </div>
@@ -337,15 +335,15 @@ const mapStoreToProps = (state) => {
     error: state?.category?.error,
     data: state?.category?.data,
     subcategoryLoading: state?.subcategory?.loading,
-    subcategoryError: state?.subcategory?.error,  
-    subcategoryData: state?.subcategory?.data,
+    subcategoryError: state?.subcategory?.error,
+    subcategoryData: state?.subcategory?.data
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getCategory: () => dispatch(categoryAction()),
-    getSubCategory: (id) => dispatch(subCategoryAction(id)),
+    getSubCategory: (id) => dispatch(subCategoryAction(id))
   };
 };
 

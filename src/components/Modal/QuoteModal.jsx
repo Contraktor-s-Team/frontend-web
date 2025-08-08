@@ -23,12 +23,8 @@ const SuccessPopup = ({ message, isVisible, onClose }) => {
             <CheckCircle className="h-5 w-5 text-green-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 font-inter">
-              Success
-            </p>
-            <p className="text-sm text-gray-600 font-inter mt-1">
-              {message}
-            </p>
+            <p className="text-sm font-medium text-gray-900 font-inter">Success</p>
+            <p className="text-sm text-gray-600 font-inter mt-1">{message}</p>
           </div>
           <div className="flex-shrink-0">
             <button
@@ -44,13 +40,7 @@ const SuccessPopup = ({ message, isVisible, onClose }) => {
   );
 };
 
-export default function QuoteModal({
-  isOpen,
-  setIsOpen,
-  job,
-  postProposal,
-  navigate
-}) {
+export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navigate }) {
   const [formData, setFormData] = useState({
     topEstimatedCost: '',
     costBreakdown: [{ name: '', amount: '' }],
@@ -61,7 +51,7 @@ export default function QuoteModal({
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value
     }));
@@ -70,14 +60,14 @@ export default function QuoteModal({
   const handleCostBreakdownChange = (index, field, value) => {
     const newCostBreakdown = [...formData.costBreakdown];
     newCostBreakdown[index][field] = value;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       costBreakdown: newCostBreakdown
     }));
   };
 
   const addCostItem = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       costBreakdown: [...prev.costBreakdown, { name: '', amount: '' }]
     }));
@@ -86,7 +76,7 @@ export default function QuoteModal({
   const removeCostItem = (index) => {
     if (formData.costBreakdown.length > 1) {
       const newCostBreakdown = formData.costBreakdown.filter((_, i) => i !== index);
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         costBreakdown: newCostBreakdown
       }));
@@ -104,15 +94,15 @@ export default function QuoteModal({
       return false;
     }
 
-    // Validate cost breakdown items
-    const validCostItems = formData.costBreakdown.filter(item => 
-      item.name.trim() && item.amount.trim()
-    );
+    // // Validate cost breakdown items
+    // const validCostItems = formData.costBreakdown.filter(item =>
+    //   item.name.trim() && item.amount.trim()
+    // );
 
-    if (validCostItems.length === 0) {
-      alert('Please add at least one cost breakdown item');
-      return false;
-    }
+    // if (validCostItems.length === 0) {
+    //   alert('Please add at least one cost breakdown item');
+    //   return false;
+    // }
 
     return true;
   };
@@ -126,30 +116,32 @@ export default function QuoteModal({
 
     try {
       // Filter out empty cost breakdown items
-      const validCostBreakdown = formData.costBreakdown.filter(item => 
-        item.name.trim() && item.amount.trim()
-      );
+      const validCostBreakdown = formData.costBreakdown.filter((item) => item.name.trim() && item.amount.trim());
 
       // Prepare the proposal data according to your API structure
       const proposalData = {
         jobId: job?.id,
         proposedPrice: formData.topEstimatedCost,
         // costBreakdown: validCostBreakdown,
-        message: formData.message,
+        message: formData.message
         // Add any other required fields based on your API
       };
 
       console.log('Submitting proposal:', proposalData);
 
       // Call the postProposal action
-      await postProposal(proposalData, ()=>{
-        // Show success toast instead of alert
-        setShowSuccessToast(true);
-      }, (errors) => {
-        console.error('Proposal submission errors:', errors);
-        // Handle errors here
-        alert('Failed to submit proposal. Please try again.');
-      });
+      await postProposal(
+        proposalData,
+        () => {
+          // Show success toast instead of alert
+          setShowSuccessToast(true);
+        },
+        (errors) => {
+          console.error('Proposal submission errors:', errors);
+          // Handle errors here
+          alert('Failed to submit proposal. Please try again.');
+        }
+      );
 
       // If successful, close modal and reset form
       setFormData({
@@ -157,11 +149,8 @@ export default function QuoteModal({
         costBreakdown: [{ name: '', amount: '' }],
         message: ''
       });
-      
-      setIsOpen(false);
-      
-      
 
+      setIsOpen(false);
     } catch (error) {
       console.error('Error submitting proposal:', error);
       alert('Failed to submit proposal. Please try again.');
@@ -210,27 +199,26 @@ export default function QuoteModal({
                 <p className="text-sm text-gray-600">
                   Please read requirements and breakdown so that we can negotiate cost on fair
                 </p>
-                {job?.budget!=null?(
-                   <div class="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
+                {job?.budget != null ? (
+                  <div class="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
                     <span class="text-[#005790]">Customer Budget: </span>
-                    <span class="font-bold text-[#005790]"> {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(job?.budget || 0)}</span>
+                    <span class="font-bold text-[#005790]">
+                      {' '}
+                      {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(job?.budget || 0)}
+                    </span>
                   </div>
-                ):(
+                ) : (
                   <div class="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
                     <span class="text-[#005790]">Consultation Fee: </span>
                     <span class="font-bold text-[#005790]">₦18,000</span>
                   </div>
                 )}
-               
+
                 {/* Top Estimated Cost */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Top Estimated Cost *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Top Estimated Cost *</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                       ₦
-                    </span>
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₦</span>
                     <input
                       type="text"
                       placeholder="₦0,000"
@@ -243,10 +231,8 @@ export default function QuoteModal({
                 </div>
 
                 {/* Cost Breakdown */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cost Breakdown
-                  </label>
+                {/* <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Cost Breakdown</label>
                   <div className="space-y-3">
                     {formData.costBreakdown.map((item, index) => (
                       <div key={index} className="grid grid-cols-2 gap-3">
@@ -260,7 +246,7 @@ export default function QuoteModal({
                         />
                         <div className="relative">
                           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
-                             ₦
+                            ₦
                           </span>
                           <input
                             type="text"
@@ -281,10 +267,10 @@ export default function QuoteModal({
                           )}
                         </div>
                       </div>
-                    ))}
-                    
-                    {/* Add Item Button */}
-                    <button
+                    ))} */}
+
+                {/* Add Item Button */}
+                {/* <button
                       onClick={addCostItem}
                       className="w-full py-2 border-2 border-dashed border-blue-300 text-blue-500 rounded-lg hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isSubmitting}
@@ -293,13 +279,11 @@ export default function QuoteModal({
                       Add Item
                     </button>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message for customer *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Message for customer *</label>
                   <textarea
                     placeholder="A short fair message into this brief on..."
                     value={formData.message}

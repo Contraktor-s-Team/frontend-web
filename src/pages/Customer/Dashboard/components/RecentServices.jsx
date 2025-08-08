@@ -4,8 +4,7 @@ import Button from '../../../../components/Button/Button';
 import ServiceTable from '../../../../components/Tables/ServiceTable';
 import { connect } from 'react-redux';
 import { jobAction } from '../../../../redux/Jobs/JobsAction';
-
-import {  Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 const services = [
   {
@@ -46,34 +45,23 @@ const services = [
   }
 ];
 
-
-
-const RecentServices = ({
-  services,
-  activeTab,
-  formatJobSlug,
-  // getJob,
-  // loading,
-  // jobsData,
-  // error,
-}) => {
+const RecentServices = ({ getJob, loading, jobsData, error }) => {
+  const { tab: activeTab = 'posted' } = useParams();
   const navigate = useNavigate();
-  // const { tab: activeTab = 'posted' } = useParams();
-  // const formatJobSlug = (title) => {
-  //   return title
-  //     .toLowerCase()
-  //     .replace(/\s+/g, '-')
-  //     .replace(/[^\w-]/g, '');
-  // };
+  const formatJobSlug = (title) => {
+    return title
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]/g, '');
+  };
 
-  // const formatDate = (dateString) => {
-  //   return new Date(dateString).toLocaleDateString('en-US', {
-  //     year: 'numeric',
-  //     month: 'short',
-  //     day: 'numeric'
-  //   });
-  // };
-
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   // const transformJobData = (apiJob) => {
   //   return {
@@ -94,62 +82,49 @@ const RecentServices = ({
   //   };
   // };
 
-  //  const determineJobTab = (job) => {
-  //   // This is where you'd implement your business logic
-  //   // For now, we'll categorize based on proposals or other criteria
-  //   if (job.proposals && job.proposals.length > 0) {
-  //     return 'ongoing';
-  //   }
-  //   return 'posted'; // Default to posted if no proposals
-  // };
+  const determineJobTab = (job) => {
+    // This is where you'd implement your business logic
+    // For now, we'll categorize based on proposals or other criteria
+    if (job.proposals && job.proposals.length > 0) {
+      return 'ongoing';
+    }
+    return 'posted'; // Default to posted if no proposals
+  };
 
-
-  // const allJobs = jobsData
-  // ? jobsData?.data?.map(transformJobData)
-  // : [];
+  const allJobs = jobsData ? jobsData?.data?.map(transformJobData) : [];
 
   // useEffect(() => {
   //   getJob();
   // }, []);
-  
+
   return (
     <div className="font-inter bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
       <div className="px-6 py-5 border-b border-neu-light-1 flex items-center justify-between">
         <h2 className="font-manrope text-xl font-semibold text-gray-900">Recent Job Listing</h2>
-        <Link to="/customer/jobs/ongoing">
-        <Button
-          variant="secondary"
-          onClick={() => navigate(`/customer/jobs/${activeTab}`)}
-          rightIcon={<ChevronRight size={20} />}
-          className=""
-        >
-          View All
-        </Button>
+        <Link to="/customer/jobs/posted">
+          <Button variant="secondary" to="/services" rightIcon={<ChevronRight size={20} />} className="">
+            View All
+          </Button>
         </Link>
       </div>
-      {/* {allJobs?.length > 0 ? (
-          <ServiceTable 
-            items={allJobs} 
-            // onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.id)}`)}
-            activeTab={activeTab}
-            formatItemSlug={formatJobSlug}
-          />
-        ) : (
-          <div className="p-6 text-center">
-            <div className="text-gray-500">
-              <>
-                <p>No job found</p>
-                <p className="text-sm mt-1">Jobs will appear here when available</p>
-              </>
-            </div>
+      {allJobs?.length > 0 ? (
+        <ServiceTable
+          items={allJobs}
+          onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${job.id}`)}
+          activeTab={activeTab}
+          formatItemSlug={formatJobSlug}
+        />
+      ) : (
+        <div className="p-6 text-center">
+          <div className="text-gray-500">
+            <>
+              <p>No job found</p>
+              <p className="text-sm mt-1">Jobs will appear here when available</p>
+            </>
           </div>
-        )} */}
-          <ServiceTable 
-            items={services} 
-            // onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.id)}`)}
-            activeTab={activeTab}
-            formatItemSlug={formatJobSlug}
-          />
+        </div>
+      )}
+      {/* <ServiceTable items={services} /> */}
     </div>
   );
 };
@@ -159,13 +134,13 @@ const mapStoreToProps = (state) => {
   return {
     loading: state?.jobs?.loading,
     jobsData: state?.jobs?.data,
-    error: state?.jobs?.error,
+    error: state?.jobs?.error
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getJob: () => dispatch(jobAction()),
+    getJob: () => dispatch(jobAction())
   };
 };
 
