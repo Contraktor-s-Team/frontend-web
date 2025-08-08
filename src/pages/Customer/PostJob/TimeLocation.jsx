@@ -15,6 +15,7 @@ const TimeLocation = () => {
   const navigate = useNavigate();
   const location = useLocation(); 
   const jobData = useSelector((state) => state.jobPost);
+  
   const [date, setDate] = useState(jobData.date);
   const [time, setTime] = useState(jobData.time);
   const [urgent, setUrgent] = useState(jobData.urgent);
@@ -83,7 +84,6 @@ const TimeLocation = () => {
     return date && 
            time && 
            formAddress.line1 && 
-           formAddress.line2 && 
            formAddress.city && 
            formAddress.postalCode && 
            formAddress.state;
@@ -157,32 +157,30 @@ const TimeLocation = () => {
         </div>
       </div>
 
-      {/* <WorkflowButtons
-        previousPath="/post-job/describe"
-        nextPath="/post-job/review"
-        onNext={(navigate) => {
+      {/* CHANGE: Updated navigation to pass all job data including files from Redux */}
+      <Button
+        variant="primary" 
+        onClick={() => {
           saveFormData();
-          if (isFormValid()) {
-            navigate();
-          }
+          navigate("/customer/post-job/review", { 
+            state: { 
+              jobData,
+              date,
+              time,
+              formAddress, 
+              data: { 
+                jobtitle: jobData.jobTitle, // Use Redux data
+                description: jobData.description // Use Redux data
+              }, 
+              file: jobData.files || [], // Use files from Redux
+              category: jobData.subcategory // Use Redux data
+            } 
+          });
         }}
-        onPrevious={(navigate) => {
-          // Just save form data before going back
-          saveFormData();
-          navigate();
-        }}
-        disableNext={!isFormValid()}
-        nextLabel="Save & Continue"
-        className="mt-14"
-        alignButtons="start"
-        btnClassName="px-6 py-4.25"
-      /> */}
-       <Button
-          variant="primary" 
-          onClick={()=> navigate("/customer/post-job/review", { state: { jobData,date,time,formAddress, data:{ jobtitle: location.state.jobTitle, description:location.state.description}, file: location.state.files, category:location.state.subcategory } })}
-        >,
-            "Save & Continue"
-        </Button>
+        disabled={!isFormValid()}
+      >
+        Save & Continue
+      </Button>
     </FormSection>
   );
 };

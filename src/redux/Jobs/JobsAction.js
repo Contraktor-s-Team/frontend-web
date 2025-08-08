@@ -1,5 +1,5 @@
 import axios from "axios"
-import { CATEGORY_FALIURE, CATEGORY_REQUEST, CATEGORY_SUCCESS, JOB_FALIURE, JOB_ID_FALIURE, JOB_ID_REQUEST, JOB_ID_SUCCESS, JOB_REQUEST, JOB_SUCCESS, POST_JOB_FALIURE, POST_JOB_REQUEST, POST_JOB_SUCCESS, SUBCATEGORY_FALIURE, SUBCATEGORY_REQUEST, SUBCATEGORY_SUCCESS } from "./JobsType"
+import { CATEGORY_FALIURE, CATEGORY_REQUEST, CATEGORY_SUCCESS, DELETE_JOB_FALIURE, DELETE_JOB_REQUEST, DELETE_JOB_SUCCESS, JOB_FALIURE, JOB_ID_FALIURE, JOB_ID_REQUEST, JOB_ID_SUCCESS, JOB_REQUEST, JOB_SUCCESS, POST_JOB_FALIURE, POST_JOB_REQUEST, POST_JOB_SUCCESS, SUBCATEGORY_FALIURE, SUBCATEGORY_REQUEST, SUBCATEGORY_SUCCESS } from "./JobsType"
 
 export const jobRequest=()=>{
     return{
@@ -38,6 +38,27 @@ export const postJobFaliure=(error)=>{
         payload: error
     }
 }
+
+
+export const deleteJobRequest=()=>{
+    return{
+        type:DELETE_JOB_REQUEST
+    }
+}
+export const deleteJobSuccess=(response)=>{
+    return{
+        type:DELETE_JOB_SUCCESS,
+        payload: response
+    }
+}
+
+export const deleteJobFaliure=(error)=>{
+    return{
+        type:DELETE_JOB_FALIURE,
+        payload: error
+    }
+}
+
 export const jobIdRequest=()=>{
     return{
         type:JOB_ID_REQUEST
@@ -95,22 +116,57 @@ export const subcategoryFaliure=(error)=>{
     }
 }
 const baseUrl = 'https://distrolink-001-site1.anytempurl.com/api/JobListing'
-export const jobAction = () =>{
+// export const jobAction = () =>{
+//     return async (dispatch) => {
+//         dispatch(jobRequest())
+//         let datas = JSON.parse(localStorage.getItem("auth"))
+//         await axios.get(`${baseUrl}/customer`,{headers: {
+//             Authorization: `Bearer ${datas?.token}`
+//         }})
+//         .then(response=>{
+//             const data = response.data;
+//             dispatch(jobSuccess(data))
+//         }).catch(error=>{
+//             dispatch(jobFaliure(error.response.data.message))
+//         })
+//     }
+// }
+export const jobAction = (filters = {}) => {
     return async (dispatch) => {
         dispatch(jobRequest())
-        let datas = JSON.parse(localStorage.getItem("auth"))
-        await axios.get(`${baseUrl}/customer`,{headers: {
-            Authorization: `Bearer ${datas?.token}`
-        }})
-        .then(response=>{
-            const data = response.data;
-            dispatch(jobSuccess(data))
-        }).catch(error=>{
-            dispatch(jobFaliure(error.response.data.message))
-        })
+        
+        try {
+            const datas = JSON.parse(localStorage.getItem("auth"))
+            
+            // Filter out undefined/null/empty values and build params
+            const validFilters = Object.entries(filters)
+                .filter(([key, value]) => {
+                    if (value === null || value === undefined || value === '') return false
+                    if (typeof value === 'string' && !value.trim()) return false
+                    return true
+                })
+                .reduce((acc, [key, value]) => {
+                    // Convert camelCase to PascalCase for API
+                    const apiKey = key.charAt(0).toUpperCase() + key.slice(1)
+                    acc[apiKey] = typeof value === 'string' ? value.trim() : value
+                    return acc
+                }, {})
+            
+            const response = await axios.get(`${baseUrl}/customer`, {
+                headers: {
+                    Authorization: `Bearer ${datas?.token}`
+                },
+                params: validFilters // Axios will handle URL encoding
+            })
+            
+            dispatch(jobSuccess(response.data))
+            
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || error.message || 'An error occurred'
+            dispatch(jobFaliure(errorMessage))
+        }
     }
 }
-
 
 export const jobIdAction = (id) =>{
     return async (dispatch) => {
@@ -124,6 +180,23 @@ export const jobIdAction = (id) =>{
             dispatch(jobIdSuccess(data))
         }).catch(error=>{
             dispatch(jobIdFaliure(error.response.data.message))
+        })
+    }
+}
+
+export const deleteJobAction = (id,history) =>{
+    return async (dispatch) => {
+        dispatch(deleteJobRequest())
+        let datas = JSON.parse(localStorage.getItem("auth"))
+        await axios.delete(`${baseUrl}/${id}`,{headers: {
+            Authorization: `Bearer ${datas?.token}`
+        }})
+        .then(response=>{
+            const data = response.data;
+            dispatch(deleteJobSuccess(data))
+            history()
+        }).catch(error=>{
+            dispatch(deleteJobFaliure(error.response.data.message))
         })
     }
 }
