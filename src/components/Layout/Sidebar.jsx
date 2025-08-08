@@ -1,21 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  Search, 
-  FileText, 
-  MessageSquareText, 
-  Headset, 
-  Banknote,
-  Disc,
-} from 'lucide-react';
+import { Home, Search, FileText, MessageSquareText, Headset, Banknote, Disc } from 'lucide-react';
 import logo from '../../assets/logo.png';
 
 const Sidebar = ({ userType = 'customer' }) => {
   const location = useLocation();
-  
+
   // Check if the current path starts with the given path to support nested routes
-  const isActive = path => {
+  const isActive = (path) => {
     if (path === '/') return location.pathname === path;
     return location.pathname.startsWith(path);
   };
@@ -44,15 +36,15 @@ const Sidebar = ({ userType = 'customer' }) => {
       notification: 1
     },
     {
-    icon: <Disc size={20} strokeWidth={isActive('/customer/profile') ? 2.5 : 2} />,
-    label: 'Profile & Settings',
-    path: '/customer/profile&settings'
-  },
-  // {
-  //   icon: <Headset size={20} strokeWidth={isActive('/customer/help') ? 2.5 : 2} />,
-  //   label: 'Help Centre',
-  //   path: '/customer/help'
-  // }
+      icon: <Disc size={20} strokeWidth={isActive('/customer/profile') ? 2.5 : 2} />,
+      label: 'Profile & Settings',
+      path: '/customer/profile&settings'
+    },
+    {
+      icon: <Headset size={20} strokeWidth={isActive('/customer/help') ? 2.5 : 2} />,
+      label: 'Help Centre',
+      path: '/customer/help'
+    }
   ];
 
   // Artisan specific navigation
@@ -87,7 +79,7 @@ const Sidebar = ({ userType = 'customer' }) => {
       icon: <Disc size={20} strokeWidth={isActive('/artisan/profile') ? 2.5 : 2} />,
       label: 'Profile & Settings',
       path: '/artisan/profile&settings'
-    },
+    }
     // {
     //   icon: <Headset size={20} strokeWidth={isActive('/artisan/help') ? 2.5 : 2} />,
     //   label: 'Help Centre',
@@ -98,7 +90,7 @@ const Sidebar = ({ userType = 'customer' }) => {
   // Use appropriate navigation items based on user type
   const navItems = userType === 'artisan' ? artisanNavItems : customerNavItems;
 
-  const renderNavItem = item => (
+  const renderNavItem = (item) => (
     <Link
       key={item.path}
       to={item.path}
@@ -138,7 +130,7 @@ const Sidebar = ({ userType = 'customer' }) => {
       {/* Responsive Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 h-20">
         <div className="flex justify-around items-center w-full h-full px-1 md:px-4">
-          {navItems.map(item => (
+          {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}

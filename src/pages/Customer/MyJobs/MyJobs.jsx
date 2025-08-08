@@ -10,12 +10,7 @@ import PageHeader from '../../../components/PageHeader/PageHeader';
 import { jobAction } from '../../../redux/Jobs/JobsAction';
 import { connect } from 'react-redux';
 
-const MyJobs = ({
-  getJob,
-  loading,
-  jobsData,
-  error
-}) => {
+const MyJobs = ({ getJob, loading, jobsData, error }) => {
   const { tab: activeTab = 'posted' } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,44 +45,50 @@ const MyJobs = ({
   }, [debouncedSearch]);
 
   // Sync URL params with filters
-  const updateUrlParams = useCallback((newFilters) => {
-    const params = new URLSearchParams();
-    
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value && value !== '' && value !== 'all' && value !== 'date-range') {
-        if (key === 'pageNumber') {
-          params.set('page', value.toString());
-        } else if (key === 'pageSize') {
-          params.set('pageSize', value.toString());
-        } else if (key === 'searchTerm') {
-          params.set('search', value);
-        } else {
-          params.set(key, value);
-        }
-      }
-    });
+  const updateUrlParams = useCallback(
+    (newFilters) => {
+      const params = new URLSearchParams();
 
-    setSearchParams(params, { replace: true });
-  }, [setSearchParams]);
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value && value !== '' && value !== 'all' && value !== 'date-range') {
+          if (key === 'pageNumber') {
+            params.set('page', value.toString());
+          } else if (key === 'pageSize') {
+            params.set('pageSize', value.toString());
+          } else if (key === 'searchTerm') {
+            params.set('search', value);
+          } else {
+            params.set(key, value);
+          }
+        }
+      });
+
+      setSearchParams(params, { replace: true });
+    },
+    [setSearchParams]
+  );
 
   // Handle filter changes
-  const handleFilterChange = useCallback((filterName, value) => {
-    const newFilters = {
-      ...filters,
-      [filterName]: value,
-      // Reset to page 1 when filters change (except pagination)
-      ...(filterName !== 'pageNumber' && filterName !== 'pageSize' ? { pageNumber: 1 } : {})
-    };
+  const handleFilterChange = useCallback(
+    (filterName, value) => {
+      const newFilters = {
+        ...filters,
+        [filterName]: value,
+        // Reset to page 1 when filters change (except pagination)
+        ...(filterName !== 'pageNumber' && filterName !== 'pageSize' ? { pageNumber: 1 } : {})
+      };
 
-    setFilters(newFilters);
-    updateUrlParams(newFilters);
-  }, [filters, updateUrlParams]);
+      setFilters(newFilters);
+      updateUrlParams(newFilters);
+    },
+    [filters, updateUrlParams]
+  );
 
   // Build filters for API call based on current tab and filters
   const buildApiFilters = useCallback(() => {
     const apiFilters = {
       pageNumber: filters.pageNumber,
-      pageSize: filters.pageSize,
+      pageSize: filters.pageSize
     };
 
     // Add search term if present
@@ -117,10 +118,10 @@ const MyJobs = ({
   const mapStatusToApi = (uiStatus) => {
     const statusMap = {
       'in-progress': 'InProgress',
-      'completed': 'Completed',
-      'cancelled': 'Cancelled',
-      'pending': 'Pending',
-      'posted': 'Posted'
+      completed: 'Completed',
+      cancelled: 'Cancelled',
+      pending: 'Pending',
+      posted: 'Posted'
     };
     return statusMap[uiStatus] || uiStatus;
   };
@@ -129,7 +130,7 @@ const MyJobs = ({
   const getDateRangeFilters = (dateRange) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
+
     switch (dateRange) {
       case 'today':
         return {
@@ -164,7 +165,7 @@ const MyJobs = ({
       completed: { status: 'Completed' },
       cancelled: { status: 'Cancelled' }
     };
-    
+
     return tabFilters[tab] || {};
   };
 
@@ -184,7 +185,7 @@ const MyJobs = ({
       pageNumber: 1,
       pageSize: filters.pageSize
     };
-    
+
     setFilters(resetFilters);
     setSearchQuery('');
     setDebouncedSearch('');
@@ -232,8 +233,8 @@ const MyJobs = ({
   const totalPages = jobsData?.totalPages || 0;
   const totalRecords = jobsData?.totalRecords || 0;
 
-  console.log("Transformed Jobs:", transformedJobs);
-  console.log("Jobs Data:", jobsData);
+  console.log('Transformed Jobs:', transformedJobs);
+  console.log('Jobs Data:', jobsData);
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
@@ -268,10 +269,10 @@ const MyJobs = ({
           buttonIcon={<Plus size={18} />}
         />
 
-        <TabNav 
-          tabs={tabs} 
-          activeTab={activeTab} 
-          basePath="/customer/jobs" 
+        <TabNav
+          tabs={tabs}
+          activeTab={activeTab}
+          basePath="/customer/jobs"
           navClassName="flex flex-wrap items-center justify-between"
         />
 
@@ -281,7 +282,7 @@ const MyJobs = ({
               {tabs.find((tab) => tab.id === activeTab)?.label}
             </h3>
           </div>
-          
+
           {/* Loading skeleton */}
           <div className="p-6">
             <div className="animate-pulse">
@@ -307,11 +308,7 @@ const MyJobs = ({
   }
 
   // Error state
-   const hasError = error && (
-    error.message || 
-    error.error || 
-    (typeof error === 'string' && error.length > 0)
-  );
+  const hasError = error && (error.message || error.error || (typeof error === 'string' && error.length > 0));
   if (hasError) {
     return (
       <div className="space-y-6">
@@ -332,11 +329,7 @@ const MyJobs = ({
               {typeof error === 'string' ? error : 'There was an error loading your jobs. Please try again.'}
             </p>
             <div className="mt-6">
-              <Button 
-                onClick={() => getJob(buildApiFilters())} 
-                variant="primary"
-                className="inline-flex items-center"
-              >
+              <Button onClick={() => getJob(buildApiFilters())} variant="primary" className="inline-flex items-center">
                 Try Again
               </Button>
             </div>
@@ -347,7 +340,7 @@ const MyJobs = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-2 sm:px-4 md:px-8">
       <PageHeader
         title="My Jobs"
         subtitle="Manage your posted jobs and track their progress"
@@ -358,23 +351,22 @@ const MyJobs = ({
       />
 
       {/* Tabs */}
-      <TabNav 
-        tabs={tabs} 
-        activeTab={activeTab} 
-        basePath="/customer/jobs" 
+      <TabNav
+        tabs={tabs}
+        activeTab={activeTab}
+        basePath="/customer/jobs"
         navClassName="flex flex-wrap items-center justify-between"
       />
 
       {/* Jobs Table */}
       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div className="flex items-center justify-between px-4 py-5 sm:px-6 border-b border-gray-200">
-          <h3 className="font-manrope text-xl leading-6 font-semibold text-gray-900">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-2 sm:px-4 py-5 sm:px-6 border-b border-gray-200">
+          <h3 className="font-manrope text-xl leading-6 font-semibold text-gray-900 mb-2 md:mb-0">
             {tabs.find((tab) => tab.id === activeTab)?.label}
           </h3>
-
           {/* Filters and Search */}
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="flex-1 w-[333px]">
+          <div className="flex flex-col sm:flex-row w-full md:w-auto gap-2 sm:gap-4">
+            <div className="w-full sm:w-[220px] md:w-[333px]">
               <TextInput
                 type="text"
                 placeholder="Search jobs..."
@@ -385,51 +377,43 @@ const MyJobs = ({
                 inputClassName="pr-6 rounded-full"
               />
             </div>
-
-            <div className="flex gap-4">
-              <div className="">
-                <Select
-                  value={filters.status || 'status'}
-                  onChange={(e) => handleFilterChange('status', e.target.value)}
-                  options={[
-                    { value: 'status', label: 'All Status' },
-                    { value: 'posted', label: 'Posted' },
-                    { value: 'in-progress', label: 'In Progress' },
-                    { value: 'completed', label: 'Completed' },
-                    { value: 'cancelled', label: 'Cancelled' },
-                    { value: 'pending', label: 'Pending' }
-                  ]}
-                  trailingIcon={<ChevronDown className="h-5 w-5 text-gray-400" />}
-                  className="text-sm rounded-full"
-                />
-              </div>
-
-              <div className="">
-                <Select
-                  value={filters.dateRange || 'date-range'}
-                  onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-                  options={[
-                    { value: 'date-range', label: 'All Dates' },
-                    { value: 'today', label: 'Today' },
-                    { value: 'week', label: 'This Week' },
-                    { value: 'month', label: 'This Month' }
-                  ]}
-                  trailingIcon={<Calendar className="h-5 w-5 text-gray-400" />}
-                  className="text-sm rounded-full"
-                />
-              </div>
+            <div className="flex gap-2 sm:gap-4 w-full sm:w-auto">
+              <Select
+                value={filters.status || 'status'}
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+                options={[
+                  { value: 'status', label: 'All Status' },
+                  { value: 'posted', label: 'Posted' },
+                  { value: 'in-progress', label: 'In Progress' },
+                  { value: 'completed', label: 'Completed' },
+                  { value: 'cancelled', label: 'Cancelled' },
+                  { value: 'pending', label: 'Pending' }
+                ]}
+                trailingIcon={<ChevronDown className="h-5 w-5 text-gray-400" />}
+                className="text-sm rounded-full w-full sm:w-auto"
+              />
+              <Select
+                value={filters.dateRange || 'date-range'}
+                onChange={(e) => handleFilterChange('dateRange', e.target.value)}
+                options={[
+                  { value: 'date-range', label: 'All Dates' },
+                  { value: 'today', label: 'Today' },
+                  { value: 'week', label: 'This Week' },
+                  { value: 'month', label: 'This Month' }
+                ]}
+                trailingIcon={<Calendar className="h-5 w-5 text-gray-400" />}
+                className="text-sm rounded-full w-full sm:w-auto"
+              />
             </div>
           </div>
         </div>
 
-        
-
         {/* Table or Empty State */}
         {transformedJobs.length > 0 ? (
-          <ServiceTable 
-            items={transformedJobs} 
-            onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${formatJobSlug(job.id)}`)}
-            activeTab={activeTab} 
+          <ServiceTable
+            items={transformedJobs}
+            onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${job.id}`)}
+            activeTab={activeTab}
             formatItemSlug={formatJobSlug}
           />
         ) : (
@@ -450,10 +434,11 @@ const MyJobs = ({
           </div>
         )}
       </div>
-        {/* Results summary */}
+      {/* Results summary */}
       {!loading && transformedJobs.length > 0 && (
         <div className="px-4 py-3 border-b border-gray-200 text-sm text-gray-600">
-          Showing {((filters.pageNumber - 1) * filters.pageSize) + 1} to {Math.min(filters.pageNumber * filters.pageSize, totalRecords)} of {totalRecords} jobs
+          Showing {(filters.pageNumber - 1) * filters.pageSize + 1} to{' '}
+          {Math.min(filters.pageNumber * filters.pageSize, totalRecords)} of {totalRecords} jobs
         </div>
       )}
       {/* Pagination - only show if there are jobs */}
@@ -473,7 +458,7 @@ const MyJobs = ({
               className="text-sm w-20"
             />
           </div>
-          
+
           <Pagination
             currentPage={filters.pageNumber}
             totalPages={totalPages}
@@ -492,13 +477,13 @@ const mapStoreToProps = (state) => {
   return {
     loading: state?.jobs?.loading,
     jobsData: state?.jobs?.data,
-    error: state?.jobs?.error,
+    error: state?.jobs?.error
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getJob: (filters) => dispatch(jobAction(filters)),
+    getJob: (filters) => dispatch(jobAction(filters))
   };
 };
 

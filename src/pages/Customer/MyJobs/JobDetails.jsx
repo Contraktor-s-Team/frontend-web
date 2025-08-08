@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { deleteJobAction, jobIdAction } from '../../../redux/Jobs/JobsAction';
 import { jobProposalAction, negotiateAction, negotiateProposalAction } from '../../../redux/Proposals/ProposalAction';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
-import SuccessModal from '../../../components/Modal/SuccessModal'; 
+import SuccessModal from '../../../components/Modal/SuccessModal';
 import ConfirmationModal from '../../../components/Modal/ComfirmationModal';
 import SuccessPopup from '../../../components/Modal/SuccessPopup';
 
@@ -22,14 +22,14 @@ const JobDetails = ({
   getJobProposals,
   proposals,
   negotiateProposal,
-  getNegotiations,        
-  negotiations,          
+  getNegotiations,
+  negotiations,
   negotiationsLoading,
   negotiationsError,
   deleteJob,
   deleteLoading,
   deleteSuccess,
-  deleteError,
+  deleteError
 }) => {
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
@@ -60,22 +60,22 @@ const JobDetails = ({
     getJobProposals(jobId);
   }, [jobId]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (data) {
       setJob(data);
     }
-  },[data]);
+  }, [data]);
 
   // Handle back navigation while preserving tab state
   const handleBack = () => {
     navigate(-1);
   };
-  console.log("Job not found for ID:", job);
+  console.log('Job not found for ID:', job);
 
   const openModal = (proposal) => {
     setSelectedProposal(proposal);
     getNegotiations(proposal.id);
-    setIsOpen(true)
+    setIsOpen(true);
   };
 
   const handleDeleteJob = () => {
@@ -83,7 +83,7 @@ const JobDetails = ({
   };
 
   const confirmDeleteJob = () => {
-    deleteJob(jobId,()=>{
+    deleteJob(jobId, () => {
       setShowDeleteModal(false);
       setShowSuccessPopup(true);
       navigate('/customer/jobs/posted');
@@ -95,7 +95,6 @@ const JobDetails = ({
     if (deleteSuccess) {
       // setShowDeleteModal(false);
       // setShowSuccessPopup(true);
-      
       // // Navigate after showing success message
       // setTimeout(() => {
       //   navigate('/customer/jobs/posted');
@@ -115,7 +114,7 @@ const JobDetails = ({
     return <div className="p-6">Loading job details...</div>;
   }
   if (!job) {
-    console.log("Job not found for ID:", job);
+    console.log('Job not found for ID:', job);
     return (
       <div className="p-6">
         <Button variant="destructive-sec" onClick={handleBack} leftIcon={<ArrowLeft size={20} />}>
@@ -153,11 +152,7 @@ const JobDetails = ({
             <Button variant="secondary" rightIcon={<Pencil size={20} />}>
               Edit Job
             </Button>
-             <Button 
-              variant="grey-sec" 
-              onClick={handleDeleteJob}
-              disabled={deleteLoading}
-            >
+            <Button variant="grey-sec" onClick={handleDeleteJob} disabled={deleteLoading}>
               {deleteLoading ? 'Deleting...' : 'Delete Job'}
             </Button>
           </div>
@@ -209,14 +204,16 @@ const JobDetails = ({
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span className="">scheduled date & time:</span>
               <span className="text-black">
-                {job?.postedAt ? new Date(job.postedAt).toLocaleString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: true,
-                }) : 'N/A'}
+                {job?.postedAt
+                  ? new Date(job.postedAt).toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true
+                    })
+                  : 'N/A'}
               </span>
             </p>
 
@@ -255,24 +252,24 @@ const JobDetails = ({
             </div>
 
             <div className="space-y-4.25">
-               {job?.jobDetails?.jobLocation?.address ? (
-                  <>
-                    <p className="font-medium">{job.jobDetails.jobLocation.address}</p>
-                    <Button
-                      variant="secondary"
-                      rightIcon={<Map size={20} />}
-                      onClick={() =>
-                        window.open(
-                          `https://www.google.com/maps/search/?api=1&query=${job.jobDetails.jobLocation.address}`,
-                          '_blank'
-                        )
-                      }
-                    >
-                      View on Map
-                    </Button>
-                  </>
-                ) : (
-                  <p className="text-sm text-gray-500 italic">No address provided</p>
+              {job?.jobDetails?.jobLocation?.address ? (
+                <>
+                  <p className="font-medium">{job.jobDetails.jobLocation.address}</p>
+                  <Button
+                    variant="secondary"
+                    rightIcon={<Map size={20} />}
+                    onClick={() =>
+                      window.open(
+                        `https://www.google.com/maps/search/?api=1&query=${job.jobDetails.jobLocation.address}`,
+                        '_blank'
+                      )
+                    }
+                  >
+                    View on Map
+                  </Button>
+                </>
+              ) : (
+                <p className="text-sm text-gray-500 italic">No address provided</p>
               )}
             </div>
           </div>
@@ -304,24 +301,28 @@ const JobDetails = ({
 
               <div className="h-0.25 bg-neu-light-3 my-5.5"></div>
 
-
               <div className=" space-y-6.5">
                 <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
                   <span className="">artisan name:</span>
                   <div className="flex items-center gap-2.5">
-                    <img src={job?.jobDetails?.artisanDetails?.image} alt="artisan" className="w-10 h-10 rounded-full" />
+                    <img
+                      src={job?.jobDetails?.artisanDetails?.image}
+                      alt="artisan"
+                      className="w-10 h-10 rounded-full"
+                    />
 
                     <div className="text-pri-dark-1">{job?.jobDetails?.artisanDetails?.name}</div>
-                    </div>
+                  </div>
                 </p>
                 <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
                   <span className="">rating:</span>
                   <div className="bg-neu-light-1 px-2.5 py-3 rounded-full flex items-center gap-2.5">
-                    <GoStarFill size={20} className='text-warning-norm-1' />
-                    <span className="text-black">{job?.proposals?.rating?.split(' ')[0]} <span className="text-neu-norm-2">{job?.proposals?.rating?.split(' ').slice(1).join(' ')}</span>
-                      
+                    <GoStarFill size={20} className="text-warning-norm-1" />
+                    <span className="text-black">
+                      {job?.proposals?.rating?.split(' ')[0]}{' '}
+                      <span className="text-neu-norm-2">{job?.proposals?.rating?.split(' ').slice(1).join(' ')}</span>
                     </span>
-                    </div>
+                  </div>
                 </p>
                 <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
                   <span className="">specialty:</span>
@@ -360,15 +361,13 @@ const JobDetails = ({
               <div className="bg-white rounded-xl p-7 h-fit">
                 {/* Header */}
                 <div className="mb-6">
-                  <h1 className="font-manrope text-xl font-semibold mb-2.5">Quotes</h1>
-                  <p className="text-neu-dark-1">
-                    You've received {proposals?.length || 0} quotes for this job
-                  </p>
+                  <h1 className="font-manrope text-xl font-semibold mb-2.5">Proposal(s)</h1>
+                  <p className="text-neu-dark-1">You've received {proposals?.length || 0} proposals for this job</p>
                 </div>
 
                 {/* No Quotes Message */}
-                {(!proposals || proposals?.length === 0) ? (
-                  <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Quotes yet</h3>
+                {!proposals || proposals?.length === 0 ? (
+                  <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Proposal yet</h3>
                 ) : (
                   <div className="space-y-4">
                     {proposals?.map((quote) => (
@@ -389,7 +388,9 @@ const JobDetails = ({
 
                           <div className="flex-1 space-y-4.25">
                             <div>
-                              <h3 className="font-semibold mb-1">{quote?.artisan?.firstName}  {quote?.artisan?.lastName}</h3>
+                              <h3 className="font-semibold mb-1">
+                                {quote?.artisan?.firstName} {quote?.artisan?.lastName}
+                              </h3>
                               <p className="text-neu-dark-1 text-sm mb-2">{quote?.category}</p>
                             </div>
 
@@ -400,7 +401,9 @@ const JobDetails = ({
 
                             <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
                               <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
-                              <span className="text-sm text-success-norm-3 font-medium">{quote?.availability ? quote?.availability : "always available"}</span>
+                              <span className="text-sm text-success-norm-3 font-medium">
+                                {quote?.availability ? quote?.availability : 'always available'}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -414,10 +417,14 @@ const JobDetails = ({
                         {/* Action Buttons */}
                         <div className="flex gap-4">
                           <Button variant="secondary" rightIcon={<Check size={20} />}>
-                            Accept Quote
+                            Accept Proposal
                           </Button>
-                          <Button variant="grey-sec" rightIcon={<MessageSquareText size={20} />} onClick={() => openModal(quote)}>
-                            Negotiate Quote
+                          <Button
+                            variant="grey-sec"
+                            rightIcon={<MessageSquareText size={20} />}
+                            onClick={() => openModal(quote)}
+                          >
+                            Negotiate Proposal
                           </Button>
                         </div>
                       </div>
@@ -481,18 +488,18 @@ const JobDetails = ({
         setIsOpen={setIsOpen}
         closeModal={() => {
           setIsOpen(false);
-          setSelectedProposal(null); 
+          setSelectedProposal(null);
         }}
         selectedProposal={selectedProposal}
         proposals={proposals}
         negotiateProposal={negotiateProposal}
-        negotiations={negotiations?.data || []}        // Pass negotiations from Redux state
-        negotiationsLoading={negotiationsLoading}     // Pass loading state
-        negotiateSuccess = {negotiations?.isSuccess}
-        errors = {negotiationsError}
-        currentUserId={userData?.id}// Replace with actual current user ID from Redux
+        negotiations={negotiations?.data || []} // Pass negotiations from Redux state
+        negotiationsLoading={negotiationsLoading} // Pass loading state
+        negotiateSuccess={negotiations?.isSuccess}
+        errors={negotiationsError}
+        currentUserId={userData?.id} // Replace with actual current user ID from Redux
         currentUserRole="User" // Replace with actual current user role from Redux
-      />  
+      />
       <ConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -522,12 +529,12 @@ const mapStoreToProps = (state) => {
     data: state?.singleJob?.data?.data,
     error: state?.singleJob?.error,
     proposals: state?.jobProposals?.data?.data,
-    negotiations: state?.negotiate?.data,           
+    negotiations: state?.negotiate?.data,
     negotiationsLoading: state?.negotiate?.loading,
     negotiationsError: state?.negotiateProposal?.error,
     deleteLoading: state?.deleteJob?.loading,
     deleteSuccess: state?.deleteJob?.data?.isSuccess,
-    deleteError: state?.deleteJob?.error,
+    deleteError: state?.deleteJob?.error
   };
 };
 
@@ -536,8 +543,9 @@ const mapDispatchToProps = (dispatch) => {
     getJobId: (id) => dispatch(jobIdAction(id)),
     deleteJob: (id, history) => dispatch(deleteJobAction(id, history)),
     getJobProposals: (id) => dispatch(jobProposalAction(id)),
-    negotiateProposal: (id, postState, history, errors) => dispatch(negotiateProposalAction(id, postState, history, errors)),
-    getNegotiations: (proposalId) => dispatch(negotiateAction(proposalId)),
+    negotiateProposal: (id, postState, history, errors) =>
+      dispatch(negotiateProposalAction(id, postState, history, errors)),
+    getNegotiations: (proposalId) => dispatch(negotiateAction(proposalId))
   };
 };
 export default connect(mapStoreToProps, mapDispatchToProps)(JobDetails);
