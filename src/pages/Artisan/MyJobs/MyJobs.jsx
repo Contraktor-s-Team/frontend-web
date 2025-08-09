@@ -45,16 +45,50 @@ const MyJobs = () => {
     fetchJobs();
   }, []);
 
-  console.log('All Jobs:', allJobs);
-  // Filter jobs based on active tab and search query
+  // Filter jobs based on active tab, search query, status, and date
   const filteredJobs = allJobs?.filter((job) => {
     const matchesCategory = job.tab === activeTab;
+    
     const matchesSearch =
       searchQuery === '' ||
-      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.customer.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+      (job.title && job.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (job.customer && job.customer.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesStatus = 
+      statusFilter === 'status' || 
+      (job.status && job.status.toLowerCase() === statusFilter.toLowerCase());
+    
+    const matchesDate = dateRange === 'date-range' || filterByDateRange(job.postedAt, dateRange);
+    
+    return matchesCategory && matchesSearch && matchesStatus && matchesDate;
   });
+
+  // Helper function for date filtering
+  const filterByDateRange = (dateString, range) => {
+    if (!dateString) return true;
+    
+    const jobDate = new Date(dateString);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    switch (range) {
+      case 'today':
+        return jobDate >= today;
+      case 'week':
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return jobDate >= weekAgo;
+      case 'month':
+        const monthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+        return jobDate >= monthAgo;
+      default:
+        return true;
+    }
+  };
+
+  // console.log('Active Tab:', activeTab);
+  // console.log('All Jobs:', allJobs);
+  // console.log('Filtered Jobs:', filteredJobs);
+  // console.log('Current Jobs:', currentJobs);
 
   // Get current jobs for pagination
   const indexOfLastJob = currentPage * jobsPerPage;
@@ -62,7 +96,7 @@ const MyJobs = () => {
   const currentJobs = filteredJobs?.slice(indexOfFirstJob, indexOfLastJob) || [];
   const totalFilteredJobs = filteredJobs?.length || 0;
 
-  console.log('Current Jobs:', currentJobs);
+
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -128,10 +162,7 @@ const MyJobs = () => {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="My Jobs"
-        subtitle="Manage your posted jobs and track their progress"
-      />
+      <PageHeader title="My Jobs" subtitle="Manage your posted jobs and track their progress" />
 
       {/* Tabs */}
       <TabNav
@@ -199,6 +230,7 @@ const MyJobs = () => {
         {/* Table or Empty State */}
         {allJobs?.length > 0 ? (
           <>
+
             <ServiceTable
               items={currentJobs}
               onRowClick={(job) => navigate(`/artisan/my-jobs/${activeTab}/${formatJobSlug(job.title)}`)}
@@ -226,18 +258,18 @@ const MyJobs = () => {
         )}
       </div>
 
-    {/* Pagination - only show if there are jobs */}
+      {/* Pagination - only show if there are jobs */}
       {filteredJobs?.length > jobsPerPage && (
-              <div className="mt-4">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={Math.ceil(totalFilteredJobs / jobsPerPage) || 1}
-                  totalResults={totalFilteredJobs}
-                  resultsPerPage={jobsPerPage}
-                  onPageChange={paginate}
-                />
-              </div>
-            )}
+        <div className="mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(totalFilteredJobs / jobsPerPage) || 1}
+            totalResults={totalFilteredJobs}
+            resultsPerPage={jobsPerPage}
+            onPageChange={paginate}
+          />
+        </div>
+      )}
     </div>
   );
 };

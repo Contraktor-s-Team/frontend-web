@@ -1,84 +1,3 @@
-// import React, { useEffect, useState } from 'react';
-// import DashboardHeader from './components/DashboardHeader';
-// import RecentServices from './components/NewJobRequests';
-// import { useLocation, useParams } from 'react-router-dom';
-// import TabNav from '../../../components/Navigation/TabNav';
-// import { connect, useSelector } from 'react-redux';
-// import { userAction, userEmailAction } from '../../../redux/User/UserAction';
-
-// const Dashboard = ({
-//   loading,
-//   error,
-//   data,
-//   getuser
-// }) => {
-//   const location = useLocation();
-//   const { tab: activeTab = 'new' } = useParams();
-//   const [services, setServices] = useState([]);
-//   const email = location?.state?.email;
-//   const userEmail = useSelector((state) => state.login.data?.email || state.user?.data?.email);
-//   useEffect(()=>{
-//     getuser();
-//   },[])
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const res = await fetch('/new-job-requests.json');
-//         if (!res.ok) {
-//           throw new Error('Failed to fetch services');
-//         }
-//         const data = await res.json();
-//         console.log(data);
-//         const filtedServices = data.filter((service) => service.category === activeTab);
-//         console.log(filtedServices);
-//         setServices(filtedServices);
-//       } catch (err) {
-//         console.error('Error:', err);
-//       }
-//     };
-
-//     fetchData();
-//   }, [activeTab]);
-
-//   const tabs = [
-//     { id: 'new', label: 'New Job Requests' },
-//     { id: 'in-progress', label: 'Jobs In Progress' },
-//     { id: 'today', label: "Today's Jobs" }
-//   ];
-  
-//   return (
-//     <>
-//       <DashboardHeader data={data}/>
-//       <TabNav 
-//         tabs={tabs} 
-//         activeTab={activeTab} 
-//         basePath="/artisan/dashboard" 
-//         navClassName="flex flex-wrap items-center gap-8 font-inter font-medium"
-//       />
-//       <div className="mt-8">
-//         <RecentServices services={services} activeTab={activeTab} />
-//       </div>
-//     </>
-//   );
-// };
-
-// const mapStoreToProps = (state) => {
-//   console.log(state)
-//     return {
-//         loading: state?.user?.loading,
-//         error: state?.user?.error,
-//         data: state?.user?.data,
-//     };
-// };
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         getuser: () => dispatch(userAction()),
-//     };
-// };
-
-
-// export default connect(mapStoreToProps, mapDispatchToProps)(Dashboard);
 import React, { useEffect, useState } from 'react';
 import DashboardHeader from './components/DashboardHeader';
 import RecentServices from './components/NewJobRequests';
@@ -223,16 +142,61 @@ const Dashboard = ({
     }
   }, [proposalData, fetchedJobDetails, proposalNegotiations, currentUserId, activeTab]);
 
-  // Original fetch for other tabs (keeping the structure but making them empty)
+  // Fetch data for other tabs
   useEffect(() => {
     if (activeTab !== 'proposals') {
       const fetchData = async () => {
         try {
-          // For non-proposal tabs, we'll just set empty services
-          // This ensures "no jobs available" message is shown
-          setServices([]);
+          const response = await fetch('/artisan-jobs.json');
+          const data = await response.json();
+          
+          let filteredData = [];
+          
+          // Filter data based on active tab
+          if (activeTab === 'new') {
+            filteredData = data.filter(job => job.tab === 'newRequests');
+          } else if (activeTab === 'in-progress') {
+            filteredData = data.filter(job => job.tab === 'ongoing' || job.status === 'In Progress');
+          } else if (activeTab === 'today') {
+            // Filter jobs for today's date
+            const today = new Date();
+            const todayString = today.toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric'
+            });
+            
+            filteredData = data.filter(job => {
+              // Check if job date matches today or if it's a scheduled/ongoing job for today
+              const jobDate = job.date;
+              const isToday = jobDate === todayString;
+              const isScheduledToday = job.tab === 'scheduled' && jobDate === todayString;
+              const isOngoingToday = job.tab === 'ongoing';
+              
+              return isToday || isScheduledToday || isOngoingToday;
+            });
+          }
+          
+          // Transform the data to match the expected format
+          const transformedData = filteredData.map(job => ({
+            ...job,
+            id: job.title + '_' + job.date, // Create unique ID
+            subcategoryName: job.category,
+            description: job.jobDetails?.jobDescription || 'Description unavailable',
+            customer: {
+              name: job.customer,
+              location: job.jobDetails?.customerDetails?.location || 'Location unavailable',
+              image: job.jobDetails?.customerDetails?.image
+            },
+            postedAt: job.date,
+            imageUrls: job.jobDetails?.attachedPhotos || [],
+            customerImage: job.jobDetails?.customerDetails?.image
+          }));
+          
+          setServices(transformedData);
         } catch (err) {
-          console.error('Error:', err);
+          console.error('Error fetching jobs:', err);
+          setServices([]);
         }
       };
 

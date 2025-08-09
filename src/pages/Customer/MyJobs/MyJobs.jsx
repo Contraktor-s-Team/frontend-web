@@ -435,12 +435,25 @@ const MyJobs = ({ getJob, loading, jobsData, error }) => {
         )}
       </div>
       {/* Results summary */}
+      {/* Results summary */}
       {!loading && transformedJobs.length > 0 && (
         <div className="px-4 py-3 border-b border-gray-200 text-sm text-gray-600">
-          Showing {(filters.pageNumber - 1) * filters.pageSize + 1} to{' '}
-          {Math.min(filters.pageNumber * filters.pageSize, totalRecords)} of {totalRecords} jobs
+          {(() => {
+            // Use API totalRecords if available, otherwise fallback to displayed jobs length
+            const totalRecordsSafe = jobsData?.totalRecords ?? transformedJobs.length;
+
+            const start = (filters.pageNumber - 1) * filters.pageSize + 1;
+            const end = Math.min(filters.pageNumber * filters.pageSize, totalRecordsSafe);
+
+            return (
+              <>
+                Showing {start} to {end} of {totalRecordsSafe} jobs
+              </>
+            );
+          })()}
         </div>
       )}
+
       {/* Pagination - only show if there are jobs */}
       {transformedJobs.length > 0 && totalPages > 1 && (
         <div className="flex justify-between items-center">

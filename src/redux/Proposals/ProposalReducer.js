@@ -1,4 +1,4 @@
-import { ARTISAN_PROPOSAL_FALIURE, ARTISAN_PROPOSAL_REQUEST, ARTISAN_PROPOSAL_SUCCESS, GET_NEGOTIATION_FALIURE, GET_NEGOTIATION_REQUEST, GET_NEGOTIATION_SUCCESS, JOB_PROPOSAL_FALIURE, JOB_PROPOSAL_REQUEST, JOB_PROPOSAL_SUCCESS, NEGOTIATE_PROPOSAL_FALIURE, NEGOTIATE_PROPOSAL_REQUEST, NEGOTIATE_PROPOSAL_SUCCESS, POST_PROPOSAL_FALIURE, POST_PROPOSAL_REQUEST, POST_PROPOSAL_SUCCESS } from "./ProposalType"
+import { ARTISAN_PROPOSAL_FAILURE, ARTISAN_PROPOSAL_REQUEST, ARTISAN_PROPOSAL_SUCCESS, GET_NEGOTIATION_FAILURE, GET_NEGOTIATION_REQUEST, GET_NEGOTIATION_SUCCESS, JOB_PROPOSAL_FAILURE, JOB_PROPOSAL_REQUEST, JOB_PROPOSAL_SUCCESS, NEGOTIATE_PROPOSAL_FAILURE, NEGOTIATE_PROPOSAL_REQUEST, NEGOTIATE_PROPOSAL_SUCCESS, POST_PROPOSAL_FAILURE, POST_PROPOSAL_REQUEST, POST_PROPOSAL_SUCCESS } from "./ProposalType"
 
 
 const initialstate = {
@@ -21,7 +21,7 @@ export const proposalPostReducer = (state=initialstate, action) => {
                 data: action.payload,
                 error: {}
             }
-        case POST_PROPOSAL_FALIURE:
+        case POST_PROPOSAL_FAILURE:
             return{
                 loading:false,
                 data: {},
@@ -44,7 +44,7 @@ export const jobProposalReducer = (state=initialstate, action) => {
                 data: action.payload,
                 error: {}
             }
-        case JOB_PROPOSAL_FALIURE:
+        case JOB_PROPOSAL_FAILURE:
             return{
                 loading:false,
                 data: {},
@@ -67,7 +67,7 @@ export const artisanProposalReducer = (state=initialstate, action) => {
                 data: action.payload,
                 error: {}
             }
-        case ARTISAN_PROPOSAL_FALIURE:
+        case ARTISAN_PROPOSAL_FAILURE:
             return{
                 loading:false,
                 data: {},
@@ -90,7 +90,7 @@ export const negotiateProposalReducer = (state=initialstate, action) => {
                 data: action.payload,
                 error: {}
             }
-        case NEGOTIATE_PROPOSAL_FALIURE:
+        case NEGOTIATE_PROPOSAL_FAILURE:
             return{
                 loading:false,
                 data: {},
@@ -114,7 +114,7 @@ export const negotiateReducer = (state=initialstate, action) => {
                 data: action.payload,
                 error: {}
             }
-        case GET_NEGOTIATION_FALIURE:
+        case GET_NEGOTIATION_FAILURE:
             return{
                 loading:false,
                 data: {},
@@ -124,94 +124,3 @@ export const negotiateReducer = (state=initialstate, action) => {
     }
 }
 
-// export const jobidReducer = (state=initialstate, action) => {
-//     switch (action.type){
-//         case JOB_ID_REQUEST:
-//             return{
-//                 ...state,
-//                 loading: true
-//             }
-//         case JOB_ID_SUCCESS:
-//             return{
-//                 loading: false,
-//                 data: action.payload,
-//                 error: {}
-//             }
-//         case JOB_ID_FALIURE:
-//             return{
-//                 loading:false,
-//                 data: {},
-//                 error: action.payload
-//             }
-//         default: return state   
-//     }
-// }
-
-// export const categoryReducer = (state=initialstate, action) => {
-//     switch (action.type){
-//         case CATEGORY_REQUEST:
-//             return{
-//                 ...state,
-//                 loading: true
-//             }
-//         case CATEGORY_SUCCESS:
-//             return{
-//                 loading: false,
-//                 data: action.payload,
-//                 error: {}
-//             }
-//         case CATEGORY_FALIURE:
-//             return{
-//                 loading:false,
-//                 data: {},
-//                 error: action.payload
-//             }
-//         default: return state   
-//     }
-// }
-
-// export const subCategoryReducer = (state=initialstate, action) => {
-//     switch (action.type){
-//         case SUBCATEGORY_REQUEST:
-//             return{
-//                 ...state,
-//                 loading: true
-//             }
-//         case SUBCATEGORY_SUCCESS:
-//             return{
-//                 loading: false,
-//                 data: action.payload,
-//                 error: {}
-//             }
-//         case SUBCATEGORY_FALIURE:
-//             return{
-//                 loading:false,
-//                 data: {},
-//                 error: action.payload
-//             }
-//         default: return state   
-//     }
-// }
-
-// export const artisanJobReducer = (state=initialstate, action) => {
-//     switch (action.type){
-//         case ARTISAN_JOB_REQUEST:
-//             return{
-//                 ...state,
-//                 loading: true
-//             }
-//         case ARTISAN_JOB_SUCCESS:
-//             return{
-//                 loading: false,
-//                 data: action.payload,
-//                 error: {}
-//             }
-//         case ARTISAN_JOB_FALIURE:
-//             return{
-//                 loading:false,
-//                 data: {},
-//                 error: action.payload
-//             }
-//         default: return state   
-//     }
-// }

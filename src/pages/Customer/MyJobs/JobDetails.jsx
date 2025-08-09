@@ -82,6 +82,11 @@ const JobDetails = ({
     setShowDeleteModal(true);
   };
 
+  const handleEditJob = (job) => {
+    console.log('function to handle the editing of the job!!');
+    console.log(job?.id);
+  };
+
   const confirmDeleteJob = () => {
     deleteJob(jobId, () => {
       setShowDeleteModal(false);
@@ -125,6 +130,9 @@ const JobDetails = ({
     );
   }
 
+  console.log(job);
+  console.log(jobId);
+
   return (
     <div className="font-inter font-medium">
       <div className="">
@@ -149,7 +157,7 @@ const JobDetails = ({
 
         {['posted'].includes(tab?.toLowerCase()) && (
           <div className="flex items-center gap-2">
-            <Button variant="secondary" rightIcon={<Pencil size={20} />}>
+            <Button onClick={() => handleEditJob(job)} variant="secondary" rightIcon={<Pencil size={20} />}>
               Edit Job
             </Button>
             <Button variant="grey-sec" onClick={handleDeleteJob} disabled={deleteLoading}>
@@ -217,12 +225,12 @@ const JobDetails = ({
               </span>
             </p>
 
-            {/* {job?.jobDetails?.location && (
+            {job?.jobDetails?.location && (
               <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
                 <span className="">agreed price:</span>
                 <span className="text-black">{job?.jobDetails?.agreedPrice}</span>
               </p>
-            )} */}
+            )}
           </div>
 
           <div className="mt-6 space-y-10.5">
@@ -234,7 +242,7 @@ const JobDetails = ({
             <div className="space-y-4.25">
               <p className="font-medium text-neu-norm-2">Attached Photos</p>
               <div className="flex flex-wrap gap-2">
-                {job?.imageUrls > 0 ? (
+                {job?.imageUrls.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {job?.imageUrls?.map((photo, index) => (
                       <img

@@ -1,16 +1,16 @@
 import React from 'react';
-import { Calendar, MapPin, Zap } from 'lucide-react';
+import { Calendar, MapPin, Zap, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../../../components/Button/Button';
 
-const JobCard = ({ job, activeTab }) => {
-
-  const { 
-    subcategoryName, 
-    title, 
-    description, 
-    customer, 
+const JobCard = ({ job, activeTab, userAppliedJobs = [] }) => {
+  const {
+    subcategoryName,
+    title,
+    description,
+    customer,
     postedAt,
+    id,
     // Negotiation-related props
     canAccept,
     hasNegotiation,
@@ -20,13 +20,18 @@ const JobCard = ({ job, activeTab }) => {
   } = job;
 
   const isRequest = activeTab === 'requests';
-
+  
+  // Check if user has already applied to this job
+  const hasUserApplied = userAppliedJobs.includes(id);
+  
   // Check if the current user is the sender (artisan) of the proposal
   const isCurrentUserSender = senderId === currentUserId;
 
   // Render negotiation buttons based on conditions
   const renderNegotiationButtons = () => {
     if (!isRequest) return null;
+
+    console.log(job);
 
     // If user is the sender (artisan), they cannot accept their own proposal
     if (isCurrentUserSender) {
@@ -78,11 +83,13 @@ const JobCard = ({ job, activeTab }) => {
     }
   };
 
-  return (
-    <Link 
-      to={`/artisan/find-jobs/${activeTab}/${job.id}`}
-      className="block bg-white rounded-lg p-4 shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 hover:border-blue-200"
-    >
+  // Render the card content
+  const cardContent = (
+    <div className={`block bg-white rounded-lg p-4 border border-gray-200 overflow-hidden transition-all duration-200 ${
+      hasUserApplied && !isRequest
+        ? 'opacity-60 cursor-not-allowed border-gray-300 bg-gray-50'
+        : 'hover:shadow-md hover:border-blue-200'
+    }`}>
       {/* Main content */}
       <div className="">
         <div className="flex items-center justify-between mb-2">
@@ -90,17 +97,26 @@ const JobCard = ({ job, activeTab }) => {
             <Zap size={16} />
             <span className="text-gray-600 font-medium text-sm">{subcategoryName}</span>
           </div>
-          {/* Show negotiation indicator */}
-          {isRequest && hasNegotiation && (
-            <div className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
-              Negotiating
+          {/* Show applied indicator for job listings */}
+          {!isRequest && hasUserApplied && (
+            <div className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+              <Check size={12} />
+              Applied
             </div>
           )}
+          {/* Show negotiation indicator for requests */}
+          {isRequest && hasNegotiation && (
+            <div className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Negotiating</div>
+          )}
         </div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2" title={title}>
+        <h2 className={`text-lg font-semibold mb-2 line-clamp-2 ${
+          hasUserApplied && !isRequest ? 'text-gray-500' : 'text-gray-900'
+        }`} title={title}>
           {title}
         </h2>
-        <p className="text-gray-700 text-sm leading-relaxed line-clamp-2 h-[50px]" title={description}>
+        <p className={`text-sm leading-relaxed line-clamp-2 h-[50px] ${
+          hasUserApplied && !isRequest ? 'text-gray-400' : 'text-gray-700'
+        }`} title={description}>
           {description}
         </p>
       </div>
@@ -108,36 +124,44 @@ const JobCard = ({ job, activeTab }) => {
       {/* Profile section */}
       <div className="px-4 py-4 border-y-2 border-gray-200 flex items-center gap-3 my-5.25">
         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-700">
-          {customer?.name && customer.name.split(' ').length >= 2 
+          {customer?.name && customer.name.split(' ').length >= 2
             ? customer.name.split(' ')[0][0] + customer.name.split(' ')[1][0]
-            : customer?.name ? customer.name[0] : 'C'}
+            : customer?.name
+            ? customer.name[0]
+            : 'C'}
         </div>
         <div>
-          <p className="text-gray-900 text-sm font-medium">{customer?.name ? customer?.name : "Customer Details Unavailable"}</p>
+          <p className={`text-sm font-medium ${
+            hasUserApplied && !isRequest ? 'text-gray-400' : 'text-gray-900'
+          }`}>
+            {customer?.name ? customer?.name : 'Customer Details Unavailable'}
+          </p>
           {isRequest && (
-            <p className="text-gray-600 text-xs">
-              {isCurrentUserSender ? "Your proposal" : "Proposal received"}
-            </p>
+            <p className="text-gray-600 text-xs">{isCurrentUserSender ? 'Your proposal' : 'Proposal received'}</p>
           )}
         </div>
       </div>
 
       {/* Location and date info */}
-      <div className="text-sm text-gray-700 space-y-4">
+      <div className={`text-sm space-y-4 ${
+        hasUserApplied && !isRequest ? 'text-gray-400' : 'text-gray-700'
+      }`}>
         <div className="flex items-center gap-2">
-          <MapPin className="text-blue-500" size={16}/>
-          <span>{customer?.location ? customer?.location : "Location Unavailable"}</span>
+          <MapPin className={hasUserApplied && !isRequest ? 'text-gray-400' : 'text-blue-500'} size={16} />
+          <span>{customer?.location ? customer?.location : 'Location Unavailable'}</span>
         </div>
         <div className="flex items-center gap-2">
-          <Calendar className=" text-blue-500" size={16}/>
-          <span>{new Date(postedAt).toLocaleString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: true,
-                })}</span>
+          <Calendar className={hasUserApplied && !isRequest ? 'text-gray-400' : 'text-blue-500'} size={16} />
+          <span>
+            {new Date(postedAt).toLocaleString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+              hour12: true
+            })}
+          </span>
         </div>
       </div>
 
@@ -161,13 +185,48 @@ const JobCard = ({ job, activeTab }) => {
             renderNegotiationButtons()
           ) : (
             <div className="">
-              <Button variant="primary" className="px-4.25 py-2">Apply</Button>
+              {hasUserApplied ? (
+                <Button 
+                  variant="grey-sec" 
+                  className="px-4.25 py-2 cursor-not-allowed opacity-50"
+                  disabled
+                >
+                  <Check size={16} className="mr-2" />
+                  Applied
+                </Button>
+              ) : (
+                <Button variant="primary" className="px-4.25 py-2">
+                  Apply
+                </Button>
+              )}
             </div>
           )}
         </div>
       </div>
+    </div>
+  );
+
+  // For job listings, conditionally wrap with Link only if user hasn't applied
+  if (!isRequest) {
+    if (hasUserApplied) {
+      // Return non-clickable card
+      return cardContent;
+    } else {
+      // Return clickable card
+      return (
+        <Link to={`/artisan/find-jobs/${activeTab}/${job.id}`}>
+          {cardContent}
+        </Link>
+      );
+    }
+  }
+
+  // For requests, always wrap with Link (existing behavior)
+  return (
+    <Link to={`/artisan/find-jobs/${activeTab}/${job.id}`}>
+      {cardContent}
     </Link>
   );
-}
+};
 
 export default JobCard;

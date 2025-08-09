@@ -6,141 +6,118 @@ import { connect } from 'react-redux';
 import { jobAction } from '../../../../redux/Jobs/JobsAction';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
-const services = [
-  {
-    id: 1,
-    title: 'AC Installation',
-    artisan: 'Musa Ibrahim',
-    status: 'Completed',
-    date: '6 Jul, 2023',
-    time: '1:00 PM',
-    image: '/img/avatar1.jpg'
-  },
-  {
-    id: 2,
-    title: 'Plumbing Leak Repair',
-    artisan: 'Fatima Bello',
-    status: 'In Progress',
-    date: '12 June 2023',
-    time: '1:00 PM',
-    image: '/img/avatar2.jpg'
-  },
-  {
-    id: 3,
-    title: 'House Cleaning',
-    artisan: 'Chinedu Okafor',
-    status: 'Completed',
-    date: '13 June 2023',
-    time: '1:00 PM',
-    image: '/img/avatar3.jpg'
-  },
-  {
-    id: 4,
-    title: 'Generator Service',
-    artisan: 'Ayodele Akinwumi',
-    status: 'In Progress',
-    date: '14 June 2023',
-    time: '1:00 PM',
-    image: ''
-  }
-];
-
 const RecentServices = ({ getJob, loading, jobsData, error }) => {
-  const { tab: activeTab = 'posted' } = useParams();
   const navigate = useNavigate();
-  const formatJobSlug = (title) => {
-    return title
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]/g, '');
-  };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+  // DEBUGGING - Let's see what we're getting
+  console.log('=== RECENT SERVICES DEBUG ===');
+  console.log('loading:', loading);
+  console.log('error:', error);
+  console.log('jobsData:', jobsData);
+  console.log('jobsData type:', typeof jobsData);
 
-  // const transformJobData = (apiJob) => {
-  //   return {
-  //     id: apiJob.id,
-  //     title: apiJob.title.trim(), // Remove any trailing whitespace
-  //     description: apiJob.description,
-  //     postedAt: formatDate(apiJob.postedAt),
-  //     userId: apiJob.userId,
-  //     userFullName: apiJob.userFullName || 'Unknown User',
-  //     artisanSubcategoryId: apiJob.artisanSubcategoryId,
-  //     subcategoryName: apiJob.subcategoryName || 'General',
-  //     proposals: apiJob.proposals || [],
-  //     proposalCount: apiJob.proposals?.length || 0,
-  //     // Add tab classification based on your business logic
-  //     tab: determineJobTab(apiJob),
-  //     // Add artisan field if needed by your table
-  //     artisan: apiJob.userFullName || 'N/A'
-  //   };
-  // };
-
-  const determineJobTab = (job) => {
-    // This is where you'd implement your business logic
-    // For now, we'll categorize based on proposals or other criteria
-    if (job.proposals && job.proposals.length > 0) {
-      return 'ongoing';
+  useEffect(() => {
+    // Only fetch if we don't have data yet
+    if (!jobsData || !jobsData.data || jobsData.data.length === 0) {
+      console.log('Fetching jobs...');
+      getJob({ pageNumber: 1, pageSize: 5 });
     }
-    return 'posted'; // Default to posted if no proposals
-  };
+  }, []);
 
-  const allJobs = jobsData ? jobsData?.data?.map(transformJobData) : [];
+  // Fix the data checking logic
+  const isSuccessful = jobsData && jobsData.isSuccess;
+  const hasJobsArray = jobsData && jobsData.data && Array.isArray(jobsData.data);
+  const jobCount = hasJobsArray ? jobsData.data.length : 0;
+  const hasData = isSuccessful && hasJobsArray && jobCount > 0;
 
-  // useEffect(() => {
-  //   getJob();
-  // }, []);
+  console.log('isSuccessful:', isSuccessful);
+  console.log('hasJobsArray:', hasJobsArray);
+  console.log('hasData:', hasData);
+  console.log('jobCount:', jobCount);
+
+  // Check if there's an actual error (not just empty object)
+  const hasError = error && Object.keys(error).length > 0;
 
   return (
     <div className="font-inter bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
       <div className="px-6 py-5 border-b border-neu-light-1 flex items-center justify-between">
         <h2 className="font-manrope text-xl font-semibold text-gray-900">Recent Job Listing</h2>
         <Link to="/customer/jobs/posted">
-          <Button variant="secondary" to="/services" rightIcon={<ChevronRight size={20} />} className="">
+          <Button variant="secondary" rightIcon={<ChevronRight size={20} />}>
             View All
           </Button>
         </Link>
       </div>
-      {allJobs?.length > 0 ? (
-        <ServiceTable
-          items={allJobs}
-          onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${job.id}`)}
-          activeTab={activeTab}
-          formatItemSlug={formatJobSlug}
-        />
-      ) : (
-        <div className="p-6 text-center">
-          <div className="text-gray-500">
-            <>
-              <p>No job found</p>
-              <p className="text-sm mt-1">Jobs will appear here when available</p>
-            </>
+
+      <div className="p-6">
+        {loading && (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+            <p className="text-gray-600">Loading jobs...</p>
           </div>
-        </div>
-      )}
-      {/* <ServiceTable items={services} /> */}
+        )}
+
+        {hasError && (
+          <div className="text-center text-red-500 py-8">
+            <p>Error loading jobs: {JSON.stringify(error)}</p>
+            <Button onClick={() => getJob({ pageNumber: 1, pageSize: 5 })} variant="secondary" className="mt-2">
+              Retry
+            </Button>
+          </div>
+        )}
+
+        {!loading && !hasError && !hasData && isSuccessful && (
+          <div className="text-center text-gray-500 py-8">
+            <p>No recent jobs found</p>
+            <p className="text-sm mt-1">Jobs you post will appear here</p>
+          </div>
+        )}
+
+        {!loading && !hasError && hasData && (
+          <div>
+            {/* Use ServiceTable to display the jobs */}
+            <ServiceTable
+              items={jobsData.data}
+              onRowClick={(job) => {
+                console.log('Job clicked:', job);
+                navigate(`/customer/jobs/${job.id}/${job.id}`);
+              }}
+              showLocation={false}
+              containerClassName=""
+            />
+          </div>
+        )}
+
+        {!loading && !hasError && !isSuccessful && (
+          <div className="text-center text-orange-500 py-8">
+            <p>Unexpected response format</p>
+            <details className="mt-2">
+              <summary className="cursor-pointer">Show details</summary>
+              <pre className="text-xs mt-2 bg-gray-50 p-2 rounded">{JSON.stringify(jobsData, null, 2)}</pre>
+            </details>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 const mapStoreToProps = (state) => {
-  console.log(state);
+
+
   return {
-    loading: state?.jobs?.loading,
-    jobsData: state?.jobs?.data,
-    error: state?.jobs?.error
+    loading: state?.jobs?.loading || false,
+    jobsData: state?.jobs?.data || null,
+    error: state?.jobs?.error || {}
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getJob: () => dispatch(jobAction())
+    getJob: (filters = {}) => {
+      console.log('Dispatching jobAction with filters:', filters);
+      return dispatch(jobAction(filters));
+    }
   };
 };
 

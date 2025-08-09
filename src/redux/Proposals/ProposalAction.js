@@ -1,25 +1,37 @@
+/**
+ * Proposal Redux Actions
+ * 
+ * This file implements all Redux actions for the Proposal API endpoints:
+ * 
+ * ✅ POST /api/Proposal - Create a new proposal
+ * ✅ POST /api/Proposal/{proposalId}/negotiate - Negotiate a proposal
+ * ✅ GET /api/Proposal/joblisting/{jobId} - Get proposals for a job
+ * ✅ GET /api/Proposal/Artisan - Get artisan proposals
+ * ✅ GET /api/Proposal/selected/{jobId} - Get selected proposals for a job
+ * ✅ POST /api/Proposal/select/{proposalId} - Select a proposal
+ * ✅ GET /api/Proposal/{proposalId}/negotiations - Get negotiations for a proposal
+ * ✅ GET /api/Proposal/{proposalId}/negotiations/latest - Get latest negotiation
+ * ✅ POST /api/Proposal/{negotiationId}/accept - Accept a negotiation
+ * ✅ POST /api/Proposal/{negotiationId}/reject - Reject a negotiation
+ */
+
 import axios from "axios"
-import { ARTISAN_PROPOSAL_FALIURE, ARTISAN_PROPOSAL_REQUEST, ARTISAN_PROPOSAL_SUCCESS, GET_NEGOTIATION_FALIURE, GET_NEGOTIATION_REQUEST, GET_NEGOTIATION_SUCCESS, JOB_PROPOSAL_FALIURE, JOB_PROPOSAL_REQUEST, JOB_PROPOSAL_SUCCESS, NEGOTIATE_PROPOSAL_FALIURE, NEGOTIATE_PROPOSAL_REQUEST, NEGOTIATE_PROPOSAL_SUCCESS, POST_PROPOSAL_FALIURE, POST_PROPOSAL_REQUEST, POST_PROPOSAL_SUCCESS } from "./ProposalType"
+import { 
+    ARTISAN_PROPOSAL_FAILURE, ARTISAN_PROPOSAL_REQUEST, ARTISAN_PROPOSAL_SUCCESS, 
+    GET_NEGOTIATION_FAILURE, GET_NEGOTIATION_REQUEST, GET_NEGOTIATION_SUCCESS, 
+    JOB_PROPOSAL_FAILURE, JOB_PROPOSAL_REQUEST, JOB_PROPOSAL_SUCCESS, 
+    NEGOTIATE_PROPOSAL_FAILURE, NEGOTIATE_PROPOSAL_REQUEST, NEGOTIATE_PROPOSAL_SUCCESS, 
+    POST_PROPOSAL_FAILURE, POST_PROPOSAL_REQUEST, POST_PROPOSAL_SUCCESS,
+    SELECT_PROPOSAL_FAILURE, SELECT_PROPOSAL_REQUEST, SELECT_PROPOSAL_SUCCESS,
+    GET_SELECTED_PROPOSALS_FAILURE, GET_SELECTED_PROPOSALS_REQUEST, GET_SELECTED_PROPOSALS_SUCCESS,
+    GET_LATEST_NEGOTIATION_FAILURE, GET_LATEST_NEGOTIATION_REQUEST, GET_LATEST_NEGOTIATION_SUCCESS,
+    ACCEPT_NEGOTIATION_FAILURE, ACCEPT_NEGOTIATION_REQUEST, ACCEPT_NEGOTIATION_SUCCESS,
+    REJECT_NEGOTIATION_FAILURE, REJECT_NEGOTIATION_REQUEST, REJECT_NEGOTIATION_SUCCESS
+} from "./ProposalType"
 
-// export const jobRequest=()=>{
-//     return{
-//         type:JOB_REQUEST
-//     }
-// }
-// export const jobSuccess=(response)=>{
-//     return{
-//         type:JOB_SUCCESS,
-//         payload: response
-//     }
-// }
+const baseUrl = 'https://distrolink-001-site1.anytempurl.com/api/Proposal'
 
-// export const jobFaliure=(error)=>{
-//     return{
-//         type:JOB_FALIURE,
-//         payload: error
-//     }
-// }
-
+// Action Creators
 export const postProposalRequest=()=>{
     return{
         type:POST_PROPOSAL_REQUEST
@@ -32,9 +44,9 @@ export const postProposalSuccess=(response)=>{
     }
 }
 
-export const postProposalFaliure=(error)=>{
+export const postProposalFailure=(error)=>{
     return{
-        type:POST_PROPOSAL_FALIURE,
+        type:POST_PROPOSAL_FAILURE,
         payload: error
     }
 }
@@ -49,9 +61,9 @@ export const jobProposalSuccess=(response)=>{
         payload: response
     }
 }
-export const jobProposalFaliure=(error)=>{
+export const jobProposalFailure=(error)=>{
     return{
-        type:JOB_PROPOSAL_FALIURE,
+        type:JOB_PROPOSAL_FAILURE,
         payload: error
     }
 }
@@ -68,9 +80,9 @@ export const artisanProposalSuccess=(response)=>{
     }
 }
 
-export const artisanProposalFaliure=(error)=>{
+export const artisanProposalFailure=(error)=>{
     return{
-        type:ARTISAN_PROPOSAL_FALIURE,
+        type:ARTISAN_PROPOSAL_FAILURE,
         payload: error
     }
 }
@@ -87,9 +99,9 @@ export const negotiateProposalSuccess=(response)=>{
     }
 }
 
-export const negotiateProposalFaliure=(error)=>{
+export const negotiateProposalFailure=(error)=>{
     return{
-        type:NEGOTIATE_PROPOSAL_FALIURE,
+        type:NEGOTIATE_PROPOSAL_FAILURE,
         payload: error
     }
 }
@@ -106,81 +118,231 @@ export const negotiateSuccess=(response)=>{
     }
 }
 
-export const negotiateFaliure=(error)=>{
+export const negotiateFailure=(error)=>{
     return{
-        type:GET_NEGOTIATION_FALIURE,
+        type:GET_NEGOTIATION_FAILURE,
         payload: error
     }
 }
 
-// export const categoryRequest=()=>{
-//     return{
-//         type:CATEGORY_REQUEST
-//     }
-// }
-// export const categorySuccess=(response)=>{
-//     return{
-//         type:CATEGORY_SUCCESS,
-//         payload: response
-//     }
-// }
+// Select Proposal Action Creators
+export const selectProposalRequest=()=>{
+    return{
+        type: SELECT_PROPOSAL_REQUEST
+    }
+}
+export const selectProposalSuccess=(response)=>{
+    return{
+        type:SELECT_PROPOSAL_SUCCESS,
+        payload: response
+    }
+}
+export const selectProposalFailure=(error)=>{
+    return{
+        type:SELECT_PROPOSAL_FAILURE,
+        payload: error
+    }
+}
 
-// export const categoryFaliure=(error)=>{
-//     return{
-//         type:CATEGORY_FALIURE,
-//         payload: error
-//     }
-// }
+// Get Selected Proposals Action Creators
+export const getSelectedProposalsRequest=()=>{
+    return{
+        type: GET_SELECTED_PROPOSALS_REQUEST
+    }
+}
+export const getSelectedProposalsSuccess=(response)=>{
+    return{
+        type:GET_SELECTED_PROPOSALS_SUCCESS,
+        payload: response
+    }
+}
+export const getSelectedProposalsFailure=(error)=>{
+    return{
+        type:GET_SELECTED_PROPOSALS_FAILURE,
+        payload: error
+    }
+}
 
-// export const subcategoryRequest=()=>{
-//     return{
-//         type:SUBCATEGORY_REQUEST
-//     }
-// }
-// export const subcategorySuccess=(response)=>{
-//     return{
-//         type:SUBCATEGORY_SUCCESS,
-//         payload: response
-//     }
-// }
+// Get Latest Negotiation Action Creators
+export const getLatestNegotiationRequest=()=>{
+    return{
+        type: GET_LATEST_NEGOTIATION_REQUEST
+    }
+}
+export const getLatestNegotiationSuccess=(response)=>{
+    return{
+        type:GET_LATEST_NEGOTIATION_SUCCESS,
+        payload: response
+    }
+}
+export const getLatestNegotiationFailure=(error)=>{
+    return{
+        type:GET_LATEST_NEGOTIATION_FAILURE,
+        payload: error
+    }
+}
 
-// export const subcategoryFaliure=(error)=>{
-//     return{
-//         type:SUBCATEGORY_FALIURE,
-//         payload: error
-//     }
-// }
-const baseUrl = 'https://distrolink-001-site1.anytempurl.com/api/Proposal'
-// export const jobAction = () =>{
-//     return async (dispatch) => {
-//         dispatch(jobRequest())
-//         let datas = JSON.parse(localStorage.getItem("auth"))
-//         await axios.get(`${baseUrl}/customer`,{headers: {
-//             Authorization: `Bearer ${datas?.token}`
-//         }})
-//         .then(response=>{
-//             const data = response.data;
-//             dispatch(jobSuccess(data))
-//         }).catch(error=>{
-//             dispatch(jobFaliure(error.response.data.message))
-//         })
-//     }
-// }
+// Accept Negotiation Action Creators
+export const acceptNegotiationRequest=()=>{
+    return{
+        type: ACCEPT_NEGOTIATION_REQUEST
+    }
+}
+export const acceptNegotiationSuccess=(response)=>{
+    return{
+        type:ACCEPT_NEGOTIATION_SUCCESS,
+        payload: response
+    }
+}
+export const acceptNegotiationFailure=(error)=>{
+    return{
+        type:ACCEPT_NEGOTIATION_FAILURE,
+        payload: error
+    }
+}
 
+// Reject Negotiation Action Creators
+export const rejectNegotiationRequest=()=>{
+    return{
+        type: REJECT_NEGOTIATION_REQUEST
+    }
+}
+export const rejectNegotiationSuccess=(response)=>{
+    return{
+        type:REJECT_NEGOTIATION_SUCCESS,
+        payload: response
+    }
+}
+export const rejectNegotiationFailure=(error)=>{
+    return{
+        type:REJECT_NEGOTIATION_FAILURE,
+        payload: error
+    }
+}
 
+// API Action Implementations for missing endpoints
+
+// POST /api/Proposal/select/{proposalId}
+export const selectProposalAction = (proposalId, history, errors) => {
+    return async (dispatch) => {
+        dispatch(selectProposalRequest())
+        let datas = JSON.parse(localStorage.getItem("auth"))
+        try {
+            const res = await axios.post(`${baseUrl}/select/${proposalId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${datas?.token}`
+                }
+            })
+            const {data} = res 
+            dispatch(selectProposalSuccess(data))
+            if(res.status){
+                history()   
+            }
+        } catch(error) {
+            dispatch(selectProposalFailure(error?.response?.data?.message || error.message))
+            errors()
+        }
+    }
+}
+
+// GET /api/Proposal/selected/{jobId}
+export const getSelectedProposalsAction = (jobId) => {
+    return async (dispatch) => {
+        dispatch(getSelectedProposalsRequest())
+        let datas = JSON.parse(localStorage.getItem("auth"))
+        try {
+            const response = await axios.get(`${baseUrl}/selected/${jobId}`, {
+                headers: {
+                    Authorization: `Bearer ${datas?.token}`
+                }
+            })
+            const data = response.data;
+            dispatch(getSelectedProposalsSuccess(data))
+        } catch (error) {
+            dispatch(getSelectedProposalsFailure(error?.response?.data?.message || error.message))
+        }
+    }
+}
+
+// GET /api/Proposal/{proposalId}/negotiations/latest
+export const getLatestNegotiationAction = (proposalId) => {
+    return async (dispatch) => {
+        dispatch(getLatestNegotiationRequest())
+        let datas = JSON.parse(localStorage.getItem("auth"))
+        try {
+            const response = await axios.get(`${baseUrl}/${proposalId}/negotiations/latest`, {
+                headers: {
+                    Authorization: `Bearer ${datas?.token}`
+                }
+            })
+            const data = response.data;
+            dispatch(getLatestNegotiationSuccess(data))
+        } catch (error) {
+            dispatch(getLatestNegotiationFailure(error?.response?.data?.message || error.message))
+        }
+    }
+}
+
+// POST /api/Proposal/{negotiationId}/accept
+export const acceptNegotiationAction = (negotiationId, history, errors) => {
+    return async (dispatch) => {
+        dispatch(acceptNegotiationRequest())
+        let datas = JSON.parse(localStorage.getItem("auth"))
+        try {
+            const res = await axios.post(`${baseUrl}/${negotiationId}/accept`, {}, {
+                headers: {
+                    Authorization: `Bearer ${datas?.token}`
+                }
+            })
+            const {data} = res 
+            dispatch(acceptNegotiationSuccess(data))
+            if(res.status){
+                history()   
+            }
+        } catch(error) {
+            dispatch(acceptNegotiationFailure(error?.response?.data?.message || error.message))
+            errors()
+        }
+    }
+}
+
+// POST /api/Proposal/{negotiationId}/reject
+export const rejectNegotiationAction = (negotiationId, history, errors) => {
+    return async (dispatch) => {
+        dispatch(rejectNegotiationRequest())
+        let datas = JSON.parse(localStorage.getItem("auth"))
+        try {
+            const res = await axios.post(`${baseUrl}/${negotiationId}/reject`, {}, {
+                headers: {
+                    Authorization: `Bearer ${datas?.token}`
+                }
+            })
+            const {data} = res 
+            dispatch(rejectNegotiationSuccess(data))
+            if(res.status){
+                history()   
+            }
+        } catch(error) {
+            dispatch(rejectNegotiationFailure(error?.response?.data?.message || error.message))
+            errors()
+        }
+    }
+}
+
+// API Action Implementations
 export const jobProposalAction = (id) =>{
     return async (dispatch) => {
         dispatch(jobProposalRequest())
         let datas = JSON.parse(localStorage.getItem("auth"))
-        await axios.get(`${baseUrl}/joblisting/${id}`,{headers: {
-            Authorization: `Bearer ${datas?.token}`
-        }})
-        .then(response=>{
+        try {
+            const response = await axios.get(`${baseUrl}/joblisting/${id}`,{headers: {
+                Authorization: `Bearer ${datas?.token}`
+            }})
             const data = response.data;
             dispatch(jobProposalSuccess(data))
-        }).catch(error=>{
-            dispatch(jobProposalFaliure(error.response.data.message))
-        })
+        } catch (error) {
+            dispatch(jobProposalFailure(error?.response?.data?.message || error.message))
+        }
     }
 }
 
@@ -188,15 +350,15 @@ export const artisanProposalAction = () =>{
     return async (dispatch) => {
         dispatch(artisanProposalRequest())
         let datas = JSON.parse(localStorage.getItem("auth"))
-        await axios.get(`${baseUrl}/Artisan`,{headers: {
-            Authorization: `Bearer ${datas?.token}`
-        }})
-        .then(response=>{
+        try {
+            const response = await axios.get(`${baseUrl}/Artisan`,{headers: {
+                Authorization: `Bearer ${datas?.token}`
+            }})
             const data = response.data;
             dispatch(artisanProposalSuccess(data))
-        }).catch(error=>{
-            dispatch(artisanProposalFaliure(error.response.data.message))
-        })
+        } catch (error) {
+            dispatch(artisanProposalFailure(error?.response?.data?.message || error.message))
+        }
     }
 }
 
@@ -204,15 +366,15 @@ export const negotiateAction = (id) =>{
     return async (dispatch) => {
         dispatch(negotiateRequest())
         let datas = JSON.parse(localStorage.getItem("auth"))
-        await axios.get(`${baseUrl}/${id}/negotiations`,{headers: {
-            Authorization: `Bearer ${datas?.token}`
-        }})
-        .then(response=>{
+        try {
+            const response = await axios.get(`${baseUrl}/${id}/negotiations`,{headers: {
+                Authorization: `Bearer ${datas?.token}`
+            }})
             const data = response.data;
             dispatch(negotiateSuccess(data))
-        }).catch(error=>{
-            dispatch(negotiateFaliure(error.response.data.message))
-        })
+        } catch (error) {
+            dispatch(negotiateFailure(error?.response?.data?.message || error.message))
+        }
     }
 }
 
@@ -226,15 +388,13 @@ export const postProposalAction = (postState, history, errors) =>{
            
         }})
             const {data} = res 
-            console.log(data)
-            console.log(res)
             dispatch(postProposalSuccess(data))
             if(res.status){
                 history()   
             }
         }
         catch(error){
-            dispatch(postProposalFaliure(error?.response?.data?.message))
+            dispatch(postProposalFailure(error?.response?.data?.message || error.message))
             errors()
         }
     }
@@ -250,62 +410,14 @@ export const negotiateProposalAction = (id,postState, history, errors) =>{
            
         }}) 
             const {data} = res 
-            console.log(data)
-            console.log(res)
             dispatch(negotiateProposalSuccess(data))
             if(res.status){
                 history()   
             }
         }
         catch(error){
-            dispatch(negotiateProposalFaliure(error?.response?.data?.message))
+            dispatch(negotiateProposalFailure(error?.response?.data?.message || error.message))
             errors()
         }
     }
 }
-
-// export const categoryAction = () =>{
-//     return (dispatch) => {
-//         console.log("categoryAction called")
-//         dispatch(categoryRequest())
-//         axios.get(`https://distrolink-001-site1.anytempurl.com/api/ArtisanCategory`)
-//             .then(response=>{
-//                 const data = response.data;
-//                 console.log("category data", data)
-//                 dispatch(categorySuccess(data))
-//             }).catch(error=>{
-//                 dispatch(categoryFaliure(error.response.data.message))
-//             })
-//     }
-// }
-
-
-// export const subCategoryAction = (id) =>{
-//     return  (dispatch) => {
-
-//         dispatch(subcategoryRequest())
-//         axios.get(`https://distrolink-001-site1.anytempurl.com/api/ArtisanSubcategory/category/${id}`)
-//             .then(response=>{
-//                 const data = response.data;
-//                 dispatch(subcategorySuccess(data))
-//             }).catch(error=>{
-//                 dispatch(subcategoryFaliure(error.response.data.message))
-//             })
-//     }
-// }
-
-// export const artisanJobAction = (Id) =>{
-//     return async (dispatch) => {
-//         dispatch(jobRequest())
-//         let datas = JSON.parse(localStorage.getItem("auth"))
-//         await axios.get(`${baseUrl}/subcategory/${Id}`,{headers: {
-//             Authorization: `Bearer ${datas?.token}`
-//         }})
-//         .then(response=>{
-//             const data = response.data;
-//             dispatch(jobSuccess(data))
-//         }).catch(error=>{
-//             dispatch(jobFaliure(error.response.data.message))
-//         })
-//     }
-// }

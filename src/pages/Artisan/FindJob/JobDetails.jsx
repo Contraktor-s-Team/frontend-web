@@ -16,7 +16,7 @@ const JobDetails = ({
   postProposal,
   getNegotiations,
   getJobProposals,
-  negotiations,          
+  negotiations,
   negotiationsLoading,
   userData,
   proposalData
@@ -28,10 +28,11 @@ const JobDetails = ({
   const [isNegotiationModalOpen, setIsNegotiationModalOpen] = useState(false);
   const [selectedProposal, setSelectedProposal] = useState(null);
   const [proposalNegotiations, setProposalNegotiations] = useState([]);
+  const [hasUserApplied, setHasUserApplied] = useState(false);
 
   // Get current user info
   const currentUserId = userData?.data?.id;
-  const currentUserRole = userData?.data?.role || "User"; // Assuming role is available
+  const currentUserRole = userData?.data?.role || 'User'; // Assuming role is available
 
   useEffect(() => {
     getJobId(jobId);
@@ -44,14 +45,24 @@ const JobDetails = ({
     }
   }, [data]);
 
+  // Check if user has already applied to this job
+  useEffect(() => {
+    if (proposalData && currentUserId && jobId) {
+      const userProposal = proposalData.find(
+        (proposal) => proposal.senderId === currentUserId && proposal.jobListingId === jobId
+      );
+      setHasUserApplied(!!userProposal);
+    }
+  }, [proposalData, currentUserId, jobId]);
+
   // Find the current user's proposal for this job when in requests tab
   useEffect(() => {
     if (tab === 'requests' && proposalData && currentUserId) {
       // Find the proposal that matches current user and current job
-      const userProposal = proposalData.find(proposal => 
-        proposal.senderId === currentUserId && proposal.jobListingId === jobId
+      const userProposal = proposalData.find(
+        (proposal) => proposal.senderId === currentUserId && proposal.jobListingId === jobId
       );
-      
+
       if (userProposal) {
         setSelectedProposal(userProposal);
         // Fetch negotiations for this proposal
@@ -75,8 +86,17 @@ const JobDetails = ({
     navigate(-1);
   };
 
+  console.log(job);
+
   const openQuoteModal = () => setIsQuoteModalOpen(true);
   const openNegotiationModal = () => setIsNegotiationModalOpen(true);
+
+  // Handle successful job application
+  const handleApplicationSuccess = (appliedJobId) => {
+    if (appliedJobId === jobId) {
+      setHasUserApplied(true);
+    }
+  };
 
   // Check if current user can accept negotiations
   const canAcceptNegotiation = () => {
@@ -135,6 +155,19 @@ const JobDetails = ({
   // Render action buttons based on tab and conditions
   const renderActionButtons = () => {
     if (tab === 'listings') {
+      if (hasUserApplied) {
+        return (
+          <div className="flex items-center gap-5">
+            <Button variant="grey-sec" className="px-4 py-3.75 cursor-not-allowed opacity-50" disabled>
+              Already Applied
+            </Button>
+            <Button variant="destructive-sec" className="px-4 py-3.75">
+              Report Issue
+            </Button>
+          </div>
+        );
+      }
+      
       return (
         <div className="flex items-center gap-5">
           <Button variant="secondary" onClick={openQuoteModal} className="px-4 py-3.75">
@@ -156,11 +189,7 @@ const JobDetails = ({
         if (hasOngoingNegotiation()) {
           return (
             <div className="flex items-center gap-5">
-              <Button 
-                variant="secondary" 
-                onClick={openNegotiationModal} 
-                className="px-4 py-3.75"
-              >
+              <Button variant="secondary" onClick={openNegotiationModal} className="px-4 py-3.75">
                 Renegotiate
               </Button>
               <Button variant="grey-sec" className="px-4 py-3.75">
@@ -185,17 +214,13 @@ const JobDetails = ({
         if (hasOngoingNegotiation()) {
           return (
             <div className="flex items-center gap-5">
-              <button 
+              <button
                 onClick={handleAccept}
                 className="py-4 px-3.75 bg-success-norm-1 text-white text-sm font-medium rounded-full hover:bg-success-norm-2"
               >
                 Accept Offer
               </button>
-              <Button 
-                variant="secondary" 
-                onClick={openNegotiationModal} 
-                className="px-4 py-3.75"
-              >
+              <Button variant="secondary" onClick={openNegotiationModal} className="px-4 py-3.75">
                 Renegotiate
               </Button>
               <Button variant="grey-sec" className="px-4 py-3.75">
@@ -206,17 +231,13 @@ const JobDetails = ({
         } else {
           return (
             <div className="flex items-center gap-5">
-              <button 
+              <button
                 onClick={handleAccept}
                 className="py-4 px-3.75 bg-success-norm-1 text-white text-sm font-medium rounded-full hover:bg-success-norm-2"
               >
                 Accept Job
               </button>
-              <Button 
-                variant="destructive-sec" 
-                onClick={handleReject}
-                className="px-4 py-3.75"
-              >
+              <Button variant="destructive-sec" onClick={handleReject} className="px-4 py-3.75">
                 Reject Job
               </Button>
               <Button variant="grey-sec" className="px-4 py-3.75">
@@ -231,15 +252,39 @@ const JobDetails = ({
     return null;
   };
 
+  // hiding customer details
+  const maskCustomerNumber = (phone) => {
+    console.log(phone);
+    if (!phone) return ' ';
+    return phone.slice(0, 3) + '****' + phone.slice(-2);
+  };
+
   return (
     <div className="font-inter font-medium">
       {/* Breadcrumb */}
       <div className="">
         <p className="capitalize font-medium text-sm text-pri-norm-1">
-          <Link to="/artisan/find-jobs">Find Jobs</Link> / <Link to={`/artisan/jobs/${tab}`}>{tab}</Link>{' '}
-          / <span className="text-black">Job Details</span>
+          <Link to="/artisan/find-jobs">Find Jobs</Link> / <Link to={`/artisan/jobs/${tab}`}>{tab}</Link> /{' '}
+          <span className="text-black">Job Details</span>
         </p>
       </div>
+
+      {/* Applied Status Banner */}
+      {tab === 'listings' && hasUserApplied && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 my-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div>
+              <h4 className="font-semibold text-green-800">Application Submitted</h4>
+              <p className="text-sm text-green-600">You have already applied to this job. You will be notified when the customer responds.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Title and Action Buttons */}
       <div className="flex items-center justify-between my-6.25">
@@ -302,19 +347,24 @@ const JobDetails = ({
             </p>
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span>Date & Time:</span>
-              <span className="text-black">{job?.postedAt ? new Date(job.postedAt).toLocaleString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: true,
-                }) : 'N/A'}
+              <span className="text-black">
+                {job?.postedAt
+                  ? new Date(job.postedAt).toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true
+                    })
+                  : 'N/A'}
               </span>
             </p>
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span>Job Location:</span>
-              <span className="text-black">{job?.customer?.location ? job?.customer?.location : "Location Unavailable"}</span>
+              <span className="text-black">
+                {job?.customer?.location ? job?.customer?.location : 'Location Unavailable'}
+              </span>
             </p>
             <Button
               variant="secondary"
@@ -357,39 +407,6 @@ const JobDetails = ({
             </div>
           </div>
         </div>
-
-        {/* Customer Details */}
-        <div className="bg-white rounded-xl p-7 h-fit w-full max-w-[482px]">
-          <div className="flex items-center justify-between">
-            <h3 className="font-manrope text-xl font-semibold">Customer Details</h3>
-            <div className="flex items-center gap-4 text-pri-norm-1">
-              <MessageSquareText size={24} />
-              <Phone size={24} />
-            </div>
-          </div>
-          <div className="h-0.25 bg-neu-light-3 my-5.5"></div>
-          <div className="space-y-6.5">
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-              <span>Name:</span>
-              <div className="flex items-center gap-2.5">
-                <img src={job?.customer?.avatar || Avatar} alt="customer" className="w-10 h-10 rounded-full" />
-                <div className="">{job?.customer?.name}</div>
-              </div>
-            </p>
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-              <span>Phone Number:</span>
-              <span className="text-black">{job?.customer?.phone}</span>
-            </p>
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-              <span>Email:</span>
-              <span className="text-black">{job?.customer?.email}</span>
-            </p>
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-              <span>Location:</span>
-              <span className="text-black">{job?.customer?.location}</span>
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Quote Modal for listings tab */}
@@ -426,10 +443,10 @@ const mapStoreToProps = (state) => {
     loading: state?.singleJob?.loading,
     data: state?.singleJob?.data?.data,
     error: state?.singleJob?.error,
-    negotiations: state?.negotiate?.data,           
+    negotiations: state?.negotiate?.data,
     negotiationsLoading: state?.negotiate?.loading,
     userData: state?.user?.data, // User data to get current user ID
-    proposalData: state?.artisanProposal?.data?.data, // All proposals to find current user's proposal
+    proposalData: state?.artisanProposal?.data?.data // All proposals to find current user's proposal
   };
 };
 
@@ -438,7 +455,7 @@ const mapDispatchToProps = (dispatch) => {
     getJobId: (id) => dispatch(jobIdAction(id)),
     getJobProposals: (id) => dispatch(jobProposalAction(id)),
     getNegotiations: (proposalId) => dispatch(negotiateAction(proposalId)),
-    postProposal: (postState, history, errors) => dispatch(postProposalAction(postState, history, errors)),
+    postProposal: (postState, history, errors) => dispatch(postProposalAction(postState, history, errors))
   };
 };
 
