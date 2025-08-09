@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateJobData } from '../../../redux/slices/jobPostSlice';
+import { useJobPost } from '../../../contexts/JobPostContext';
 import { FormSection, DateTimePicker, AddressFields, WorkflowButtons } from '../../../components/FormWorkflow';
 import Button from '../../../components/Button/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const TimeLocation = () => {
-  const dispatch = useDispatch();
+  const { state: jobData, dispatch } = useJobPost();
   const navigate = useNavigate();
   const location = useLocation();
-  const jobData = useSelector((state) => state.jobPost);
 
   const [date, setDate] = useState(jobData.date);
   const [time, setTime] = useState(jobData.time);
@@ -45,7 +43,7 @@ const TimeLocation = () => {
       state: formAddress.state
     };
 
-    dispatch(updateJobData({ date, time, urgent, address: addressData }));
+    dispatch({ type: 'UPDATE_JOB_DATA', payload: { date, time, urgent, address: addressData } });
     return true;
   };
 

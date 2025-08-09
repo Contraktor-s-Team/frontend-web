@@ -46,14 +46,14 @@
 //     { id: 'in-progress', label: 'Jobs In Progress' },
 //     { id: 'today', label: "Today's Jobs" }
 //   ];
-  
+
 //   return (
 //     <>
 //       <DashboardHeader data={data}/>
-//       <TabNav 
-//         tabs={tabs} 
-//         activeTab={activeTab} 
-//         basePath="/artisan/dashboard" 
+//       <TabNav
+//         tabs={tabs}
+//         activeTab={activeTab}
+//         basePath="/artisan/dashboard"
 //         navClassName="flex flex-wrap items-center gap-8 font-inter font-medium"
 //       />
 //       <div className="mt-8">
@@ -77,71 +77,55 @@
 //     };
 // };
 
-
 // export default connect(mapStoreToProps, mapDispatchToProps)(Dashboard);
+
 import React, { useEffect, useState } from 'react';
 import DashboardHeader from './components/DashboardHeader';
 import RecentServices from './components/NewJobRequests';
 import { useLocation, useParams } from 'react-router-dom';
 import TabNav from '../../../components/Navigation/TabNav';
-import { connect, useSelector } from 'react-redux';
-import { userAction } from '../../../redux/User/UserAction';
-import { artisanProposalAction, negotiateAction } from '../../../redux/Proposals/ProposalAction';
-import { jobIdAction } from '../../../redux/Jobs/JobsAction';
+import { useUser } from '../../../contexts/UserContext';
+import { useArtisan } from '../../../contexts/ArtisanContext';
+import { useProposal } from '../../../contexts/ProposalContext';
+import { useJobs } from '../../../contexts/JobsContext';
 
-const Dashboard = ({
-  loading,
-  error,
-  data,
-  getuser,
-  getProposal,
-  proposalData,
-  proposalLoading,
-  getProposedJob,
-  proposedJobsData,
-  getNegotiations,
-  negotiations,
-  negotiationsLoading
-}) => {
+const Dashboard = () => {
   const location = useLocation();
   const { tab: activeTab = 'new' } = useParams();
   const [services, setServices] = useState([]);
   const [proposedJobs, setProposedJobs] = useState([]);
   const [fetchedJobDetails, setFetchedJobDetails] = useState({});
   const [proposalNegotiations, setProposalNegotiations] = useState({});
-  
-  const email = location?.state?.email;
-  const userEmail = useSelector((state) => state.login.data?.email || state.user?.data?.email);
-  const currentUserId = data?.data?.id;
-
-  useEffect(() => {
-    getuser();
-  }, []);
+  const { user, loading: userLoading } = useUser();
+  const { artisan } = useArtisan();
+  const { proposals, loading: proposalLoading, getProposals, getNegotiations, negotiations } = useProposal();
+  const { getJobById } = useJobs();
+  const currentUserId = user?.id;
 
   // Fetch proposals when switching to proposals tab
   useEffect(() => {
     if (activeTab === 'proposals') {
-      getProposal();
+      getProposals && getProposals();
     }
-  }, [activeTab, getProposal]);
+  }, [activeTab, getProposals]);
 
   // Fetch negotiations for each proposal when proposal data is available
   useEffect(() => {
-    if (proposalData && proposalData.length > 0 && activeTab === 'proposals') {
-      proposalData.forEach(proposal => {
+    if (proposals && proposals.length > 0 && activeTab === 'proposals') {
+      proposals.forEach((proposal) => {
         if (proposal.id && !proposalNegotiations[proposal.id]) {
-          getNegotiations(proposal.id);
+          getNegotiations && getNegotiations(proposal.id);
         }
       });
     }
-  }, [proposalData, activeTab, getNegotiations, proposalNegotiations]);
+  }, [proposals, activeTab, getNegotiations, proposalNegotiations]);
 
   // Store negotiations data when it's received
   useEffect(() => {
     if (negotiations && negotiations.data) {
       const proposalId = negotiations.proposalId || negotiations.data.proposalId;
       if (proposalId) {
-        setProposalNegotiations(prev => ({
+        setProposalNegotiations((prev) => ({
           ...prev,
           [proposalId]: negotiations.data
         }));
@@ -151,26 +135,17 @@ const Dashboard = ({
 
   // Handle proposal data and fetch corresponding job details
   useEffect(() => {
-    if (proposalData && proposalData.length > 0 && activeTab === 'proposals') {
-      const jobListingIds = [...new Set(proposalData.map(proposal => proposal.jobListingId))];
-
-      jobListingIds.forEach(jobId => {
-        if (!fetchedJobDetails[jobId]) {
-          getProposedJob(jobId);
+    if (proposals && proposals.length > 0 && activeTab === 'proposals') {
+      const jobListingIds = [...new Set(proposals.map((proposal) => proposal.jobListingId))];
+      jobListingIds.forEach((jobId) => {
+        if (!fetchedJobDetails[jobId] && getJobById) {
+          getJobById(jobId).then((job) => {
+            setFetchedJobDetails((prev) => ({ ...prev, [jobId]: job }));
+          });
         }
       });
     }
-  }, [proposalData, getProposedJob, fetchedJobDetails, activeTab]);
-
-  // Store fetched job details when proposedJobsData changes
-  useEffect(() => {
-    if (proposedJobsData && proposedJobsData.id) {
-      setFetchedJobDetails(prev => ({
-        ...prev,
-        [proposedJobsData.id]: proposedJobsData
-      }));
-    }
-  }, [proposedJobsData]);
+  }, [proposals, getJobById, fetchedJobDetails, activeTab]);
 
   // Helper functions
   const canAcceptNegotiation = (proposal) => {
@@ -187,11 +162,10 @@ const Dashboard = ({
 
   // Merge proposal data with job details and negotiation info
   useEffect(() => {
-    if (proposalData && proposalData.length > 0 && activeTab === 'proposals') {
-      const mergedData = proposalData.map(proposal => {
+    if (proposals && proposals.length > 0 && activeTab === 'proposals') {
+      const mergedData = proposals.map((proposal) => {
         const jobDetails = fetchedJobDetails[proposal.jobListingId];
         const negotiations = proposalNegotiations[proposal.id] || [];
-        
         return {
           ...proposal,
           jobDetails: jobDetails || null,
@@ -210,42 +184,28 @@ const Dashboard = ({
           hasNegotiation: hasOngoingNegotiation(proposal.id),
           senderId: proposal.senderId,
           currentUserId: currentUserId,
-          // Additional fields for compatibility
           category: 'proposals'
         };
       });
-
       setProposedJobs(mergedData);
       setServices(mergedData); // Set services to proposed jobs for the proposals tab
     } else if (activeTab !== 'proposals') {
-      // For other tabs, set empty services to show "no jobs available"
       setServices([]);
     }
-  }, [proposalData, fetchedJobDetails, proposalNegotiations, currentUserId, activeTab]);
+  }, [proposals, fetchedJobDetails, proposalNegotiations, currentUserId, activeTab]);
 
   // Original fetch for other tabs (keeping the structure but making them empty)
   useEffect(() => {
     if (activeTab !== 'proposals') {
-      const fetchData = async () => {
-        try {
-          // For non-proposal tabs, we'll just set empty services
-          // This ensures "no jobs available" message is shown
-          setServices([]);
-        } catch (err) {
-          console.error('Error:', err);
-        }
-      };
-
-      fetchData();
+      setServices([]);
     }
   }, [activeTab]);
 
   const tabs = [
-     { id: 'proposals', label: 'Proposal Sent' },
+    { id: 'proposals', label: 'Proposal Sent' },
     { id: 'new', label: 'New Job Requests' },
     { id: 'in-progress', label: 'Jobs In Progress' },
     { id: 'today', label: "Today's Jobs" }
-   
   ];
 
   // Determine current loading state
@@ -253,31 +213,29 @@ const Dashboard = ({
     if (activeTab === 'proposals') {
       return proposalLoading;
     }
-    return loading;
+    return userLoading;
   };
 
   const currentLoading = getCurrentLoading();
-  
+
   return (
     <>
-      <DashboardHeader data={data}/>
-      <TabNav 
-        tabs={tabs} 
-        activeTab={activeTab} 
-        basePath="/artisan/dashboard" 
+      <DashboardHeader data={user} />
+      <TabNav
+        tabs={tabs}
+        activeTab={activeTab}
+        basePath="/artisan/dashboard"
         navClassName="flex flex-wrap items-center gap-8 font-inter font-medium"
       />
       <div className="mt-8">
         {currentLoading ? (
           <div className="text-center py-10">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-            <p className="mt-2 text-gray-600">
-              {activeTab === 'proposals' ? 'Loading proposals...' : 'Loading...'}
-            </p>
+            <p className="mt-2 text-gray-600">{activeTab === 'proposals' ? 'Loading proposals...' : 'Loading...'}</p>
           </div>
         ) : (
-          <RecentServices 
-            services={services} 
+          <RecentServices
+            services={services}
             activeTab={activeTab}
             isProposalsTab={activeTab === 'proposals'}
             proposalLoading={proposalLoading}
@@ -288,27 +246,4 @@ const Dashboard = ({
   );
 };
 
-const mapStoreToProps = (state) => {
-  console.log(state);
-  return {
-    loading: state?.user?.loading,
-    error: state?.user?.error,
-    data: state?.user?.data,
-    proposalData: state?.artisanProposal?.data?.data,
-    proposalLoading: state?.artisanProposal?.loading,
-    proposedJobsData: state?.singleJob?.data?.data,
-    negotiations: state?.negotiate?.data?.data,
-    negotiationsLoading: state?.negotiate?.loading,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getuser: () => dispatch(userAction()),
-    getProposal: () => dispatch(artisanProposalAction()),
-    getProposedJob: (id) => dispatch(jobIdAction(id)),
-    getNegotiations: (proposalId) => dispatch(negotiateAction(proposalId)),
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(Dashboard);
+export default Dashboard;

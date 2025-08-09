@@ -7,10 +7,10 @@ import Pagination from '../../../components/Pagination';
 import TabNav from '../../../components/Navigation/TabNav';
 import ServiceTable from '../../../components/Tables/ServiceTable';
 import PageHeader from '../../../components/PageHeader/PageHeader';
-import { jobAction } from '../../../redux/Jobs/JobsAction';
-import { connect } from 'react-redux';
+import { useJobs } from '../../../contexts/JobsContext.jsx';
 
-const MyJobs = ({ getJob, loading, jobsData, error }) => {
+const MyJobs = () => {
+  const { state, fetchJobs } = useJobs();
   const { tab: activeTab = 'posted' } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -173,7 +173,7 @@ const MyJobs = ({ getJob, loading, jobsData, error }) => {
   useEffect(() => {
     const apiFilters = buildApiFilters();
     console.log('Fetching jobs with filters:', apiFilters);
-    getJob(apiFilters);
+    fetchJobs(apiFilters);
   }, [buildApiFilters, getJob]);
 
   // Reset filters when tab changes
@@ -229,6 +229,9 @@ const MyJobs = ({ getJob, loading, jobsData, error }) => {
   };
 
   // Get transformed jobs data
+  const jobsData = state.jobs.data;
+  const loading = state.jobs.loading;
+  const error = state.jobs.error;
   const transformedJobs = jobsData?.data?.map(transformJobData) || [];
   const totalPages = jobsData?.totalPages || 0;
   const totalRecords = jobsData?.totalRecords || 0;
@@ -472,19 +475,4 @@ const MyJobs = ({ getJob, loading, jobsData, error }) => {
   );
 };
 
-const mapStoreToProps = (state) => {
-  console.log(state);
-  return {
-    loading: state?.jobs?.loading,
-    jobsData: state?.jobs?.data,
-    error: state?.jobs?.error
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getJob: (filters) => dispatch(jobAction(filters))
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(MyJobs);
+export default MyJobs;

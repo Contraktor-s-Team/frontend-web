@@ -1,75 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import {
-  ArrowLeft,
-  Map,
-  MessageSquareText,
-  Phone,
-  ChevronRight,
-} from 'lucide-react';
+import { ArrowLeft, Map, MessageSquareText, Phone, ChevronRight } from 'lucide-react';
 import { GoStarFill } from 'react-icons/go';
 import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
 import { FaRegBookmark } from 'react-icons/fa6';
-import { connect, useDispatch } from 'react-redux';
-import { setArtisanDetails } from '../../../redux/slices/hireArtisanSlice';
-import { getArtisanIdAction } from '../../../redux/Artisan/ArtisanAction';
+import { useArtisan } from '../../../contexts/ArtisanContext';
 
-const ArtisanDetails = ({
-  getArtisan,
-  data,
-  loading: artisanLoading,
-  error
-}) => {
+const ArtisanDetails = () => {
   const { artisanId, tab } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  // Transform API data to match UI expectations
-  const transformArtisanData = (apiData) => {
-    if (!apiData || !apiData.user) return null;
-
-    const user = apiData.user;
-    const subcategories = apiData.subcategories?.result || [];
-    
-    // Get primary specialty from first subcategory
-    const primarySpecialty = subcategories.length > 0 
-      ? subcategories[0].subcategory.name 
-      : 'General Services';
-
-    // Get all service names
-    const services = subcategories.map(sub => sub.subcategory.name);
-
-    return {
-      id: user.id,
-      name: `${user.firstName} ${user.lastName}`,
-      specialty: primarySpecialty,
-      rating: 4.5, // Default rating - you might want to fetch this from another endpoint
-      reviewCount: 0, // Default - you might want to fetch this from another endpoint
-      location: user.address || 'Location not specified',
-      available: user.isActive,
-      phoneNumber: user.phoneNumber || '------------',
-      email: user.email,
-      languages: ['English'], // Default - you might want to add this to your API
-      image: user.imageUrl || Avatar,
-      about: `Professional ${primarySpecialty} with years of experience in the field.`, // Default bio
-      priceRange: '₦5,000 - ₦50,000', // Default - you might want to add this to your API
-      availabilitySchedule: 'Monday - Saturday, 8AM - 6PM', // Default
-      services: services,
-      serviceAreas: 'Lagos, Nigeria', // Default - you might want to add this to your API
-      workPhotos: [], // Default empty array - you might want to add this to your API
-      reviews: [] // Default empty array - you might want to fetch from another endpoint
-    };
-  };
-
-  // Get transformed artisan data
-  const artisan = data ? transformArtisanData(data) : null;
+  const { artisan, loading: artisanLoading, error, fetchArtisanById, setHireArtisanDetails } = useArtisan();
 
   useEffect(() => {
-    if (artisanId) {
-      getArtisan(artisanId);
+    if (artisanId && fetchArtisanById) {
+      fetchArtisanById(artisanId);
     }
-  }, [artisanId, getArtisan]);
+  }, [artisanId, fetchArtisanById]);
 
   console.log('API Data:', data);
   console.log('Transformed Artisan:', artisan);
@@ -78,34 +25,28 @@ const ArtisanDetails = ({
   const handleBack = () => {
     navigate(-1);
   };
-  
+
   // Handle hiring the artisan
   const handleHireArtisan = () => {
-    if (artisan) {
-      dispatch(setArtisanDetails({
+    if (artisan && setHireArtisanDetails) {
+      setHireArtisanDetails({
         id: artisan.id,
         name: artisan.name,
         specialty: artisan.specialty,
         rating: artisan.rating,
         image: artisan.image,
         location: artisan.location,
-        availability: artisan.available ? "Available" : "Not Available",
+        availability: artisan.available ? 'Available' : 'Not Available',
         languages: Array.isArray(artisan.languages) ? artisan.languages.join(', ') : artisan.languages
-      }));
+      });
     }
-    
-    // Navigate to the hire artisan workflow with the new route structure
     navigate(`/customer/hire-artisan/${tab}/${artisanId}/describe`);
   };
 
   if (artisanLoading) {
     return <div className="p-6">Loading artisan details...</div>;
   }
-  const hasError = error && (
-    error.message || 
-    error.error || 
-    (typeof error === 'string' && error.length > 0)
-  );
+  const hasError = error && (error.message || error.error || (typeof error === 'string' && error.length > 0));
 
   if (hasError) {
     return (
@@ -144,11 +85,15 @@ const ArtisanDetails = ({
       <div className="flex items-center justify-between my-6.25 ">
         <h3 className="font-manrope text-2xl font-semibold">Artisan Details</h3>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" className='capitalize' onClick={handleHireArtisan}>hire this artisan</Button>
-          <Button variant="grey-sec" rightIcon={<FaRegBookmark size={20} />} className='capitalize'>
+          <Button variant="secondary" className="capitalize" onClick={handleHireArtisan}>
+            hire this artisan
+          </Button>
+          <Button variant="grey-sec" rightIcon={<FaRegBookmark size={20} />} className="capitalize">
             save for later
           </Button>
-          <Button variant="destructive-sec" className='capitalize'>report artisan</Button>
+          <Button variant="destructive-sec" className="capitalize">
+            report artisan
+          </Button>
         </div>
       </div>
 
@@ -224,11 +169,7 @@ const ArtisanDetails = ({
 
               {/* Right side - Image */}
               <div className="relative">
-                <img
-                  src={artisan.image}
-                  alt={artisan.name}
-                  className="w-26.25 h-26.25 rounded-full object-cover"
-                />
+                <img src={artisan.image} alt={artisan.name} className="w-26.25 h-26.25 rounded-full object-cover" />
               </div>
             </div>
 
@@ -237,9 +178,7 @@ const ArtisanDetails = ({
               <div className="flex items-baseline">
                 <span className="text-neu-norm-2">Biography</span>
               </div>
-              <p className="font-medium">
-                {artisan.about}
-              </p>
+              <p className="font-medium">{artisan.about}</p>
             </div>
           </div>
 
@@ -334,7 +273,11 @@ const ArtisanDetails = ({
                   <div className="grid grid-cols-3 gap-3">
                     {artisan.workPhotos.map((photo, index) => (
                       <div key={index} className="h-[100px] bg-gray-200 rounded-lg">
-                        <img src={photo} alt={`work-photo-${index}`} className="w-full h-full object-cover rounded-lg" />
+                        <img
+                          src={photo}
+                          alt={`work-photo-${index}`}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                       </div>
                     ))}
                   </div>
@@ -378,9 +321,7 @@ const ArtisanDetails = ({
                   </div>
                 ))
               ) : (
-                <div className="text-neu-norm-2 text-center py-8">
-                  No reviews available yet
-                </div>
+                <div className="text-neu-norm-2 text-center py-8">No reviews available yet</div>
               )}
             </div>
           </div>
@@ -390,19 +331,4 @@ const ArtisanDetails = ({
   );
 };
 
-const mapStoreToProps = (state) => {
-  console.log('Redux State:', state);
-  return {
-    loading: state?.artisan?.loading,
-    data: state?.artisan?.data,
-    error: state?.artisan?.error,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getArtisan: (id) => dispatch(getArtisanIdAction(id)),
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(ArtisanDetails);
+export default ArtisanDetails;

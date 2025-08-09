@@ -5,32 +5,16 @@ import { ArrowLeft, Map, Check, MessageSquareText, Banknote, RotateCw, Download,
 import { GoStarFill } from 'react-icons/go';
 import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
-import { connect } from 'react-redux';
-import { deleteJobAction, jobIdAction } from '../../../redux/Jobs/JobsAction';
-import { jobProposalAction, negotiateAction, negotiateProposalAction } from '../../../redux/Proposals/ProposalAction';
+import { useJobs } from '../../../contexts/JobsContext.jsx';
+import { useProposal } from '../../../contexts/ProposalContext.jsx';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
 import SuccessModal from '../../../components/Modal/SuccessModal';
 import ConfirmationModal from '../../../components/Modal/ComfirmationModal';
 import SuccessPopup from '../../../components/Modal/SuccessPopup';
 
-const JobDetails = ({
-  getJobId,
-  userData,
-  loading,
-  data,
-  error,
-  getJobProposals,
-  proposals,
-  negotiateProposal,
-  getNegotiations,
-  negotiations,
-  negotiationsLoading,
-  negotiationsError,
-  deleteJob,
-  deleteLoading,
-  deleteSuccess,
-  deleteError
-}) => {
+const JobDetails = () => {
+  const { state: jobsState, fetchJobById, deleteJob } = useJobs();
+  const { state: proposalState, fetchJobProposal, fetchNegotiation, negotiateProposal } = useProposal();
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState(data);
@@ -56,15 +40,15 @@ const JobDetails = ({
   };
 
   useEffect(() => {
-    getJobId(jobId);
-    getJobProposals(jobId);
+    fetchJobById(jobId);
+    fetchJobProposal(jobId);
   }, [jobId]);
 
   useEffect(() => {
-    if (data) {
-      setJob(data);
+    if (jobsState.jobById.data) {
+      setJob(jobsState.jobById.data);
     }
-  }, [data]);
+  }, [jobsState.jobById.data]);
 
   // Handle back navigation while preserving tab state
   const handleBack = () => {
@@ -74,7 +58,7 @@ const JobDetails = ({
 
   const openModal = (proposal) => {
     setSelectedProposal(proposal);
-    getNegotiations(proposal.id);
+    fetchNegotiation(proposal.id);
     setIsOpen(true);
   };
 
@@ -110,6 +94,16 @@ const JobDetails = ({
       console.error('Failed to delete job:', deleteError);
     }
   }, [deleteError]);
+  const loading = jobsState.jobById.loading;
+  const error = jobsState.jobById.error;
+  const proposals = proposalState.jobProposal.data?.data;
+  const negotiations = proposalState.negotiate.data;
+  const negotiationsLoading = proposalState.negotiate.loading;
+  const negotiationsError = proposalState.negotiateProposal.error;
+  const deleteLoading = jobsState.jobDelete.loading;
+  const deleteSuccess = jobsState.jobDelete.data?.isSuccess;
+  const deleteError = jobsState.jobDelete.error;
+  const userData = {}; // TODO: get user data from context if needed
   if (loading) {
     return <div className="p-6">Loading job details...</div>;
   }
@@ -521,31 +515,4 @@ const JobDetails = ({
     </div>
   );
 };
-const mapStoreToProps = (state) => {
-  console.log(state);
-  return {
-    userData: state?.user?.data?.data,
-    loading: state?.singleJob?.loading,
-    data: state?.singleJob?.data?.data,
-    error: state?.singleJob?.error,
-    proposals: state?.jobProposals?.data?.data,
-    negotiations: state?.negotiate?.data,
-    negotiationsLoading: state?.negotiate?.loading,
-    negotiationsError: state?.negotiateProposal?.error,
-    deleteLoading: state?.deleteJob?.loading,
-    deleteSuccess: state?.deleteJob?.data?.isSuccess,
-    deleteError: state?.deleteJob?.error
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getJobId: (id) => dispatch(jobIdAction(id)),
-    deleteJob: (id, history) => dispatch(deleteJobAction(id, history)),
-    getJobProposals: (id) => dispatch(jobProposalAction(id)),
-    negotiateProposal: (id, postState, history, errors) =>
-      dispatch(negotiateProposalAction(id, postState, history, errors)),
-    getNegotiations: (proposalId) => dispatch(negotiateAction(proposalId))
-  };
-};
-export default connect(mapStoreToProps, mapDispatchToProps)(JobDetails);
+export default JobDetails;

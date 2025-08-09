@@ -201,27 +201,14 @@
 // export default connect(mapStoreToProps, mapDispatchToProps)(DescribeJob);
 
 import React, { useEffect, useState } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { WorkflowButtons, JobDescriptionForm } from '../../../components/FormWorkflow';
-import { updateJobData } from '../../../redux/slices/jobPostSlice';
-import { categoryAction, subCategoryAction } from '../../../redux/Jobs/JobsAction';
+import { useJobPost } from '../../../contexts/JobPostContext';
+import { JobDescriptionForm } from '../../../components/FormWorkflow';
 import Button from '../../../components/Button';
 import { useNavigate } from 'react-router-dom';
 
-const DescribeJob = ({
-  getCategory,
-  getSubCategory,
-  loading,
-  error,
-  data,
-  subcategoryLoading,
-  subcategoryError,
-  subcategoryData
-}) => {
-  const dispatch = useDispatch();
-  const jobData = useSelector((state) => state.jobPost);
+const DescribeJob = () => {
+  const { state: jobData, dispatch } = useJobPost();
   const navigate = useNavigate();
-
   const [jobTitle, setJobTitle] = useState(jobData.jobTitle || '');
   const [category, setCategory] = useState(jobData.category || '');
   const [subcategory, setSubcategory] = useState(jobData.subcategory || '');
@@ -230,32 +217,24 @@ const DescribeJob = ({
   const [budgetType, setBudgetType] = useState(jobData.budgetType ?? false);
   const [budgetAmount, setBudgetAmount] = useState(jobData.budgetAmount || '');
 
-  // Track if form is valid
   const isFormValid = () => jobTitle && category && description;
-
-  // Handle file changes
   const handleFileChange = (newFiles) => {
     setFiles(newFiles);
   };
-
-  // CHANGE 1: Modified saveFormData to only save to Redux state, not submit to API
   const saveFormData = (e) => {
     e.preventDefault();
-
-    // Save all form data to Redux state for later submission
-    dispatch(
-      updateJobData({
+    dispatch({
+      type: 'UPDATE_JOB_DATA',
+      payload: {
         jobTitle,
         category,
         subcategory,
         description,
-        files, // Store actual files for later FormData creation
+        files,
         budgetType,
         budgetAmount
-      })
-    );
-
-    // Navigate to next step with current form data
+      }
+    });
     navigate('/customer/post-job/time-location', {
       state: {
         jobTitle,
@@ -267,32 +246,13 @@ const DescribeJob = ({
       }
     });
   };
-
-  const categoryOptions = data?.data?.map((item) => ({
-    value: item.id,
-    label: item.name
-  }));
-
-  useEffect(() => {
-    console.log('Fetching categories...');
-    try {
-      getCategory();
-    } catch (err) {
-      console.error('Error in useEffect:', err);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (category) {
-      getSubCategory(category);
-    }
-  }, [category]);
-
+  // TODO: Fetch categories/subcategories with context or hooks
+  const categoryOptions = [];
+  const subcategoryData = { data: [] };
   return (
     <div className="bg-white p-4 sm:p-6">
       <div className="max-w-full sm:max-w-[637px]">
         <h1 className="font-manrope text-2xl font-medium mb-8">What do you need done?</h1>
-
         <JobDescriptionForm
           jobTitle={jobTitle}
           setJobTitle={setJobTitle}
@@ -317,8 +277,6 @@ const DescribeJob = ({
           budgetAmount={budgetAmount}
           setBudgetAmount={setBudgetAmount}
         />
-
-        {/* Navigation buttons */}
         <div className="mt-14">
           <Button variant="primary" onClick={(e) => saveFormData(e)} disabled={!isFormValid()}>
             Save & Continue
@@ -328,23 +286,4 @@ const DescribeJob = ({
     </div>
   );
 };
-
-const mapStoreToProps = (state) => {
-  return {
-    loading: state?.category?.loading,
-    error: state?.category?.error,
-    data: state?.category?.data,
-    subcategoryLoading: state?.subcategory?.loading,
-    subcategoryError: state?.subcategory?.error,
-    subcategoryData: state?.subcategory?.data
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getCategory: () => dispatch(categoryAction()),
-    getSubCategory: (id) => dispatch(subCategoryAction(id))
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(DescribeJob);
+export default DescribeJob;

@@ -13,8 +13,13 @@ import ForgotPassword from './pages/Onboarding/ForgotPassword';
 import VerificationCode from './pages/Onboarding/VerificationCode';
 import CreateNewPassword from './pages/Onboarding/CreateNewPassword';
 
-import store from './redux/store';
-import { Provider } from 'react-redux';
+import { AuthProvider } from './contexts/AuthContext';
+import { JobsProvider } from './contexts/JobsContext';
+import { UserProvider } from './contexts/UserContext';
+import { ArtisanProvider } from './contexts/ArtisanContext';
+import { ProposalProvider } from './contexts/ProposalContext';
+import { JobPostProvider } from './contexts/JobPostContext';
+import { HireArtisanProvider } from './contexts/HireArtisanContext';
 
 // Customer Pages
 import CustomerDashboard from './pages/Customer/Dashboard/Dashboard';
@@ -67,13 +72,13 @@ const AppRoutes = () => {
   // Use the current location as the "under" location or the saved background location from state
   const backgroundLocation = location.state?.backgroundLocation || location;
 
-    // Determine user type based on the current route
-    const isArtisanRoute = location.pathname.startsWith('/artisan');
-    const userType = isArtisanRoute ? 'artisan' : 'customer';
+  // Determine user type based on the current route
+  const isArtisanRoute = location.pathname.startsWith('/artisan');
+  const userType = isArtisanRoute ? 'artisan' : 'customer';
 
   return (
     <>
-    <ErrorBoundary>
+      <ErrorBoundary>
         <Routes location={backgroundLocation}>
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
@@ -148,7 +153,7 @@ const AppRoutes = () => {
                 <Route path=":tab" element={<ArtisanMyJobs />} />
                 <Route path=":tab/:jobId" element={<ArtisanMyJobDetails />} />
               </Route>
-              {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */} 
+              {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */}
               <Route path="find-jobs">
                 <Route index element={<Navigate to="listings" replace />} />
                 <Route path=":tab" element={<ArtisanFindJob />} />
@@ -162,7 +167,6 @@ const AppRoutes = () => {
 
           {/* 404 - Not Found */}
           <Route path="*" element={<Navigate to={`/${userType}/dashboard`} replace />} />
- 
         </Routes>
 
         {/* Modal Routes - shown on top of the main UI when URL matches */}
@@ -178,17 +182,28 @@ const AppRoutes = () => {
 
 function App() {
   return (
-    <Provider store={store}>
-      <Router>
-        <ScrollToTop />
-        <AppRoutes />
-      </Router>
-    </Provider>
+    <AuthProvider>
+      <UserProvider>
+        <ArtisanProvider>
+          <JobsProvider>
+            <ProposalProvider>
+              <JobPostProvider>
+                <HireArtisanProvider>
+                  <Router>
+                    <ScrollToTop />
+                    <AppRoutes />
+                  </Router>
+                </HireArtisanProvider>
+              </JobPostProvider>
+            </ProposalProvider>
+          </JobsProvider>
+        </ArtisanProvider>
+      </UserProvider>
+    </AuthProvider>
   );
 }
 
 export default App;
-
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
