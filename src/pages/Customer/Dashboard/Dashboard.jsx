@@ -1,52 +1,47 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import DashboardHeader from './components/DashboardHeader';
 import RecentServices from './components/RecentServices';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import TabNav from '../../../components/Navigation/TabNav';
 import { useUser } from '../../../contexts/UserContext';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const { tab: activeTab = 'new' } = useParams();
-  const [services, setServices] = useState([]);
-  const { user, loading } = useUser();
+  const { tab: activeTab = 'posted' } = useParams();
+  const { state: userState, fetchCurrentUser } = useUser();
+  const user = userState.user.data;
+  const loading = userState.user.loading;
   const email = location?.state?.email;
 
   useEffect(() => {
-    // If user is not loaded yet, wait
-    if (loading) return;
-    if (!user) return;
-    const role = user.role;
-    if (!user.emailConfirmed) {
-      navigate('/signup');
+    // Only fetch if we don't have user data, we're not loading, and we have a valid token
+    const authData = localStorage.getItem('auth');
+    if (!authData) {
+      console.log('🚫 Customer Dashboard: No auth token found, skipping fetchCurrentUser');
       return;
     }
-    if (role === 'user') {
-      navigate('/customer/dashboard');
-    } else if (role === 'Artisan') {
-      navigate('/artisan/dashboard');
-    } else {
-      console.warn('Unknown role:', role);
-    }
-  }, [user, loading, navigate]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('/jobs.json');
-        if (!res.ok) {
-          throw new Error('Failed to fetch services');
-        }
-        const data = await res.json();
-        const filtedServices = data.filter((service) => service.tab === activeTab).slice(0, 5);
-        setServices(filtedServices);
-      } catch (err) {
-        console.error('Error:', err);
+    try {
+      const parsedAuth = JSON.parse(authData);
+      const hasToken = !!parsedAuth?.token;
+      const hasUserData = user?.data?.id || user?.id;
+
+      if (hasToken && !hasUserData && !loading) {
+        console.log('🚀 Customer Dashboard: Fetching current user with valid token');
+        fetchCurrentUser().catch((error) => {
+          console.error('Customer Dashboard: Failed to fetch current user:', error);
+        });
+      } else {
+        console.log('🚫 Customer Dashboard: Skipping fetchCurrentUser -', {
+          hasToken,
+          hasUserData: !!hasUserData,
+          isLoading: loading
+        });
       }
-    };
-    fetchData();
-  }, [activeTab]);
+    } catch (error) {
+      console.error('Customer Dashboard: Error parsing auth data:', error);
+    }
+  }, []); // Empty dependency array - only run once on mount
 
   const tabs = [
     { id: 'posted', label: 'Posted' },
@@ -64,7 +59,7 @@ const Dashboard = () => {
         navClassName="flex flex-wrap items-center gap-8 font-inter font-medium"
       />
       <div className="mt-8">
-        <RecentServices services={services} activeTab={activeTab} />
+        <RecentServices activeTab={activeTab} />
       </div>
     </>
   );

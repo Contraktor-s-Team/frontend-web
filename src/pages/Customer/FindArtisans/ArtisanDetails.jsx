@@ -1,16 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Map, MessageSquareText, Phone, ChevronRight } from 'lucide-react';
-import { GoStarFill } from 'react-icons/go';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import {
+  ArrowLeft,
+  MessageSquare,
+  MessageSquareText,
+  Heart,
+  Phone,
+  Star,
+  MapPin,
+  CheckCircle,
+  Clock,
+  Shield,
+  ChevronRight,
+  Map
+} from 'lucide-react';
 import Button from '../../../components/Button/Button';
+import { GoStarFill } from 'react-icons/go';
+import PageHeader from '../../../components/PageHeader/PageHeader';
+import { useUser } from '../../../contexts/UserContext';
+import { useArtisan } from '../../../contexts/ArtisanContext';
+import { useHireArtisan } from '../../../contexts/HireArtisanContext';
+import FallbackImage from '../../../components/FallbackImage';
 import Avatar from '/img/avatar1.jpg';
 import { FaRegBookmark } from 'react-icons/fa6';
-import { useArtisan } from '../../../contexts/ArtisanContext';
 
 const ArtisanDetails = () => {
   const { artisanId, tab } = useParams();
   const navigate = useNavigate();
-  const { artisan, loading: artisanLoading, error, fetchArtisanById, setHireArtisanDetails } = useArtisan();
+  const { state: artisanState, fetchArtisanById } = useArtisan();
+  const { dispatch } = useHireArtisan();
+
+  // Extract data from the correct state structure
+  const artisanData = artisanState.artisan.data;
+  const loading = artisanState.artisan.loading;
+  const error = artisanState.artisan.error;
+
+  // Transform API response to match component expectations
+  const artisan = artisanData
+    ? {
+        id: artisanData.user?.id,
+        name: `${artisanData.user?.firstName || ''} ${artisanData.user?.lastName || ''}`.trim(),
+        firstName: artisanData.user?.firstName,
+        lastName: artisanData.user?.lastName,
+        email: artisanData.user?.email,
+        phone: artisanData.user?.phoneNumber,
+        imageUrl: artisanData.user?.imageUrl,
+        available: artisanData.user?.isAvailable,
+        specialty: artisanData.subcategories?.result?.[0]?.subcategory?.name || 'General Services',
+        services: artisanData.subcategories?.result?.map((item) => item.subcategory) || [],
+        location: artisanData.user?.address || 'Location not specified',
+        rating: 4.5, // Default rating since not in API response
+        reviewCount: 0, // Default review count since not in API response
+        languages: ['English'], // Default languages since not in API response
+        workPhotos: [], // Default empty array since not in API response
+        reviews: [], // Default empty array since not in API response
+        description:
+          artisanData.subcategories?.result?.[0]?.subcategory?.description ||
+          'Professional artisan ready to help with your needs.'
+      }
+    : null;
 
   useEffect(() => {
     if (artisanId && fetchArtisanById) {
@@ -18,8 +66,10 @@ const ArtisanDetails = () => {
     }
   }, [artisanId, fetchArtisanById]);
 
-  console.log('API Data:', data);
-  console.log('Transformed Artisan:', artisan);
+  console.log('Artisan State:', artisanState);
+  console.log('Artisan Data:', artisan);
+  console.log('Loading:', loading);
+  console.log('Error:', error);
 
   // Handle back navigation
   const handleBack = () => {
@@ -28,22 +78,25 @@ const ArtisanDetails = () => {
 
   // Handle hiring the artisan
   const handleHireArtisan = () => {
-    if (artisan && setHireArtisanDetails) {
-      setHireArtisanDetails({
-        id: artisan.id,
-        name: artisan.name,
-        specialty: artisan.specialty,
-        rating: artisan.rating,
-        image: artisan.image,
-        location: artisan.location,
-        availability: artisan.available ? 'Available' : 'Not Available',
-        languages: Array.isArray(artisan.languages) ? artisan.languages.join(', ') : artisan.languages
+    if (artisan && dispatch) {
+      dispatch({
+        type: 'SET_ARTISAN_DETAILS',
+        payload: {
+          id: artisan.id,
+          name: artisan.name,
+          specialty: artisan.specialty,
+          rating: artisan.rating,
+          image: artisan.imageUrl,
+          location: artisan.location,
+          availability: artisan.available ? 'Available' : 'Not Available',
+          languages: Array.isArray(artisan.languages) ? artisan.languages.join(', ') : artisan.languages || 'English'
+        }
       });
     }
     navigate(`/customer/hire-artisan/${tab}/${artisanId}/describe`);
   };
 
-  if (artisanLoading) {
+  if (loading) {
     return <div className="p-6">Loading artisan details...</div>;
   }
   const hasError = error && (error.message || error.error || (typeof error === 'string' && error.length > 0));
@@ -77,7 +130,7 @@ const ArtisanDetails = () => {
       <div className="">
         <p className="capitalize text-sm text-pri-norm-1">
           <Link to="/customer/artisans/all">browse artisans</Link> /{' '}
-          <Link to={`/customer/artisans/${artisanId}`}>{artisanId === '1' ? 'all artisans' : 'saved artisans'}</Link> /{' '}
+          <Link to={`/customer/artisans/${tab || 'all'}`}>{tab === 'saved' ? 'saved artisans' : 'all artisans'}</Link> /{' '}
           <span className="text-black">artisan details</span>
         </p>
       </div>
@@ -156,20 +209,27 @@ const ArtisanDetails = () => {
                       </div>
                     )
                   },
-                  { label: 'Phone Number', value: artisan.phoneNumber },
+                  { label: 'Phone Number', value: artisan.phone || 'Not provided' },
                   { label: 'Email', value: artisan.email },
-                  { label: 'Languages', value: artisan.languages?.join(', ') || 'English' }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-6">
-                    <span className="text-neu-norm-2">{item.label}</span>
-                    {item.custom ? item.render() : <span>{item.value}</span>}
-                  </div>
-                ))}
+                  { label: 'Languages', value: artisan.languages?.join(', ') || 'English' },
+                  { label: 'Description', value: artisan.description }
+                ]
+                  .filter((item) => item.value || item.custom)
+                  .map((item, index) => (
+                    <div key={index} className="flex items-center gap-6">
+                      <span className="text-neu-norm-2">{item.label}</span>
+                      {item.custom ? item.render() : <span>{item.value}</span>}
+                    </div>
+                  ))}
               </div>
 
               {/* Right side - Image */}
               <div className="relative">
-                <img src={artisan.image} alt={artisan.name} className="w-26.25 h-26.25 rounded-full object-cover" />
+                <FallbackImage
+                  src={artisan.imageUrl}
+                  alt={artisan.name}
+                  className="w-26.25 h-26.25 rounded-full object-cover"
+                />
               </div>
             </div>
 
@@ -178,7 +238,9 @@ const ArtisanDetails = () => {
               <div className="flex items-baseline">
                 <span className="text-neu-norm-2">Biography</span>
               </div>
-              <p className="font-medium">{artisan.about}</p>
+              <p className="font-medium">
+                {artisan.description || 'Professional artisan ready to help with your needs.'}
+              </p>
             </div>
           </div>
 
@@ -225,11 +287,14 @@ const ArtisanDetails = () => {
               <div className="mb-6">
                 <span className="text-neu-norm-2 block mb-4">Subcategories</span>
                 <div className="flex flex-wrap gap-3">
-                  {artisan.services.length > 0 ? (
+                  {artisan.services && artisan.services.length > 0 ? (
                     artisan.services.map((service, index) => (
-                      <span key={index} className="bg-neu-light-1 text-neu-dark-1 px-4 py-2 rounded-full text-sm">
-                        {service}
-                      </span>
+                      <div key={index} className="bg-neu-light-1 text-neu-dark-1 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-sm">{service.name}</div>
+                        {service.description && (
+                          <div className="text-xs text-neu-norm-2 mt-1">{service.description}</div>
+                        )}
+                      </div>
                     ))
                   ) : (
                     <span className="text-neu-norm-2">No specific services listed</span>
@@ -239,13 +304,24 @@ const ArtisanDetails = () => {
 
               <div className="mb-6">
                 <span className="text-neu-norm-2 block mb-4">Service Areas</span>
-                <p className="">{artisan.serviceAreas}</p>
+                <p className="">{artisan.location || 'Service areas not specified'}</p>
               </div>
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-8">
                   <span className="text-neu-norm-2">Base Location</span>
-                  <span className="">{artisan.location}</span>
+                  <span className="">{artisan.location || 'Location not specified'}</span>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <div className="flex items-baseline gap-8">
+                  <span className="text-neu-norm-2">Email Verified</span>
+                  <span
+                    className={`${artisanData?.user?.emailConfirmed ? 'text-success-norm-3' : 'text-warning-norm-3'}`}
+                  >
+                    {artisanData?.user?.emailConfirmed ? 'Verified' : 'Not Verified'}
+                  </span>
                 </div>
               </div>
 
@@ -269,7 +345,7 @@ const ArtisanDetails = () => {
 
               <div>
                 <span className="text-neu-norm-2 block mb-4">Work Photos</span>
-                {artisan.workPhotos.length > 0 ? (
+                {artisan.workPhotos && artisan.workPhotos.length > 0 ? (
                   <div className="grid grid-cols-3 gap-3">
                     {artisan.workPhotos.map((photo, index) => (
                       <div key={index} className="h-[100px] bg-gray-200 rounded-lg">
@@ -317,7 +393,9 @@ const ArtisanDetails = () => {
                       <p className="flex-1 text-neu-norm-2">{review.user}</p>
                     </div>
 
-                    {index !== artisan.reviews.length - 1 && <div className="h-0.25 bg-neu-light-3 my-5.5"></div>}
+                    {index !== (artisan.reviews?.length || 0) - 1 && (
+                      <div className="h-0.25 bg-neu-light-3 my-5.5"></div>
+                    )}
                   </div>
                 ))
               ) : (

@@ -6,70 +6,61 @@ import LoaderComp from '../../../assets/animation/loader';
 import google from '../../../assets/google.png';
 import facebook from '../../../assets/facebook.png';
 import PasswordChecker from '../../../components/Form/PasswordChecker';
-import { connect } from 'react-redux';
-import { externalRegister } from '../../../redux/Auth/Register/RegisterAction';
-const CreateAccountForm = ({ 
-  onNext, 
-  onInputChange, 
-  loading, 
-  error, 
-  formData,
-  isError,
-  setErrors,
-  externalRegister,
-  setStep
-}) => {
+import { useAuth } from '../../../contexts/AuthContext';
+
+const CreateAccountForm = ({ onNext, onInputChange, loading, error, formData, isError, setErrors, setStep }) => {
+  const { externalRegister } = useAuth();
   const [validationErrors, setValidationErrors] = useState({});
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [touched, setTouched] = useState({});
-  console.log("this is error", error)
+  console.log('this is error', error);
   // Email validation
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) return "Email is required";
-    if (!emailRegex.test(email)) return "Please enter a valid email address";
-    return "";
+    if (!email) return 'Email is required';
+    if (!emailRegex.test(email)) return 'Please enter a valid email address';
+    return '';
   };
 
   // Password validation
   const validatePassword = (password) => {
-    if (!password) return "Password is required";
-    if (password.length < 8) return "Password must be at least 8 characters long";
-    if (!/(?=.*[a-z])/.test(password)) return "Password must contain at least one lowercase letter";
-    if (!/(?=.*[A-Z])/.test(password)) return "Password must contain at least one uppercase letter";
-    if (!/(?=.*\d)/.test(password)) return "Password must contain at least one number";
-    if (!/(?=.*[@$!%*?&])/.test(password)) return "Password must contain at least one special character";
-    return "";
+    if (!password) return 'Password is required';
+    if (password.length < 8) return 'Password must be at least 8 characters long';
+    if (!/(?=.*[a-z])/.test(password)) return 'Password must contain at least one lowercase letter';
+    if (!/(?=.*[A-Z])/.test(password)) return 'Password must contain at least one uppercase letter';
+    if (!/(?=.*\d)/.test(password)) return 'Password must contain at least one number';
+    if (!/(?=.*[@$!%*?&])/.test(password)) return 'Password must contain at least one special character';
+    return '';
   };
 
   const handleInputChange = (field, value) => {
     onInputChange(field, value);
-    
+
     // Mark field as touched
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
 
     // Validate the field
-    let error = "";
-    if (field === "email") {
+    let error = '';
+    if (field === 'email') {
       error = validateEmail(value);
-    } else if (field === "password") {
+    } else if (field === 'password') {
       error = validatePassword(value);
     }
 
-    setValidationErrors(prev => ({
+    setValidationErrors((prev) => ({
       ...prev,
       [field]: error
     }));
   };
 
-   // Handle form submission
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Validate all fields
-    const emailError = validateEmail(formData.email || "");
-    const passwordError = validatePassword(formData.password || "");
-    const termsError = !isTermsAccepted ? "You must accept the Terms & Conditions" : "";
+    const emailError = validateEmail(formData.email || '');
+    const passwordError = validatePassword(formData.password || '');
+    const termsError = !isTermsAccepted ? 'You must accept the Terms & Conditions' : '';
 
     const newErrors = {
       email: emailError,
@@ -81,8 +72,8 @@ const CreateAccountForm = ({
     setTouched({ email: true, password: true, terms: true });
 
     // Check if there are any errors
-    const hasErrors = Object.values(newErrors).some(error => error !== "");
-    
+    const hasErrors = Object.values(newErrors).some((error) => error !== '');
+
     if (!hasErrors) {
       onNext(e);
     }
@@ -91,20 +82,18 @@ const CreateAccountForm = ({
   // Check if form is valid
   const isFormValid = () => {
     return (
-      formData.email &&
-      formData.password &&
-      isTermsAccepted &&
-      !validationErrors.email &&
-      !validationErrors.password
+      formData.email && formData.password && isTermsAccepted && !validationErrors.email && !validationErrors.password
     );
   };
-  
-  console.log("CreateAccountForm Rendered with error:", error);
+
+  console.log('CreateAccountForm Rendered with error:', error);
   return (
-    <div className=''>
+    <div className="">
       <div className="space-y-2">
-        <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Create Your CONTRAK’TOR Account</h3>
-        <p className="font-inter font-medium text-[#101928] text-sm md:text-base">Sign up in seconds by entering your basic details</p>
+        <h3 className="font-manrope font-bold text-[#101928] text-2xl md:text-3xl">Create Your Contraktor Account</h3>
+        <p className="font-inter font-medium text-[#101928] text-sm md:text-base">
+          Sign up in seconds by entering your basic details
+        </p>
       </div>
 
       {isError && (
@@ -112,7 +101,11 @@ const CreateAccountForm = ({
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div className="ml-3">
@@ -120,9 +113,9 @@ const CreateAccountForm = ({
                 {typeof error === 'string' ? error : 'An error occurred'}
               </h3> */}
               {/* {typeof error === 'object' && error.data.message && ( */}
-                <div className="text-sm text-red-700">
-                  <p>{error}</p>
-                </div>
+              <div className="text-sm text-red-700">
+                <p>{error}</p>
+              </div>
               {/* )} */}
               {/* {typeof error === 'object' && error.errors && (
                 <div className="mt-2 text-sm text-red-700">
@@ -139,16 +132,16 @@ const CreateAccountForm = ({
           </div>
         </div>
       )}
-      <form className="mt-[48px] w-full" >
+      <form className="mt-[48px] w-full">
         <TextInput
           id="email"
           label="Email Address"
           placeholder="Enter your email address"
           className="mb-[40px]"
-          onChange={(e) => handleInputChange("email", e.target.value)}
+          onChange={(e) => handleInputChange('email', e.target.value)}
           type="email"
           required
-          value={formData.email || ""}
+          value={formData.email || ''}
           isError={touched.email && validationErrors.email}
           errorMessage={validationErrors.email}
         />
@@ -160,15 +153,13 @@ const CreateAccountForm = ({
           type="password"
           className="mb-[10px]"
           trailingIcon={<FiEye className="text-[#98A2B3] text-xl" />}
-          onChange={(e) => handleInputChange("password", e.target.value)}
+          onChange={(e) => handleInputChange('password', e.target.value)}
           required
-          value={formData.password || ""}
+          value={formData.password || ''}
           isError={touched.password && validationErrors.password}
           errorMessage={validationErrors.password}
         />
-         {formData.password && (
-          <PasswordChecker password={formData.password} />
-        )}
+        {formData.password && <PasswordChecker password={formData.password} />}
         <div className="mt-6">
           <div className="flex items-start">
             <Checkbox
@@ -176,19 +167,17 @@ const CreateAccountForm = ({
               checked={isTermsAccepted}
               onChange={(e) => {
                 setIsTermsAccepted(e.target.checked);
-                setTouched(prev => ({ ...prev, terms: true }));
+                setTouched((prev) => ({ ...prev, terms: true }));
                 if (e.target.checked) {
-                  setValidationErrors(prev => ({ ...prev, terms: "" }));
+                  setValidationErrors((prev) => ({ ...prev, terms: '' }));
                 } else {
-                  setValidationErrors(prev => ({ ...prev, terms: "You must accept the Terms & Conditions" }));
+                  setValidationErrors((prev) => ({ ...prev, terms: 'You must accept the Terms & Conditions' }));
                 }
               }}
               required
             />
             <label htmlFor="terms" className="ml-2 text-sm text-gray-700 font-medium font-inter">
-              I agree to the{' '}
-              <span className="text-pri-norm-1">Terms & Conditions</span>
-              {' '}and{' '}
+              I agree to the <span className="text-pri-norm-1">Terms & Conditions</span> and{' '}
               <span className="text-pri-norm-1">Privacy Policy</span>
             </label>
           </div>
@@ -196,46 +185,61 @@ const CreateAccountForm = ({
             <p className="mt-1 text-sm text-red-600">{validationErrors.terms}</p>
           )}
         </div>
-  
-        <Button 
-          size='large'
-          variant="primary" 
-          className="w-full mt-[38px] py-[11px] h-[52px]" 
+
+        <Button
+          size="large"
+          variant="primary"
+          className="w-full mt-[38px] py-[11px] h-[52px]"
           type="button"
           onClick={handleSubmit}
           disabled={loading || !isFormValid()}
         >
-          {loading ? (
-            <LoaderComp/>
-          ) : (
-            "Create Account"
-          )}  
+          {loading ? <LoaderComp /> : 'Create Account'}
         </Button>
 
         <div className="mt-6 flex items-center justify-center">
-            <div className="w-full border-t border-gray-200" />
-            <div className="px-2 text-sm text-gray-500 font-manrope font-medium">OR</div>
-            <div className="w-full border-t border-gray-200" />
-          </div>
-
+          <div className="w-full border-t border-gray-200" />
+          <div className="px-2 text-sm text-gray-500 font-manrope font-medium">OR</div>
+          <div className="w-full border-t border-gray-200" />
+        </div>
 
         <div className="md:flex md:justify-between md:gap-4 mt-6">
           <Button
-            size='large'
+            size="large"
             variant="grey-sec"
             type="button"
             className="w-full justify-center gap-2 py-3 mb-[14px]"
-            onClick={() => externalRegister("Google",() => {setStep(3)},() => {setErrors(true)})}
+            onClick={() =>
+              externalRegister(
+                'Google',
+                () => {
+                  setStep(3);
+                },
+                () => {
+                  setErrors(true);
+                }
+              )
+            }
           >
             <img src={google} alt="Google" className="w-5 h-5" />
             <span>Google</span>
           </Button>
           <Button
-            size='large'
+            size="large"
             variant="grey-sec"
             type="button"
             className="w-full justify-center gap-2 py-3 mb-[14px]"
-            onClick={() => externalRegister("Facebook",() => {setStep(3)},() => {setErrors(true)})}  
+            onClick={() =>
+              externalRegister(
+                'Facebook',
+                () => {
+                  setStep(3);
+                },
+                () => {
+                  setErrors(true);
+                }
+              )
+            }
           >
             <img src={facebook} alt="Facebook" className="w-5 h-5" />
             <span>Facebook</span>
@@ -246,19 +250,4 @@ const CreateAccountForm = ({
   );
 };
 
-
-const mapStoreToProps = (state) => {
-    console.log(state)
-    return {
-        loading: state?.register?.loading,
-        error: state?.register?.error,
-        data: state?.register?.data,
-    };
-};
-const mapDispatchToProps = (dispatch) => {
-    return {
-      externalRegister: (providerName, history, error) => dispatch(externalRegister(providerName, history, error)),
-    };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(CreateAccountForm);
+export default CreateAccountForm;

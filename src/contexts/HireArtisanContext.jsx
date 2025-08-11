@@ -1,4 +1,6 @@
-import React, { createContext, useReducer, useContext } from 'react';
+import React, { createContext, useReducer, useContext, useCallback } from 'react';
+import axios from 'axios';
+import { handleAuthError, getAuthToken } from '../utils/authUtils';
 
 const initialState = {
   jobTitle: '',
@@ -17,7 +19,8 @@ const initialState = {
     lga: '',
     state: ''
   },
-  artisan: null
+  artisan: null,
+  hireArtisan: { loading: false, data: {}, error: {} }
 };
 
 function hireArtisanReducer(state, action) {
@@ -48,6 +51,13 @@ function hireArtisanReducer(state, action) {
       return { ...state, address: { ...state.address, ...action.payload } };
     case 'SET_ARTISAN_DETAILS':
       return { ...state, artisan: action.payload };
+    // Hire Artisan API actions
+    case 'HIRE_ARTISAN_REQUEST':
+      return { ...state, hireArtisan: { ...state.hireArtisan, loading: true } };
+    case 'HIRE_ARTISAN_SUCCESS':
+      return { ...state, hireArtisan: { loading: false, data: action.payload, error: {} } };
+    case 'HIRE_ARTISAN_FAILURE':
+      return { ...state, hireArtisan: { loading: false, data: {}, error: action.payload } };
     default:
       return state;
   }
@@ -57,7 +67,85 @@ const HireArtisanContext = createContext();
 
 export function HireArtisanProvider({ children }) {
   const [state, dispatch] = useReducer(hireArtisanReducer, initialState);
-  return <HireArtisanContext.Provider value={{ state, dispatch }}>{children}</HireArtisanContext.Provider>;
+
+  const baseUrl = 'https://distrolink-001-site1.anytempurl.com/api';
+
+  const hireArtisan = useCallback(async (postState, artisanId, price, onSuccess, onError) => {
+    dispatch({ type: 'HIRE_ARTISAN_REQUEST' });
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      // Build URL with artisanId and price as query parameters
+      const url = `${baseUrl}/ArtisanDiscovery?artisanId=${encodeURIComponent(artisanId)}&price=${encodeURIComponent(
+        price
+      )}`;
+
+      // Comprehensive payload logging
+      console.log('🚀 HireArtisan API Call - Complete Payload Debug:');
+      console.log('═══════════════════════════════════════════════════');
+      console.log('📡 URL:', url);
+      console.log('🔑 Auth Token (first 20 chars):', token.substring(0, 20) + '...');
+      console.log('💰 Price:', price);
+      console.log('👤 Artisan ID:', artisanId);
+
+      console.log('\n📦 FormData Contents:');
+      const formDataObj = {};
+      for (let [key, value] of postState.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}: [FILE] ${value.name} (${value.size} bytes, ${value.type})`);
+          formDataObj[key] = `[FILE] ${value.name} (${value.size} bytes)`;
+        } else {
+          console.log(`${key}:`, value);
+          formDataObj[key] = value;
+        }
+      }
+
+      console.log('\n🔍 Complete Request Summary:');
+      console.log('URL Parameters:', { artisanId, price });
+      console.log('FormData Object:', formDataObj);
+      console.log('═══════════════════════════════════════════════════');
+
+      const res = await axios.post(url, postState, {
+        headers: {
+          Authorization: `Bearer ${token}`
+          // Don't set Content-Type manually for FormData - let axios handle it
+        }
+      });
+
+      console.log('✅ HireArtisan Success Response:', res.data);
+      dispatch({ type: 'HIRE_ARTISAN_SUCCESS', payload: res.data });
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      console.error('HireArtisan Error Details:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        headers: error.response?.headers,
+        message: error.message
+      });
+
+      // Log specific validation errors if available
+      if (error.response?.data?.errors) {
+        console.error('Validation errors:', error.response.data.errors);
+        Object.entries(error.response.data.errors).forEach(([field, messages]) => {
+          console.error(`${field}:`, messages);
+        });
+      }
+
+      // Handle authentication errors first
+      if (handleAuthError(error)) {
+        return; // Early return if redirected to login
+      }
+
+      dispatch({ type: 'HIRE_ARTISAN_FAILURE', payload: error?.response?.data || error.message });
+      if (onError) onError();
+    }
+  }, []);
+
+  return <HireArtisanContext.Provider value={{ state, dispatch, hireArtisan }}>{children}</HireArtisanContext.Provider>;
 }
 
 export function useHireArtisan() {

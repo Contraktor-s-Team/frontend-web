@@ -39,6 +39,23 @@ const Login = () => {
     setShowPopup(false);
   };
 
+  // Helper function to get redirect path based on user role
+  const getRedirectPath = (authData) => {
+    try {
+      const user = authData?.user || authData;
+      const role = user?.role || user?.data?.role;
+
+      if (role === 'artisan' || role === 'Artisan') {
+        return '/artisan/dashboard/new';
+      } else {
+        return '/customer/dashboard/posted';
+      }
+    } catch (error) {
+      console.error('Error determining redirect path:', error);
+      return '/customer/dashboard/posted'; // Default fallback
+    }
+  };
+
   const handleSubmit = async (e) => {
     setErrors(false);
     e.preventDefault();
@@ -50,7 +67,10 @@ const Login = () => {
       await login(
         userData,
         () => {
-          navigate('/customer/dashboard', { state: { email: userData.email } });
+          // Get auth data from login response
+          const authData = authState.login.data;
+          const redirectPath = getRedirectPath(authData);
+          navigate(redirectPath, { state: { email: userData.email } });
         },
         () => {
           setErrors(true);
@@ -60,9 +80,32 @@ const Login = () => {
       console.error('Login failed:', error);
     }
   };
-  useEffect(() => {
-    fetchCurrentUser();
-  }, []);
+
+  // Only fetch current user if we have a valid token and no existing user data
+  // Remove this useEffect - it's causing the infinite loop on login page
+  // The user data will be fetched after successful login navigation
+
+  // useEffect(() => {
+  //   const authData = localStorage.getItem('auth');
+  //   if (!authData) {
+  //     return;
+  //   }
+
+  //   try {
+  //     const parsedAuth = JSON.parse(authData);
+  //     const hasToken = !!parsedAuth?.token;
+  //     const hasUserData = userState.user.data?.data?.id || userState.user.data?.id;
+  //     const isLoading = userState.user.loading;
+
+  //     if (hasToken && !hasUserData && !isLoading) {
+  //       fetchCurrentUser().catch((error) => {
+  //         console.error('Login: Failed to fetch current user:', error);
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error('Login: Error parsing auth data:', error);
+  //   }
+  // }, []); // Empty dependency array - only run once on mount
   // useEffect(() => {
   //   if(data.userId){
   //     if (user && user?.data) {
@@ -192,7 +235,9 @@ const Login = () => {
               className="w-full justify-center gap-2 py-3"
               onClick={() =>
                 externalLogin('Google', () => {
-                  navigate('/customer/dashboard', { state: { email: authState.login.data?.email } });
+                  const authData = authState.login.data;
+                  const redirectPath = getRedirectPath(authData);
+                  navigate(redirectPath, { state: { email: authState.login.data?.email } });
                 })
               }
             >
@@ -224,7 +269,6 @@ const Login = () => {
 };
 
 const mapStoreToProps = (state) => {
-  console.log(state);
   return {
     loading: state?.login?.loading,
     error: state?.login?.error,

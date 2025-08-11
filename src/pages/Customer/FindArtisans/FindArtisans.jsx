@@ -21,7 +21,17 @@ const FindArtisans = () => {
   const [availabilityFilter, setAvailabilityFilter] = useState('availability');
   const [ratingFilter, setRatingFilter] = useState('rating');
   const [priceFilter, setPriceFilter] = useState('price');
-  const { artisans: data, loading, error, fetchAllArtisans } = useArtisan();
+  const { state: artisanState, fetchAllArtisans } = useArtisan();
+
+  // Extract data from the correct state structure
+  const data = artisanState.allArtisans.data;
+  const loading = artisanState.allArtisans.loading;
+  const error = artisanState.allArtisans.error;
+
+  // Debug logging
+  console.log('FindArtisans - Raw data from context:', data);
+  console.log('FindArtisans - Loading state:', loading);
+  console.log('FindArtisans - Error state:', error);
 
   useEffect(() => {
     fetchAllArtisans && fetchAllArtisans();
@@ -61,8 +71,10 @@ const FindArtisans = () => {
   };
 
   useEffect(() => {
-    if (data && Array.isArray(data)) {
-      let transformedArtisans = transformArtisanData(data);
+    // Check for data from the API response - it might be nested in data.data
+    const artisanData = data?.data || data;
+    if (artisanData && Array.isArray(artisanData)) {
+      let transformedArtisans = transformArtisanData(artisanData);
       let filteredArtisans = [...transformedArtisans];
 
       // Filter by saved tab
@@ -182,103 +194,6 @@ const FindArtisans = () => {
       </div>
     );
   }
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await fetch('/artisans.json');
-  //       const json = await res.json();
-  //       let filteredArtisans = [...json];
-
-  //       // Filter by saved tab
-  //       if (activeTab === 'saved') {
-  //         filteredArtisans = filteredArtisans.filter((artisan) => artisan.saved);
-  //       }
-
-  //       // Apply search filtering
-  //       if (searchQuery.trim() !== '') {
-  //         const query = searchQuery.toLowerCase().trim();
-  //         filteredArtisans = filteredArtisans.filter((artisan) => {
-  //           // Search in multiple fields
-  //           return (
-  //             artisan.name.toLowerCase().includes(query) ||
-  //             artisan.specialty.toLowerCase().includes(query) ||
-  //             artisan.location.toLowerCase().includes(query) ||
-  //             (artisan.description && artisan.description.toLowerCase().includes(query)) ||
-  //             artisan.services.some(service => service.toLowerCase().includes(query))
-  //           );
-  //         });
-  //       }
-
-  //       // Filter by category (specialty)
-  //       if (categoryFilter !== 'category') {
-  //         const formattedCategory = categoryFilter.replace(/-/g, ' ');
-  //         filteredArtisans = filteredArtisans.filter(
-  //           (artisan) => artisan.specialty.toLowerCase() === formattedCategory
-  //         );
-  //       }
-
-  //       // Filter by location
-  //       if (locationFilter !== 'location') {
-  //         const formattedLocation = locationFilter.replace(/-/g, ' ');
-  //         filteredArtisans = filteredArtisans.filter(
-  //           (artisan) => artisan.location.toLowerCase().includes(formattedLocation)
-  //         );
-  //       }
-
-  //       // Filter by availability
-  //       if (availabilityFilter !== 'availability') {
-  //         const isAvailable = availabilityFilter === 'available';
-  //         filteredArtisans = filteredArtisans.filter(
-  //           (artisan) => artisan.available === isAvailable
-  //         );
-  //       }
-
-  //       // Filter by rating
-  //       if (ratingFilter !== 'rating') {
-  //         const minRating = parseFloat(ratingFilter);
-  //         filteredArtisans = filteredArtisans.filter(
-  //           (artisan) => artisan.rating >= minRating
-  //         );
-  //       }
-
-  //       // Filter by price range
-  //       if (priceFilter !== 'price') {
-  //         filteredArtisans = filteredArtisans.filter(artisan => {
-  //           // Extract numeric values from price range (assuming format like "₦6,000 – ₦15,000")
-  //           const priceText = artisan.priceRange;
-  //           const priceMatch = priceText.match(/₦([\d,]+)\s*[–-]\s*₦([\d,]+)/);
-
-  //           if (priceMatch) {
-  //             const minPrice = parseInt(priceMatch[1].replace(/,/g, ''));
-  //             const maxPrice = parseInt(priceMatch[2].replace(/,/g, ''));
-
-  //             switch(priceFilter) {
-  //               case 'under-5000':
-  //                 return minPrice < 5000;
-  //               case '5000-10000':
-  //                 return minPrice >= 5000 && maxPrice <= 10000;
-  //               case '10000-15000':
-  //                 return minPrice >= 10000 && maxPrice <= 15000;
-  //               case 'above-15000':
-  //                 return maxPrice > 15000;
-  //               default:
-  //                 return true;
-  //             }
-  //           }
-  //           return true;
-  //         });
-  //       }
-
-  //       setArtisans(filteredArtisans);
-  //     } catch (err) {
-  //       console.error('Error:', err);
-  //     }
-  //   };
-
-  //   fetchData();
-  //   setCurrentPage(1); // Reset to first page when filters change
-  // }, [activeTab, searchQuery, categoryFilter, locationFilter, availabilityFilter, ratingFilter, priceFilter]); // Add searchQuery to the dependencies
 
   // Calculate pagination
   const indexOfLastArtisan = currentPage * resultsPerPage;

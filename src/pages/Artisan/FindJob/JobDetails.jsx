@@ -3,26 +3,30 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Map, MessageSquareText, Phone } from 'lucide-react';
 import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
-import { jobIdAction } from '../../../redux/Jobs/JobsAction';
-import { connect } from 'react-redux';
+import { useJobListings } from '../../../contexts/JobListingContext';
+import { useProposal } from '../../../contexts/ProposalContext';
+import { useUser } from '../../../contexts/UserContext';
 import QuoteModal from '../../../components/Modal/QuoteModal';
-import { jobProposalAction, negotiateAction, postProposalAction } from '../../../redux/Proposals/ProposalAction';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
+import FallbackImage from '../../../components/FallbackImage';
 
-const JobDetails = ({
-  getJobId,
-  loading,
-  data,
-  postProposal,
-  getNegotiations,
-  getJobProposals,
-  negotiations,          
-  negotiationsLoading,
-  userData,
-  proposalData
-}) => {
+const JobDetails = () => {
+  console.log('🚀 JobDetails component is mounting/rendering');
+  
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
+  
+  console.log('🔍 JobDetails: tab from useParams:', tab, 'jobId:', jobId);
+  const { fetchJobListingById, state: jobListingState } = useJobListings();
+  const { fetchJobProposal, fetchNegotiation, submitProposal, state: proposalState } = useProposal();
+
+  const loading = jobListingState.jobListingById.loading;
+  const data = jobListingState.jobListingById.data;
+  const error = jobListingState.jobListingById.error;
+  const proposalData = proposalState.jobProposal?.data;
+  const negotiations = proposalState.negotiate?.data;
+  const negotiationsLoading = proposalState.negotiate?.loading;
+
   const [job, setJob] = useState(null);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isNegotiationModalOpen, setIsNegotiationModalOpen] = useState(false);
@@ -30,39 +34,47 @@ const JobDetails = ({
   const [proposalNegotiations, setProposalNegotiations] = useState([]);
 
   // Get current user info
+  const { state: userState } = useUser();
+  const userData = userState.user;
   const currentUserId = userData?.data?.id;
-  const currentUserRole = userData?.data?.role || "User"; // Assuming role is available
+  const currentUserRole = userData?.data?.role || 'User'; // Assuming role is available
 
   useEffect(() => {
-    getJobId(jobId);
-    getJobProposals(jobId);
-  }, [jobId, tab]);
+    console.log('🔍 JobDetails: useParams jobId:', jobId);
+    console.log('🔍 JobDetails: current tab:', tab);
+    if (jobId) {
+      console.log('🔍 JobDetails: Calling fetchJobListingById with ID:', jobId);
+      fetchJobListingById(jobId);
+      fetchJobProposal(jobId);
+    }
+  }, [jobId, tab, fetchJobListingById, fetchJobProposal]);
 
   useEffect(() => {
-    if (data) {
-      setJob(data);
+    if (data?.data) {
+      setJob(data.data);
     }
   }, [data]);
 
-  // Find the current user's proposal for this job when in requests tab
+  // Find the current user's proposal for this job when in proposal-sent tab
   useEffect(() => {
-    if (tab === 'requests' && proposalData && currentUserId) {
-      // Find the proposal that matches current user and current job
-      const userProposal = proposalData.find(proposal => 
-        proposal.senderId === currentUserId && proposal.jobListingId === jobId
-      );
-      
+    if (tab === 'proposal-sent' && proposalData?.data && currentUserId) {
+      // The proposalData.data should be an array of proposals for this job
+      const proposals = Array.isArray(proposalData.data) ? proposalData.data : [proposalData.data];
+
+      // Find the proposal that matches current user
+      const userProposal = proposals.find((proposal) => proposal.senderId === currentUserId);
+
       if (userProposal) {
         setSelectedProposal(userProposal);
         // Fetch negotiations for this proposal
-        getNegotiations(userProposal.id);
+        fetchNegotiation(userProposal.id);
       }
     }
-  }, [tab, proposalData, currentUserId, jobId, getNegotiations]);
+  }, [tab, proposalData, currentUserId, jobId, fetchNegotiation]);
 
   // Update negotiations when they are received
   useEffect(() => {
-    if (negotiations && negotiations.data) {
+    if (negotiations?.data) {
       if (Array.isArray(negotiations.data)) {
         setProposalNegotiations(negotiations.data);
       } else {
@@ -113,12 +125,26 @@ const JobDetails = ({
     setTimeout(() => {
       if (successCallback) successCallback();
       // Refresh negotiations after successful submission
-      getNegotiations(proposalId);
+      fetchNegotiation(proposalId);
     }, 1000);
   };
 
   if (loading) {
     return <div className="p-6">Loading job details...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <Button variant="destructive-sec" onClick={handleBack} leftIcon={<ArrowLeft size={20} />}>
+          Back to {tab}
+        </Button>
+        <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">
+          <h3 className="font-medium mb-2">Unable to load job details</h3>
+          <p className="text-sm">{typeof error === 'string' ? error : 'An error occurred while loading job details'}</p>
+        </div>
+      </div>
+    );
   }
 
   if (!job) {
@@ -134,7 +160,7 @@ const JobDetails = ({
 
   // Render action buttons based on tab and conditions
   const renderActionButtons = () => {
-    if (tab === 'listings') {
+    if (tab === 'requests') {
       return (
         <div className="flex items-center gap-5">
           <Button variant="secondary" onClick={openQuoteModal} className="px-4 py-3.75">
@@ -147,55 +173,51 @@ const JobDetails = ({
       );
     }
 
-    if (tab === 'requests') {
+    if (tab === 'proposal-sent') {
       // Check if current user is the sender of the proposal
       const isCurrentUserSender = selectedProposal?.senderId === currentUserId;
 
       if (isCurrentUserSender) {
-        // User is the artisan who sent the proposal
+        // User is the artisan who sent the proposal - they can only view status, no actions
+        let statusText = "Proposal Sent";
+        let statusClass = "bg-blue-100 text-blue-700";
+        
         if (hasOngoingNegotiation()) {
-          return (
-            <div className="flex items-center gap-5">
-              <Button 
-                variant="secondary" 
-                onClick={openNegotiationModal} 
-                className="px-4 py-3.75"
-              >
-                Renegotiate
-              </Button>
-              <Button variant="grey-sec" className="px-4 py-3.75">
-                Report Issue
-              </Button>
-            </div>
-          );
-        } else {
-          return (
-            <div className="flex items-center gap-5">
-              <Button variant="grey-sec" className="px-4 py-3.75">
-                View Status
-              </Button>
-              <Button variant="grey-sec" className="px-4 py-3.75">
-                Report Issue
-              </Button>
-            </div>
-          );
+          const latestNegotiation = proposalNegotiations[0];
+          if (latestNegotiation?.status === 'accepted') {
+            statusText = "Proposal Accepted";
+            statusClass = "bg-green-100 text-green-700";
+          } else if (latestNegotiation?.status === 'rejected') {
+            statusText = "Proposal Rejected";
+            statusClass = "bg-red-100 text-red-700";
+          } else {
+            statusText = "Awaiting Response";
+            statusClass = "bg-yellow-100 text-yellow-700";
+          }
         }
+        
+        return (
+          <div className="flex items-center gap-5">
+            <div className={`px-4 py-3 rounded-lg text-sm font-medium ${statusClass}`}>
+              {statusText}
+            </div>
+            <Button variant="grey-sec" className="px-4 py-3.75">
+              Report Issue
+            </Button>
+          </div>
+        );
       } else {
         // User is not the sender (they can accept/reject)
         if (hasOngoingNegotiation()) {
           return (
             <div className="flex items-center gap-5">
-              <button 
+              <button
                 onClick={handleAccept}
                 className="py-4 px-3.75 bg-success-norm-1 text-white text-sm font-medium rounded-full hover:bg-success-norm-2"
               >
                 Accept Offer
               </button>
-              <Button 
-                variant="secondary" 
-                onClick={openNegotiationModal} 
-                className="px-4 py-3.75"
-              >
+              <Button variant="secondary" onClick={openNegotiationModal} className="px-4 py-3.75">
                 Renegotiate
               </Button>
               <Button variant="grey-sec" className="px-4 py-3.75">
@@ -206,17 +228,13 @@ const JobDetails = ({
         } else {
           return (
             <div className="flex items-center gap-5">
-              <button 
+              <button
                 onClick={handleAccept}
                 className="py-4 px-3.75 bg-success-norm-1 text-white text-sm font-medium rounded-full hover:bg-success-norm-2"
               >
                 Accept Job
               </button>
-              <Button 
-                variant="destructive-sec" 
-                onClick={handleReject}
-                className="px-4 py-3.75"
-              >
+              <Button variant="destructive-sec" onClick={handleReject} className="px-4 py-3.75">
                 Reject Job
               </Button>
               <Button variant="grey-sec" className="px-4 py-3.75">
@@ -236,8 +254,8 @@ const JobDetails = ({
       {/* Breadcrumb */}
       <div className="">
         <p className="capitalize font-medium text-sm text-pri-norm-1">
-          <Link to="/artisan/find-jobs">Find Jobs</Link> / <Link to={`/artisan/jobs/${tab}`}>{tab}</Link>{' '}
-          / <span className="text-black">Job Details</span>
+          <Link to="/artisan/find-jobs">Find Jobs</Link> / <Link to={`/artisan/jobs/${tab}`}>{tab}</Link> /{' '}
+          <span className="text-black">Job Details</span>
         </p>
       </div>
 
@@ -254,14 +272,14 @@ const JobDetails = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-sm text-gray-600">Original Proposal</p>
-              <p className="text-xl font-bold">₦{selectedProposal.proposedPrice?.toLocaleString()}</p>
+              <p className="text-xl font-bold">₦{selectedProposal?.proposedPrice?.toLocaleString() || '0'}</p>
             </div>
             {hasOngoingNegotiation() && (
               <>
                 <div>
                   <p className="text-sm text-gray-600">Latest Offer</p>
                   <p className="text-xl font-bold text-blue-600">
-                    ₦{proposalNegotiations[0]?.proposedPrice?.toLocaleString()}
+                    ₦{proposalNegotiations[0]?.proposedPrice?.toLocaleString() || '0'}
                   </p>
                 </div>
                 <div>
@@ -276,9 +294,9 @@ const JobDetails = ({
           {hasOngoingNegotiation() && (
             <div className="mt-4 p-4 bg-white rounded-lg">
               <p className="text-sm text-gray-600 mb-2">Latest Message:</p>
-              <p className="text-gray-800">{proposalNegotiations[0]?.message}</p>
+              <p className="text-gray-800">{proposalNegotiations[0]?.message || 'No message available'}</p>
               <p className="text-xs text-gray-500 mt-2">
-                Sent {new Date(proposalNegotiations[0]?.sentAt).toLocaleString()}
+                Sent {proposalNegotiations[0]?.sentAt ? new Date(proposalNegotiations[0].sentAt).toLocaleString() : 'Unknown date'}
               </p>
             </div>
           )}
@@ -294,38 +312,48 @@ const JobDetails = ({
           <div className="space-y-6.5">
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span>Job Title:</span>
-              <span className="text-black">{job?.title}</span>
+              <span className="text-black">{job?.title || 'Untitled Job'}</span>
             </p>
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span>Category:</span>
-              <span className="text-black">{job?.subcategoryName}</span>
+              <span className="text-black">{job?.subcategoryName || 'Category not available'}</span>
+            </p>
+            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+              <span>Budget:</span>
+              <span className="text-black">₦{job?.budget ? job.budget.toLocaleString() : 'Not specified'}</span>
             </p>
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span>Date & Time:</span>
-              <span className="text-black">{job?.postedAt ? new Date(job.postedAt).toLocaleString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: true,
-                }) : 'N/A'}
+              <span className="text-black">
+                {job?.postedAt
+                  ? new Date(job.postedAt).toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true
+                    })
+                  : 'N/A'}
               </span>
             </p>
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span>Job Location:</span>
-              <span className="text-black">{job?.customer?.location ? job?.customer?.location : "Location Unavailable"}</span>
+              <span className="text-black">
+                {job?.customer?.location || job?.location || 'Location not specified'}
+              </span>
             </p>
             <Button
               variant="secondary"
               rightIcon={<Map size={20} />}
               onClick={() =>
                 window.open(
-                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.customer.location)}`,
+                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job?.customer?.location || job?.location || '')}`,
                   '_blank'
                 )
               }
               className="py-4.5 px-5.25"
+              disabled={!job?.customer?.location && !job?.location}
             >
               View Location on Map
             </Button>
@@ -334,7 +362,7 @@ const JobDetails = ({
           <div className="mt-10.25 space-y-10.5">
             <div className="space-y-4.25">
               <p className="font-medium text-neu-norm-2">Job Description</p>
-              <p className="font-medium">{job?.description}</p>
+              <p className="font-medium">{job?.description || 'No description available'}</p>
             </div>
             <div className="space-y-4.25">
               <p className="font-medium text-neu-norm-2">Attached Photos</p>
@@ -369,25 +397,34 @@ const JobDetails = ({
           </div>
           <div className="h-0.25 bg-neu-light-3 my-5.5"></div>
           <div className="space-y-6.5">
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-              <span>Name:</span>
-              <div className="flex items-center gap-2.5">
-                <img src={job?.customer?.avatar || Avatar} alt="customer" className="w-10 h-10 rounded-full" />
-                <div className="">{job?.customer?.name}</div>
+            {job?.customer || job?.userFullName ? (
+              <>
+                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+                  <span>Name:</span>
+                  <div className="flex items-center gap-2.5">
+                    <FallbackImage src={job?.customer?.avatar} alt="customer" className="w-10 h-10 rounded-full" />
+                    <div className="">{job?.customer?.name || job?.userFullName || 'Customer information unavailable'}</div>
+                  </div>
+                </p>
+                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+                  <span>Phone Number:</span>
+                  <span className="text-black">{job?.customer?.phone || 'Not available'}</span>
+                </p>
+                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+                  <span>Email:</span>
+                  <span className="text-black">{job?.customer?.email || 'Not available'}</span>
+                </p>
+                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+                  <span>Location:</span>
+                  <span className="text-black">{job?.customer?.location || job?.location || 'Location not specified'}</span>
+                </p>
+              </>
+            ) : (
+              <div className="text-center py-4 text-gray-500">
+                <p>Customer details will be available after applying to this job</p>
+                <p className="text-sm mt-2">Customer ID: {job?.userId || 'Not available'}</p>
               </div>
-            </p>
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-              <span>Phone Number:</span>
-              <span className="text-black">{job?.customer?.phone}</span>
-            </p>
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-              <span>Email:</span>
-              <span className="text-black">{job?.customer?.email}</span>
-            </p>
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-              <span>Location:</span>
-              <span className="text-black">{job?.customer?.location}</span>
-            </p>
+            )}
           </div>
         </div>
       </div>
@@ -398,7 +435,7 @@ const JobDetails = ({
         setIsOpen={setIsQuoteModalOpen}
         closeModal={() => setIsQuoteModalOpen(false)}
         job={job}
-        postProposal={postProposal}
+        postProposal={submitProposal}
       />
 
       {/* Negotiation Modal for requests tab */}
@@ -420,26 +457,4 @@ const JobDetails = ({
   );
 };
 
-const mapStoreToProps = (state) => {
-  console.log(state);
-  return {
-    loading: state?.singleJob?.loading,
-    data: state?.singleJob?.data?.data,
-    error: state?.singleJob?.error,
-    negotiations: state?.negotiate?.data,           
-    negotiationsLoading: state?.negotiate?.loading,
-    userData: state?.user?.data, // User data to get current user ID
-    proposalData: state?.artisanProposal?.data?.data, // All proposals to find current user's proposal
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getJobId: (id) => dispatch(jobIdAction(id)),
-    getJobProposals: (id) => dispatch(jobProposalAction(id)),
-    getNegotiations: (proposalId) => dispatch(negotiateAction(proposalId)),
-    postProposal: (postState, history, errors) => dispatch(postProposalAction(postState, history, errors)),
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(JobDetails);
+export default JobDetails;

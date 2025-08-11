@@ -1,7 +1,7 @@
 import React, { createContext, useReducer, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider, facebookProvider } from '../redux/Auth/Register/Config';
+import { auth, googleProvider, facebookProvider } from '../config/firebase';
 
 const initialState = {
   login: { loading: false, data: {}, error: {}, isAuthenticated: false, token: null },
@@ -88,8 +88,10 @@ export function AuthProvider({ children }) {
     dispatch({ type: 'LOGIN_REQUEST' });
     try {
       const res = await axios.post(`${baseUrl}/login`, postState);
+      console.log('Login response:', res.data);
       dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
       localStorage.setItem('auth', JSON.stringify(res.data));
+      console.log('Stored in localStorage:', JSON.stringify(res.data));
       if (onSuccess) onSuccess();
     } catch (error) {
       dispatch({ type: 'LOGIN_FAILURE', payload: error?.response?.data?.message || error.message });
@@ -225,7 +227,7 @@ export function AuthProvider({ children }) {
     try {
       const res = await axios.post(`${baseUrl}/confirm-email-validation`, postState);
       dispatch({ type: 'CONFIRM_EMAIL_SUCCESS', payload: res.data });
-      localStorage.removeItem('auth');
+      // Don't remove auth token - user should stay logged in after email confirmation
       if (onSuccess) onSuccess();
     } catch (error) {
       dispatch({ type: 'CONFIRM_EMAIL_FAILURE', payload: error?.response?.data?.message || error.message });

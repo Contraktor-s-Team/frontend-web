@@ -88,7 +88,6 @@ const ServiceTable = ({
   // Determine if this is for new job requests
   const isArtisanRoute = location.pathname.startsWith('/artisan');
   const isMyJobs = location.pathname.includes('/my-jobs');
-  console.log('this is items', items);
   return (
     <div className={`w-full overflow-x-auto font-inter font-medium ${containerClassName}`}>
       <table

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Search, Calendar, Plus, ChevronDown, AlertCircle } from 'lucide-react';
 import { Select, TextInput } from '../../../components/Form';
 import Button from '../../../components/Button/Button';
@@ -7,10 +7,10 @@ import Pagination from '../../../components/Pagination';
 import TabNav from '../../../components/Navigation/TabNav';
 import ServiceTable from '../../../components/Tables/ServiceTable';
 import PageHeader from '../../../components/PageHeader/PageHeader';
-import { useJobs } from '../../../contexts/JobsContext.jsx';
+import { useJobListings } from '../../../contexts/JobListingContext.jsx';
 
 const MyJobs = () => {
-  const { state, fetchJobs } = useJobs();
+  const { state, fetchJobListings } = useJobListings();
   const { tab: activeTab = 'posted' } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -81,7 +81,7 @@ const MyJobs = () => {
       setFilters(newFilters);
       updateUrlParams(newFilters);
     },
-    [filters, updateUrlParams]
+    [updateUrlParams] // Remove 'filters' from dependencies to prevent circular updates
   );
 
   // Build filters for API call based on current tab and filters
@@ -169,12 +169,12 @@ const MyJobs = () => {
     return tabFilters[tab] || {};
   };
 
-  // Fetch jobs when filters change
+  // Fetch job listings when filters change
   useEffect(() => {
     const apiFilters = buildApiFilters();
-    console.log('Fetching jobs with filters:', apiFilters);
-    fetchJobs(apiFilters);
-  }, [buildApiFilters, getJob]);
+    console.log('Fetching job listings with filters:', apiFilters);
+    fetchJobListings(apiFilters);
+  }, [buildApiFilters, fetchJobListings]);
 
   // Reset filters when tab changes
   useEffect(() => {
@@ -228,16 +228,16 @@ const MyJobs = () => {
     };
   };
 
-  // Get transformed jobs data
-  const jobsData = state.jobs.data;
-  const loading = state.jobs.loading;
-  const error = state.jobs.error;
-  const transformedJobs = jobsData?.data?.map(transformJobData) || [];
-  const totalPages = jobsData?.totalPages || 0;
-  const totalRecords = jobsData?.totalRecords || 0;
+  // Get transformed job listing data
+  const jobListingData = state.jobListings.data;
+  const loading = state.jobListings.loading;
+  const error = state.jobListings.error;
+  const transformedJobListings = jobListingData?.data?.map(transformJobData) || [];
+  const totalPages = jobListingData?.totalPages || 0;
+  const totalRecords = jobListingData?.totalRecords || 0;
 
-  console.log('Transformed Jobs:', transformedJobs);
-  console.log('Jobs Data:', jobsData);
+  console.log('Transformed Job Listings:', transformedJobListings);
+  console.log('Job Listing Data:', jobListingData);
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
@@ -332,7 +332,11 @@ const MyJobs = () => {
               {typeof error === 'string' ? error : 'There was an error loading your jobs. Please try again.'}
             </p>
             <div className="mt-6">
-              <Button onClick={() => getJob(buildApiFilters())} variant="primary" className="inline-flex items-center">
+              <Button
+                onClick={() => fetchJobs(buildApiFilters())}
+                variant="primary"
+                className="inline-flex items-center"
+              >
                 Try Again
               </Button>
             </div>
@@ -412,9 +416,9 @@ const MyJobs = () => {
         </div>
 
         {/* Table or Empty State */}
-        {transformedJobs.length > 0 ? (
+        {transformedJobListings.length > 0 ? (
           <ServiceTable
-            items={transformedJobs}
+            items={transformedJobListings}
             onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${job.id}`)}
             activeTab={activeTab}
             formatItemSlug={formatJobSlug}
@@ -438,14 +442,14 @@ const MyJobs = () => {
         )}
       </div>
       {/* Results summary */}
-      {!loading && transformedJobs.length > 0 && (
+      {!loading && transformedJobListings.length > 0 && (
         <div className="px-4 py-3 border-b border-gray-200 text-sm text-gray-600">
           Showing {(filters.pageNumber - 1) * filters.pageSize + 1} to{' '}
           {Math.min(filters.pageNumber * filters.pageSize, totalRecords)} of {totalRecords} jobs
         </div>
       )}
       {/* Pagination - only show if there are jobs */}
-      {transformedJobs.length > 0 && totalPages > 1 && (
+      {transformedJobListings.length > 0 && totalPages > 1 && (
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-700">Items per page:</span>

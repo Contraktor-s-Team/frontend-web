@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const TabNav = ({ tabs, activeTab, basePath, navClassName, preventDefaultOnActive = true }) => {
   return (
     <div className="border-b border-gray-200 mb-6">
-      <nav className={navClassName || "flex flex-wrap items-center gap-10"}>
+      <nav className={navClassName || 'flex flex-wrap items-center gap-10'}>
         {tabs.map((tab) => (
           <Link
             key={tab.id}
@@ -15,8 +15,11 @@ const TabNav = ({ tabs, activeTab, basePath, navClassName, preventDefaultOnActiv
                 : 'border-transparent text-neu-dark-1 hover:text-neu-dark-2 hover:border-neu-dark-2'
             }`}
             onClick={(e) => {
+              console.log('🔗 TabNav clicked:', `${basePath}/${tab.id}`);
+              console.log('🔗 Current activeTab:', activeTab);
               // Only prevent default if we're already on this tab and preventDefaultOnActive is true
               if (preventDefaultOnActive && activeTab === tab.id) {
+                console.log('🚫 Preventing navigation - already on this tab');
                 e.preventDefault();
               }
             }}

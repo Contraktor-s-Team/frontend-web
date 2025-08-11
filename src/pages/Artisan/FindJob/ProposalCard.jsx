@@ -1,9 +1,8 @@
 import React from 'react';
 import { Calendar, MapPin, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Button from '../../../components/Button/Button';
 
-const JobCard = ({ job, activeTab }) => {
+const ProposalCard = ({ proposal, activeTab }) => {
   const {
     subcategoryName,
     title,
@@ -16,17 +15,13 @@ const JobCard = ({ job, activeTab }) => {
     senderId,
     currentUserId,
     negotiations = []
-  } = job;
-
-  const isRequest = activeTab === 'proposal-sent';
+  } = proposal;
 
   // Check if the current user is the sender (artisan) of the proposal
   const isCurrentUserSender = senderId === currentUserId;
 
   // Render negotiation buttons based on conditions
   const renderNegotiationButtons = () => {
-    if (!isRequest) return null;
-
     // If user is the sender (artisan), they can only view status (no actions)
     if (isCurrentUserSender) {
       // Determine the status based on negotiations
@@ -84,12 +79,12 @@ const JobCard = ({ job, activeTab }) => {
     <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 hover:border-blue-200">
       {/* Clickable area for navigation */}
       <Link
-        to={`/artisan/find-jobs/${activeTab}/${job.id}`}
+        to={`/artisan/find-jobs/${activeTab}/${proposal.id}`}
         className="block"
         onClick={() => {
-          console.log('🔗 JobCard: Navigating to job with ID:', job.id);
-          console.log('🔗 JobCard: Job object:', job);
-          console.log('🔗 JobCard: Generated URL:', `/artisan/find-jobs/${activeTab}/${job.id}`);
+          console.log('🔗 ProposalCard: Navigating to proposal with ID:', proposal.id);
+          console.log('🔗 ProposalCard: Proposal object:', proposal);
+          console.log('🔗 ProposalCard: Generated URL:', `/artisan/find-jobs/${activeTab}/${proposal.id}`);
         }}
       >
         {/* Main content */}
@@ -100,7 +95,7 @@ const JobCard = ({ job, activeTab }) => {
               <span className="text-gray-600 font-medium text-sm">{subcategoryName}</span>
             </div>
             {/* Show negotiation indicator */}
-            {isRequest && hasNegotiation && (
+            {hasNegotiation && (
               <div className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Negotiating</div>
             )}
           </div>
@@ -125,9 +120,7 @@ const JobCard = ({ job, activeTab }) => {
             <p className="text-gray-900 text-sm font-medium">
               {customer?.name ? customer?.name : 'Customer Details Unavailable'}
             </p>
-            {isRequest && (
-              <p className="text-gray-600 text-xs">{isCurrentUserSender ? 'Your proposal' : 'Proposal received'}</p>
-            )}
+            <p className="text-gray-600 text-xs">{isCurrentUserSender ? 'Your proposal' : 'Proposal received'}</p>
           </div>
         </div>
 
@@ -153,7 +146,7 @@ const JobCard = ({ job, activeTab }) => {
         </div>
 
         {/* Show negotiation count and latest price */}
-        {isRequest && negotiations.length > 0 && (
+        {negotiations.length > 0 && (
           <div className="mt-4 p-3 bg-gray-50 rounded-lg">
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-600">Latest offer:</span>
@@ -168,20 +161,10 @@ const JobCard = ({ job, activeTab }) => {
 
       {/* Action buttons - outside the Link to prevent navigation conflicts */}
       <div className="mt-6.5">
-        <div className="flex gap-2">
-          {isRequest ? (
-            renderNegotiationButtons()
-          ) : (
-            <div className="">
-              <Button variant="primary" className="px-4.25 py-2">
-                Apply
-              </Button>
-            </div>
-          )}
-        </div>
+        <div className="flex gap-2">{renderNegotiationButtons()}</div>
       </div>
     </div>
   );
 };
 
-export default JobCard;
+export default ProposalCard;

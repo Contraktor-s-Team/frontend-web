@@ -1,14 +1,14 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import { FiUpload } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import Button from '../../../components/Button';
 import { Select, TextInput } from '../../../components/Form';
 import SelectField from '../../../components/Form/Select';
 import profile from '../../../assets/profile.png';
-import SuccessModal from '../../../components/Modal/SuccessModal';
-import { useNavigate } from 'react-router-dom';
 import TextAreaInput from '../../../components/Form/TextAreaInput';
 import { useUser } from '../../../contexts/UserContext';
 import { useArtisan } from '../../../contexts/ArtisanContext';
+import { useJobListings } from '../../../contexts/JobListingContext';
 import LoaderComp from '../../../assets/animation/loader';
 
 const options = [
@@ -26,29 +26,82 @@ const ProfileSetup = ({
   selectedServices = [],
   onToggleService
 }) => {
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = React.useState(false);
-  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
   const [category, setCategory] = React.useState('');
   const [subcategory, setSubcategory] = React.useState('');
   const [imageUploaded, setImageUploaded] = React.useState(false);
+  const [hasAttemptedImageUpload, setHasAttemptedImageUpload] = React.useState(false);
   const [error, setError] = React.useState(false);
   const [selectedService, setSelectedService] = React.useState('');
-  const { user, loading: userLoading, uploadProfileImage, profileLoading, profileError } = useUser();
-  const {
-    getCategories,
-    getSubCategories,
-    categories,
-    subcategories,
-    postAssignment,
-    assignmentLoading,
-    assignmentError
-  } = useArtisan();
+  const [hasAttemptedFetch, setHasAttemptedFetch] = React.useState(false);
+  const { state, uploadProfileImage } = useUser();
+  const { state: jobListingState, fetchCategories } = useJobListings();
+  const userState = state.user;
+  const profileLoading = state.updateUser.loading;
+  const profileError = state.updateUser.error;
+
+  // Debug the user state structure
+  console.log('🔍 ProfileSetup user state debug:', {
+    state,
+    userState,
+    userStateData: userState?.data,
+    userStateKeys: userState?.data ? Object.keys(userState.data) : null,
+    userStateType: typeof userState?.data
+  });
+
+  // Extract user data and ID
+  const user = userState?.data;
+  const userId = user?.data?.id || user?.id || user?.Id || user?.ID || user?.userId || user?.UserId;
+
+  console.log('🔍 User ID extraction debug:', {
+    user,
+    userId,
+    userKeys: user ? Object.keys(user) : null
+  });
+
+  const { postArtisanAssignment } = useArtisan();
+
+  // Get categories and subcategories from API
+  const categories = jobListingState.categories.data?.data || [];
+  const categoriesLoading = jobListingState.categories.loading;
+  const categoriesError = jobListingState.categories.error;
+
+  // Get subcategories for selected category
+  const selectedCategoryData = categories.find((cat) => cat.id === category);
+  const subcategories = selectedCategoryData?.subcategories || [];
   const { firstName = '', lastName = '', phoneNumber = '' } = formData;
 
+  // Fetch categories on component mount
+  useEffect(() => {
+    if (!hasAttemptedFetch) {
+      console.log('🔄 ProfileSetup: Attempting to fetch categories...');
+      setHasAttemptedFetch(true);
+      fetchCategories();
+    }
+  }, [fetchCategories, hasAttemptedFetch]);
+
+  // Debug logging when categories or selected category changes
+  useEffect(() => {
+    console.log('🔍 Categories state update:', {
+      categoriesLength: categories.length,
+      categoriesLoading,
+      selectedCategory: category,
+      selectedCategoryData,
+      subcategoriesLength: subcategories.length
+    });
+  }, [categories, categoriesLoading, category, selectedCategoryData, subcategories]);
+
   const handleServiceChange = (e) => {
-    setCategory(e.target.value);
+    const newCategory = e.target.value;
+    setCategory(newCategory);
+
+    // Clear selected services when category changes since subcategories will change
+    if (newCategory !== category) {
+      // Reset selected services in formData through parent component
+      onFormChange('selectedServices', []);
+    }
   };
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
@@ -110,12 +163,26 @@ const ProfileSetup = ({
     try {
       // First, upload the profile image if one exists
       if (formData.profileImage && !imageUploaded) {
-        const formDataImage = new FormData();
-        formDataImage.append('image', formData.profileImage);
-        formDataImage.append('UserId', user?.id);
+        console.log('🔧 ProfileSetup: Preparing image upload', {
+          hasImage: !!formData.profileImage,
+          imageType: formData.profileImage?.type,
+          imageSize: formData.profileImage?.size,
+          userId: userId,
+          userIdType: typeof userId,
+          userState: userState,
+          user: user
+        });
 
+        const formDataImage = new FormData();
+        // Try different field name variations that APIs commonly expect
+        formDataImage.append('image', formData.profileImage); // lowercase 'image'
+        formDataImage.append('UserId', userId?.toString()); // ensure UserId is string
+
+        console.log('🔧 FormData contents:', Array.from(formDataImage.entries()));
+
+        setHasAttemptedImageUpload(true);
         await new Promise((resolve, reject) => {
-          profileUser(
+          uploadProfileImage(
             formDataImage,
             () => {
               setImageUploaded(true);
@@ -132,14 +199,20 @@ const ProfileSetup = ({
       // Then proceed with assignment creation (for artisans)
       if (formData.role === 'artisan' || user?.role === 'Artisan') {
         const postState = {
-          artisanId: user?.id,
+          artisanId: userId,
           subCategoryIds: formData?.selectedServices
         };
 
-        postAssignment(
+        console.log('🔧 Creating artisan assignment with:', {
+          artisanId: userId,
+          selectedServices: formData?.selectedServices,
+          selectedServicesLength: formData?.selectedServices?.length
+        });
+
+        postArtisanAssignment(
           postState,
           () => {
-            // setShowSuccessModal(true);
+            // For artisans, proceed to next step (identity verification)
             onNext();
           },
           () => {
@@ -147,9 +220,9 @@ const ProfileSetup = ({
           }
         );
       } else {
-        // For regular users, just show success
-        setShowSuccessModal(true);
-        onNext();
+        // For customers, navigate immediately without showing success modal
+        console.log('🚀 Customer profile setup complete, navigating immediately...');
+        navigate('/customer/dashboard/posted', { replace: true });
       }
     } catch (error) {
       console.error('Profile setup failed:', error);
@@ -166,16 +239,6 @@ const ProfileSetup = ({
     value: sub.id,
     label: sub.name
   }));
-
-  useEffect(() => {
-    getCategories && getCategories();
-    // eslint-disable-next-line
-  }, []);
-  useEffect(() => {
-    if (category && getSubCategories) {
-      getSubCategories(category);
-    }
-  }, [category, getSubCategories]);
 
   return (
     <div className="">
@@ -239,7 +302,9 @@ const ProfileSetup = ({
           </div>
           {profileLoading && <div className="mt-2 text-sm text-blue-600">Uploading image...</div>}
           {imageUploaded && <div className="mt-2 text-sm text-green-600">✓ Image uploaded successfully</div>}
-          {profileError && <div className="mt-2 text-sm text-red-600">Image upload failed. Please try again.</div>}
+          {hasAttemptedImageUpload && profileError && (
+            <div className="mt-2 text-sm text-red-600">Image upload failed. Please try again.</div>
+          )}
         </div>
         {/* User Service Interests */}
         {(formData?.role === 'user' || user?.role === 'User') && (
@@ -281,11 +346,15 @@ const ProfileSetup = ({
                   value={category}
                   onChange={handleServiceChange}
                   options={categoryOptions}
-                  placeholder="e.g., Plumbing, Cleaning, AC Repair"
+                  placeholder={categoriesLoading ? 'Loading categories...' : 'e.g., Plumbing, Cleaning, AC Repair'}
                   className="w-full"
+                  disabled={categoriesLoading}
                 />
                 {/* <SelectField ... /> */}
               </div>
+              {hasAttemptedFetch && categoriesError && (
+                <div className="mt-2 text-sm text-red-600">Failed to load categories. Please try again.</div>
+              )}
             </div>
             {subcategoryOptions?.length > 0 && (
               <div className="mt-[44px]">
@@ -307,6 +376,12 @@ const ProfileSetup = ({
                 </div>
               </div>
             )}
+            {category && subcategoryOptions?.length === 0 && (
+              <div className="mt-[44px]">
+                <label className="block text-sm font-medium font-inter text-[#101928] mb-3">Sub Categories</label>
+                <p className="text-sm text-gray-500 mt-2">No subcategories available for the selected category.</p>
+              </div>
+            )}
             <div className="mt-[44px]">
               <TextAreaInput
                 id="serviceDescription"
@@ -325,22 +400,10 @@ const ProfileSetup = ({
           variant="primary"
           className="w-full absolute md:relative bottom-0 mt-[38px] py-[11px]"
           onClick={(e) => handleSuccess(e)}
-          disabled={profileLoading || assignmentLoading}
+          disabled={profileLoading}
         >
-          {assignmentLoading || profileLoading ? <LoaderComp /> : 'Create Account'}
+          {profileLoading ? <LoaderComp /> : 'Create Account'}
         </Button>
-        <SuccessModal
-          isOpen={showSuccessModal}
-          onClose={() => setShowSuccessModal(false)}
-          title="You’re All Set!"
-          message="You’ve successfully created your account and Ready to find the right artisan for the job"
-          primaryButtonText="Browse Artisans"
-          onPrimaryButtonClick={() =>
-            Navigate(`${formData.role === 'user' ? '/' : '/'}`, {
-              state: { message: 'Signup Successful! Please log in to continue.' }
-            })
-          }
-        />
       </div>
     </div>
   );

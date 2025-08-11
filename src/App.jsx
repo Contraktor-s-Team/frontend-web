@@ -14,12 +14,13 @@ import VerificationCode from './pages/Onboarding/VerificationCode';
 import CreateNewPassword from './pages/Onboarding/CreateNewPassword';
 
 import { AuthProvider } from './contexts/AuthContext';
-import { JobsProvider } from './contexts/JobsContext';
+import { JobListingProvider } from './contexts/JobListingContext';
 import { UserProvider } from './contexts/UserContext';
 import { ArtisanProvider } from './contexts/ArtisanContext';
 import { ProposalProvider } from './contexts/ProposalContext';
 import { JobPostProvider } from './contexts/JobPostContext';
 import { HireArtisanProvider } from './contexts/HireArtisanContext';
+import { useUserRole } from './hooks/useUserRole';
 
 // Customer Pages
 import CustomerDashboard from './pages/Customer/Dashboard/Dashboard';
@@ -71,10 +72,6 @@ const AppRoutes = () => {
 
   // Use the current location as the "under" location or the saved background location from state
   const backgroundLocation = location.state?.backgroundLocation || location;
-
-  // Determine user type based on the current route
-  const isArtisanRoute = location.pathname.startsWith('/artisan');
-  const userType = isArtisanRoute ? 'artisan' : 'customer';
 
   return (
     <>
@@ -155,7 +152,7 @@ const AppRoutes = () => {
               </Route>
               {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */}
               <Route path="find-jobs">
-                <Route index element={<Navigate to="listings" replace />} />
+                <Route index element={<Navigate to="requests" replace />} />
                 <Route path=":tab" element={<ArtisanFindJob />} />
                 <Route path=":tab/:jobId" element={<ArtisanJobDetails />} />
               </Route>
@@ -165,14 +162,15 @@ const AppRoutes = () => {
             </Route>
           </Route>
 
-          {/* 404 - Not Found */}
-          <Route path="*" element={<Navigate to={`/${userType}/dashboard`} replace />} />
+          {/* 404 - Not Found - Protected route that checks user role */}
+          <Route path="*" element={<NotFoundRedirect />} />
         </Routes>
 
         {/* Modal Routes - shown on top of the main UI when URL matches */}
         {location !== backgroundLocation && (
           <Routes>
-            <Route path={`/${userType}/notifications`} element={<NotificationsModal />} />
+            <Route path="/customer/notifications" element={<NotificationsModal />} />
+            <Route path="/artisan/notifications" element={<NotificationsModal />} />
           </Routes>
         )}
       </ErrorBoundary>
@@ -180,12 +178,18 @@ const AppRoutes = () => {
   );
 };
 
+// Component to handle 404 redirects with user role check
+const NotFoundRedirect = () => {
+  const { userType } = useUserRole();
+  return <Navigate to={userType ? `/${userType}/dashboard` : '/customer/dashboard'} replace />;
+};
+
 function App() {
   return (
     <AuthProvider>
       <UserProvider>
         <ArtisanProvider>
-          <JobsProvider>
+          <JobListingProvider>
             <ProposalProvider>
               <JobPostProvider>
                 <HireArtisanProvider>
@@ -196,7 +200,7 @@ function App() {
                 </HireArtisanProvider>
               </JobPostProvider>
             </ProposalProvider>
-          </JobsProvider>
+          </JobListingProvider>
         </ArtisanProvider>
       </UserProvider>
     </AuthProvider>

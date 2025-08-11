@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import Button from '../../../../components/Button/Button';
 import ServiceTable from '../../../../components/Tables/ServiceTable';
-import { connect } from 'react-redux';
-import { jobAction } from '../../../../redux/Jobs/JobsAction';
+import { useJobListings } from '../../../../contexts/JobListingContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
 const services = [
@@ -45,9 +44,16 @@ const services = [
   }
 ];
 
-const RecentServices = ({ getJob, loading, jobsData, error }) => {
-  const { tab: activeTab = 'posted' } = useParams();
+const RecentServices = ({ activeTab }) => {
+  const { tab: routeTab = 'posted' } = useParams();
   const navigate = useNavigate();
+  const { fetchJobListings, state: jobListingState } = useJobListings();
+  const loading = jobListingState.jobListings.loading;
+  const jobListingData = jobListingState.jobListings.data;
+  const error = jobListingState.jobListings.error;
+
+  // Use activeTab prop if provided, otherwise fall back to route tab
+  const currentTab = activeTab || routeTab;
   const formatJobSlug = (title) => {
     return title
       .toLowerCase()
@@ -63,39 +69,50 @@ const RecentServices = ({ getJob, loading, jobsData, error }) => {
     });
   };
 
-  // const transformJobData = (apiJob) => {
-  //   return {
-  //     id: apiJob.id,
-  //     title: apiJob.title.trim(), // Remove any trailing whitespace
-  //     description: apiJob.description,
-  //     postedAt: formatDate(apiJob.postedAt),
-  //     userId: apiJob.userId,
-  //     userFullName: apiJob.userFullName || 'Unknown User',
-  //     artisanSubcategoryId: apiJob.artisanSubcategoryId,
-  //     subcategoryName: apiJob.subcategoryName || 'General',
-  //     proposals: apiJob.proposals || [],
-  //     proposalCount: apiJob.proposals?.length || 0,
-  //     // Add tab classification based on your business logic
-  //     tab: determineJobTab(apiJob),
-  //     // Add artisan field if needed by your table
-  //     artisan: apiJob.userFullName || 'N/A'
-  //   };
-  // };
+  const transformJobListingData = (apiJobListing) => {
+    return {
+      id: apiJobListing.id,
+      title: apiJobListing.title.trim(), // Remove any trailing whitespace
+      description: apiJobListing.description,
+      postedAt: formatDate(apiJobListing.postedAt),
+      userId: apiJobListing.userId,
+      userFullName: apiJobListing.userFullName || 'Unknown User',
+      artisanSubcategoryId: apiJobListing.artisanSubcategoryId,
+      subcategoryName: apiJobListing.subcategoryName || 'General',
+      proposals: apiJobListing.proposals || [],
+      proposalCount: apiJobListing.proposals?.length || 0,
+      // Add tab classification based on your business logic
+      tab: determineJobListingTab(apiJobListing),
+      // Add artisan field if needed by your table
+      artisan: apiJobListing.userFullName || 'N/A'
+    };
+  };
 
-  const determineJobTab = (job) => {
-    // This is where you'd implement your business logic
-    // For now, we'll categorize based on proposals or other criteria
-    if (job.proposals && job.proposals.length > 0) {
+  const determineJobListingTab = (jobListing) => {
+    // Determine job listing tab based on status and proposals
+    if (jobListing.status === 'completed' || jobListing.status === 'Completed') {
+      return 'completed';
+    }
+    if (jobListing.status === 'in-progress' || jobListing.status === 'In Progress' || jobListing.status === 'ongoing') {
+      return 'ongoing';
+    }
+    if (jobListing.proposals && jobListing.proposals.length > 0) {
+      // Has proposals but not completed/ongoing, consider it ongoing
       return 'ongoing';
     }
     return 'posted'; // Default to posted if no proposals
   };
 
-  const allJobs = jobsData ? jobsData?.data?.map(transformJobData) : [];
+  const allJobListings = jobListingData?.data ? jobListingData.data.map(transformJobListingData) : [];
 
-  // useEffect(() => {
-  //   getJob();
-  // }, []);
+  // Filter job listings by current tab and limit to 5 for dashboard display
+  const filteredJobListings = allJobListings
+    ? allJobListings.filter((jobListing) => jobListing.tab === currentTab).slice(0, 5)
+    : [];
+
+  useEffect(() => {
+    fetchJobListings();
+  }, [fetchJobListings]);
 
   return (
     <div className="font-inter bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
@@ -107,20 +124,26 @@ const RecentServices = ({ getJob, loading, jobsData, error }) => {
           </Button>
         </Link>
       </div>
-      {allJobs?.length > 0 ? (
+      {filteredJobListings?.length > 0 ? (
         <ServiceTable
-          items={allJobs}
-          onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${job.id}`)}
-          activeTab={activeTab}
+          items={filteredJobListings}
+          onRowClick={(jobListing) => navigate(`/customer/jobs/${currentTab}/${jobListing.id}`)}
+          activeTab={currentTab}
           formatItemSlug={formatJobSlug}
         />
       ) : (
         <div className="p-6 text-center">
           <div className="text-gray-500">
-            <>
-              <p>No job found</p>
-              <p className="text-sm mt-1">Jobs will appear here when available</p>
-            </>
+            {loading ? (
+              <>
+                <p>Loading job listings...</p>
+              </>
+            ) : (
+              <>
+                <p>No {currentTab} job listings found</p>
+                <p className="text-sm mt-1">Job listings will appear here when available</p>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -129,19 +152,4 @@ const RecentServices = ({ getJob, loading, jobsData, error }) => {
   );
 };
 
-const mapStoreToProps = (state) => {
-  console.log(state);
-  return {
-    loading: state?.jobs?.loading,
-    jobsData: state?.jobs?.data,
-    error: state?.jobs?.error
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getJob: () => dispatch(jobAction())
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(RecentServices);
+export default RecentServices;

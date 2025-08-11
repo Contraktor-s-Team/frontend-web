@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useJobPost } from '../../../contexts/JobPostContext';
+import { useJobListings } from '../../../contexts/JobListingContext';
 import Button from '../../../components/Button/Button';
 import SuccessModal from '../../../components/Modal/SuccessModal';
 import LoaderComp from '../../../assets/animation/loader';
@@ -10,52 +11,164 @@ const ReviewPost = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: jobData, dispatch } = useJobPost();
+  const { postJobListing, state: jobListingState, fetchCategories } = useJobListings();
   const [posted, setPosted] = useState(false);
   const [errors, setErrors] = useState(false);
+  const [jobLoading, setJobLoading] = useState(false);
+
+  // Clear any previous errors when component mounts and fetch categories
+  useEffect(() => {
+    setErrors(false);
+    // Fetch categories if not already loaded to display category names
+    if (!jobListingState.categories.data?.data?.length && !jobListingState.categories.loading) {
+      fetchCategories();
+    }
+  }, [fetchCategories, jobListingState.categories.data, jobListingState.categories.loading]);
 
   const handlePrev = () => navigate('/customer/post-job/time-location');
 
-  // CHANGE 2: Moved postJob submission logic here from DescribeJob
+  // CHANGE 2: Updated to use JobListingContext postJobListing function
   const handlePost = async () => {
     setErrors(false);
+    setJobLoading(true);
 
     try {
-      const formData = new FormData();
-
       // Get job data from Redux state and location state
-      const jobTitle = jobData.jobTitle || location?.state?.data?.jobtitle;
-      const description = jobData.description || location?.state?.data?.description;
-      const subcategory = jobData.subcategory || location?.state?.category;
+      const jobTitle = jobData.jobTitle || location?.state?.data?.jobtitle || location?.state?.jobTitle;
+      const description = jobData.description || location?.state?.data?.description || location?.state?.description;
+      const subcategory = jobData.subcategory || location?.state?.category || location?.state?.subcategory;
       const budgetType = jobData.budgetType;
       const budgetAmount = jobData.budgetAmount;
-      const files = jobData.files || location?.state?.file || [];
 
-      // Build FormData for API submission
-      formData.append('title', jobTitle);
-      formData.append('description', description);
-      formData.append('artisanSubcategoryId', subcategory?.value);
-      formData.append('ProposalRequiresPrice', budgetType);
-
-      if (budgetType === true && budgetAmount) {
-        formData.append('Budget', budgetAmount);
-      }
-
-      // Append files
-      files.forEach((file) => {
-        formData.append('images', file);
+      // Debug: Log actual data to see the structure
+      console.log('Validation Debug:', {
+        jobTitle,
+        description,
+        subcategory,
+        subcategoryType: typeof subcategory,
+        subcategoryValue: subcategory?.value,
+        jobData,
+        locationState: location?.state
       });
 
-      console.log('Submitting job data', formData);
+      // Handle files from multiple sources
+      let files = [];
+      if (jobData.files && Array.isArray(jobData.files)) {
+        files = jobData.files;
+      } else if (jobData.photos && Array.isArray(jobData.photos)) {
+        files = jobData.photos.filter((photo) => photo !== null);
+      } else if (location?.state?.file && Array.isArray(location.state.file)) {
+        files = location.state.file;
+      }
 
-      // CHANGE 3: Submit job via API
-      // TODO: Replace with context-based job posting logic
-      // Simulate success
-      localStorage.removeItem('postJobDraft');
-      dispatch({ type: 'RESET_JOB_DATA' });
-      setPosted(true);
+      // Get address and time data from location state or JobPost context
+      const date = jobData.date || location?.state?.date;
+      const time = jobData.time || location?.state?.time;
+      const address = jobData.address || location?.state?.formAddress;
+      const urgent = jobData.urgent || location?.state?.urgent;
+
+      // Validate required fields (Title, Description, ArtisanSubCategoryId)
+      // Note: subcategory can be either an ID (from jobData) or an object (from location state)
+      const subcategoryId = subcategory?.value || subcategory;
+
+      // Convert to string for API (API expects string format)
+      const validSubcategoryId = String(subcategoryId);
+
+      if (
+        !jobTitle ||
+        !description ||
+        !validSubcategoryId ||
+        validSubcategoryId === 'undefined' ||
+        validSubcategoryId === 'null'
+      ) {
+        console.log('Validation failed:', {
+          hasTitle: !!jobTitle,
+          hasDescription: !!description,
+          hasSubcategory: !!subcategoryId,
+          validSubcategoryId,
+          subcategoryValue: subcategory
+        });
+        setErrors('Please ensure all required fields (Title, Description, and Category) are filled out.');
+        setJobLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+
+      // Required fields for API
+      formData.append('Title', jobTitle);
+      formData.append('Description', description);
+      formData.append('ArtisanSubcategoryId', validSubcategoryId);
+
+      // ScheduleType - API expects "ASAP" or "SCHEDULED"
+      // ASAP: when user checks "set as urgent"
+      // SCHEDULED: when user selects specific date/time
+      const scheduleType = urgent ? 'ASAP' : 'SCHEDULED';
+      formData.append('ScheduleType', scheduleType);
+
+      // Optional budget fields - only include when "Set a budget" is selected
+      if (budgetType === true) {
+        formData.append('ProposalRequiresPrice', true);
+        if (budgetAmount) {
+          formData.append('Budget', budgetAmount);
+        }
+      }
+
+      // Append images (if any)
+      files.forEach((file, index) => {
+        console.log(`Appending file ${index}:`, {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified
+        });
+        formData.append('Images', file);
+      });
+
+      // Debug: Log all FormData entries
+      console.log('FormData entries being sent:');
+      for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+        } else {
+          console.log(`${key}:`, value);
+        }
+      }
+
+      console.log('Submitting job data with required API fields:', {
+        Title: jobTitle,
+        Description: description,
+        ArtisanSubcategoryId: validSubcategoryId,
+        ScheduleType: scheduleType,
+        ProposalRequiresPrice: budgetType === true ? true : undefined,
+        Budget: budgetType === true && budgetAmount ? budgetAmount : undefined,
+        ImagesCount: files.length,
+        hasDate: !!date,
+        hasTime: !!time,
+        isUrgent: !!urgent,
+        scheduleLogic: `urgent: ${!!urgent} → ${scheduleType}`
+      });
+
+      // Use JobListingContext postJobListing function
+      await postJobListing(
+        formData,
+        // Success callback
+        () => {
+          localStorage.removeItem('postJobDraft');
+          dispatch({ type: 'RESET_JOB_DATA' });
+          setPosted(true);
+          setJobLoading(false);
+        },
+        // Error callback
+        () => {
+          setErrors(true);
+          setJobLoading(false);
+        }
+      );
     } catch (error) {
       console.error('Job submission failed:', error);
-      setErrors(true);
+      setErrors(error.message || 'An unexpected error occurred');
+      setJobLoading(false);
     }
   };
 
@@ -65,7 +178,7 @@ const ReviewPost = () => {
 
   const navigateToDashboard = () => {
     setPosted(false);
-    navigate('/customer/dashboard');
+    navigate('/customer/dashboard/posted');
   };
 
   const navigateToJobView = () => {
@@ -73,13 +186,55 @@ const ReviewPost = () => {
     navigate('/customer/jobs/ongoing');
   };
 
+  // Debug: Log the data to see what's available
+  console.log('ReviewPost Debug:', {
+    jobData,
+    locationState: location?.state,
+    jobListingState: jobListingState.jobPost,
+    categoryData: {
+      fromJobData: jobData.subcategory,
+      fromLocation: location?.state?.category,
+      categoryId: jobData.category,
+      subcategoryId: jobData.subcategory,
+      availableCategories: jobListingState.categories.data?.data
+    }
+  });
+
   return (
     <>
       <div className="font-inter font-medium bg-white p-7.5 rounded-lg shadow-sm border border-gray-100 space-y-6">
         <h2 className="font-manrope font-semibold text-2xl">Make sure everything looks good before posting</h2>
 
-        {/* CHANGE 4: Added error display */}
-        {errors && (
+        {/* Success message display */}
+        {jobListingState.jobPost.data && Object.keys(jobListingState.jobPost.data).length > 0 && !posted && (
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <div className="text-sm text-green-700">
+                  <p>Job posted successfully!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CHANGE 4: Fixed error display to prevent showing errors on initial state */}
+        {(errors ||
+          (jobListingState.jobPost.error &&
+            typeof jobListingState.jobPost.error === 'string' &&
+            jobListingState.jobPost.error.trim() !== '') ||
+          (typeof jobListingState.jobPost.error === 'object' &&
+            jobListingState.jobPost.error &&
+            Object.keys(jobListingState.jobPost.error).length > 0)) && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -93,7 +248,15 @@ const ReviewPost = () => {
               </div>
               <div className="ml-3">
                 <div className="text-sm text-red-700">
-                  <p>{jobError || 'An error occurred while posting the job. Please try again.'}</p>
+                  <p>
+                    {typeof errors === 'string'
+                      ? errors
+                      : typeof jobListingState.jobPost.error === 'string'
+                      ? jobListingState.jobPost.error
+                      : typeof jobListingState.jobPost.error === 'object' && jobListingState.jobPost.error
+                      ? JSON.stringify(jobListingState.jobPost.error)
+                      : 'An error occurred while posting the job. Please try again.'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -117,49 +280,117 @@ const ReviewPost = () => {
 
             <div className="flex flex-col gap-2.5 mt-7.5">
               <p className="text-sm text-neu-dark-1">Service Category</p>
-              <p className="text-sm">{(jobData.subcategory || location?.state?.category)?.label}</p>
+              <p className="text-sm">
+                {(() => {
+                  // Get category data from JobListingContext to display category name
+                  const categories = jobListingState.categories.data?.data || [];
+                  const categoryId = jobData.category || location?.state?.categoryId;
+                  const selectedCategory = categories.find((cat) => cat.id === categoryId);
+
+                  if (selectedCategory) {
+                    return selectedCategory.name;
+                  }
+
+                  // Fallback: try to get from subcategory object if it contains category info
+                  const subcategory = jobData.subcategory || location?.state?.category;
+                  if (subcategory?.categoryName) {
+                    return subcategory.categoryName;
+                  }
+
+                  return 'No category selected';
+                })()}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2.5 mt-7.5">
+              <p className="text-sm text-neu-dark-1">Service Subcategory</p>
+              <p className="text-sm">
+                {(() => {
+                  // Get subcategory data from JobListingContext to display subcategory name
+                  const categories = jobListingState.categories.data?.data || [];
+                  const categoryId = jobData.category || location?.state?.categoryId;
+                  const subcategoryId = jobData.subcategory || location?.state?.subcategoryId;
+                  const selectedCategory = categories.find((cat) => cat.id === categoryId);
+                  const selectedSubcategory = selectedCategory?.subcategories?.find((sub) => sub.id === subcategoryId);
+
+                  if (selectedSubcategory) {
+                    return selectedSubcategory.name;
+                  }
+
+                  // Fallback: try to get from location state
+                  const subcategory = location?.state?.category;
+                  if (subcategory?.label) {
+                    return subcategory.label;
+                  }
+
+                  return 'No subcategory selected';
+                })()}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2.5 mt-11">
+              <p className="text-sm text-neu-dark-1">Job Title</p>
+              <p className="text-sm">{jobData.jobTitle || location?.state?.data?.jobtitle || 'No title provided'}</p>
             </div>
 
             <div className="flex flex-col gap-2.5 mt-11">
               <p className="text-sm text-neu-dark-1">Job Description</p>
-              <p className="text-sm">{jobData.description || location?.state?.data?.description}</p>
+              <p className="text-sm">
+                {jobData.description || location?.state?.data?.description || 'No description provided'}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2.5 mt-11">
+              <p className="text-sm text-neu-dark-1">Budget</p>
+              <p className="text-sm">
+                {jobData.budgetType === false
+                  ? 'I will negotiate the price'
+                  : jobData.budgetAmount
+                  ? `₦${jobData.budgetAmount}`
+                  : 'Budget not specified'}
+              </p>
             </div>
 
             <div className="flex flex-col gap-2.5 mt-11">
               <p className="text-sm text-neu-dark-1">Photos</p>
-              {/* CHANGE: Updated to properly handle files from Redux state or location state */}
+              {/* CHANGE: Updated to properly handle files from multiple sources */}
               {(() => {
-                const files = jobData.files || location?.state?.file || [];
-                return (
-                  files.length > 0 && (
-                    <div className="flex flex-wrap gap-3">
-                      {files
-                        .map((file, idx) => {
-                          if (!file) return null;
+                // Get files from multiple possible sources
+                let files = [];
+                if (jobData.files && Array.isArray(jobData.files)) {
+                  files = jobData.files;
+                } else if (jobData.photos && Array.isArray(jobData.photos)) {
+                  files = jobData.photos.filter((photo) => photo !== null);
+                } else if (location?.state?.file && Array.isArray(location.state.file)) {
+                  files = location.state.file;
+                }
 
-                          // Check if it's a File object or just a file reference
-                          const isVideo = file.type ? file.type.startsWith('video/') : false;
-                          const fileUrl = file instanceof File ? URL.createObjectURL(file) : file;
+                return files.length > 0 ? (
+                  <div className="flex flex-wrap gap-3">
+                    {files
+                      .map((file, idx) => {
+                        if (!file) return null;
 
-                          return (
-                            <div key={idx} className="w-36 h-28 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
-                              {isVideo ? (
-                                <video src={fileUrl} controls className="w-full h-full object-cover">
-                                  Your browser does not support the video tag.
-                                </video>
-                              ) : (
-                                <img
-                                  src={fileUrl}
-                                  alt={`Job media ${idx + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              )}
-                            </div>
-                          );
-                        })
-                        .filter(Boolean)}
-                    </div>
-                  )
+                        // Check if it's a File object or just a file reference
+                        const isVideo = file.type ? file.type.startsWith('video/') : false;
+                        const fileUrl = file instanceof File ? URL.createObjectURL(file) : file;
+
+                        return (
+                          <div key={idx} className="w-36 h-28 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
+                            {isVideo ? (
+                              <video src={fileUrl} controls className="w-full h-full object-cover">
+                                Your browser does not support the video tag.
+                              </video>
+                            ) : (
+                              <img src={fileUrl} alt={`Job media ${idx + 1}`} className="w-full h-full object-cover" />
+                            )}
+                          </div>
+                        );
+                      })
+                      .filter(Boolean)}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No photos uploaded</p>
                 );
               })()}
             </div>
@@ -183,23 +414,38 @@ const ReviewPost = () => {
               {[
                 {
                   label: 'Date',
-                  value: location?.state?.date
-                    ? new Date(location?.state?.date).toLocaleDateString('en-GB', {
+                  value: (() => {
+                    const date = jobData.date || location?.state?.date;
+                    if (!date) return 'No date selected';
+                    try {
+                      return new Date(date).toLocaleDateString('en-GB', {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric'
-                      })
-                    : ''
+                      });
+                    } catch (error) {
+                      return 'Invalid date';
+                    }
+                  })()
                 },
                 {
                   label: 'Time',
-                  value: location?.state?.time
-                    ? new Date(`2000-01-01T${location?.state?.time}`).toLocaleTimeString('en-US', {
+                  value: (() => {
+                    const time = jobData.time || location?.state?.time;
+                    if (!time) return 'No time selected';
+                    try {
+                      const [hours, minutes] = time.split(':');
+                      const date = new Date();
+                      date.setHours(parseInt(hours), parseInt(minutes));
+                      return date.toLocaleTimeString('en-US', {
                         hour: 'numeric',
                         minute: '2-digit',
                         hour12: true
-                      })
-                    : ''
+                      });
+                    } catch (error) {
+                      return 'Invalid time';
+                    }
+                  })()
                 }
               ].map((item, index) => (
                 <div key={`time-${index}`} className="flex flex-col gap-2.5">
@@ -209,19 +455,45 @@ const ReviewPost = () => {
               ))}
             </div>
 
+            {/* Urgent flag display */}
+            <div className="flex flex-col gap-2.5 mt-9.5">
+              <p className="text-neu-dark-1 text-sm">Priority</p>
+              <p className="text-sm">{jobData.urgent || location?.state?.urgent ? 'Urgent' : 'Normal'}</p>
+            </div>
+
             {/* Address section */}
-            {[
-              { label: 'Street Address', value: location?.state?.formAddress?.line1 || 'N/A' },
-              { label: 'Nearby Landmark', value: location?.state?.formAddress?.landmark || 'N/A' },
-              { label: 'Area / City', value: location?.state?.formAddress?.city || 'N/A' },
-              { label: 'LGA', value: location?.state?.formAddress?.lga || 'N/A' },
-              { label: 'State', value: location?.state?.formAddress?.state || 'N/A' }
-            ].map((item, index) => (
-              <div key={`address-${index}`} className="flex flex-col gap-2.5 mt-9.5">
-                <p className="text-neu-dark-1 text-sm">{item.label}</p>
-                <p className="text-sm">{item.value}</p>
-              </div>
-            ))}
+            {(() => {
+              const address = jobData.address || location?.state?.formAddress;
+              const addressFields = [
+                {
+                  label: 'Street Address',
+                  value: address?.line1 || address?.street || 'Not provided'
+                },
+                {
+                  label: 'Nearby Landmark',
+                  value: address?.line2 || address?.landmark || 'Not provided'
+                },
+                {
+                  label: 'Area / City',
+                  value: address?.city || 'Not provided'
+                },
+                {
+                  label: 'LGA',
+                  value: address?.postalCode || address?.lga || 'Not provided'
+                },
+                {
+                  label: 'State',
+                  value: address?.state || 'Not provided'
+                }
+              ];
+
+              return addressFields.map((item, index) => (
+                <div key={`address-${index}`} className="flex flex-col gap-2.5 mt-9.5">
+                  <p className="text-neu-dark-1 text-sm">{item.label}</p>
+                  <p className="text-sm">{item.value}</p>
+                </div>
+              ));
+            })()}
           </div>
         </div>
 
@@ -229,9 +501,14 @@ const ReviewPost = () => {
           <Button variant="grey-sec" onClick={handlePrev} className="px-6 py-4.25">
             Previous
           </Button>
-          {/* CHANGE 6: Updated Post Job button with loading state */}
-          <Button variant="primary" onClick={handlePost} className="px-6 py-4.25" disabled={jobLoading}>
-            {jobLoading ? <LoaderComp /> : 'Post Job'}
+          {/* CHANGE 6: Updated Post Job button with loading state from context */}
+          <Button
+            variant="primary"
+            onClick={handlePost}
+            className="px-6 py-4.25"
+            disabled={jobLoading || jobListingState.jobPost.loading}
+          >
+            {jobLoading || jobListingState.jobPost.loading ? <LoaderComp /> : 'Post Job'}
           </Button>
         </div>
       </div>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Pencil } from 'lucide-react';
-import { useSelector, useDispatch } from 'react-redux';
-import { resetJobData } from '../../../../redux/slices/hireArtisanSlice';
+import { useHireArtisan } from '../../../../contexts/HireArtisanContext';
+import { useJobListings } from '../../../../contexts/JobListingContext';
 import SuccessModal from '../../../../components/Modal/SuccessModal';
 import Button from '../../../../components/Button';
 
@@ -17,58 +17,181 @@ const DisplayField = ({ label, value, spanFull = false }) => (
 const ReviewSubmit = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
+  const { artisanId, tab } = useParams(); // Extract both tab and artisanId
+  const { state: hireArtisanState, dispatch, hireArtisan } = useHireArtisan();
+  const { state: jobListingState } = useJobListings();
+
+  // Debug logging
+  console.log('ReviewSubmit Debug Info:', {
+    artisanId,
+    tab,
+    fullPath: location.pathname,
+    allParams: useParams(),
+    windowLocation: window.location.href
+  });
   const {
     // Using all these variables in the component
+    jobTitle,
     category,
     description,
+    photos,
     fileUrls,
     fileTypes,
     date,
     time,
-    address
-  } = useSelector((state) => state.hireArtisan);
+    urgent,
+    address,
+    artisan,
+    budgetType,
+    budgetAmount
+  } = hireArtisanState;
 
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  // Get categories from API
+  const categories = jobListingState.categories.data?.data || [];
 
-  const handlePrevious = () => {
-    // Get the path parts to construct the new path
-    const pathParts = location.pathname.split('/');
-    const basePath = pathParts.slice(0, pathParts.indexOf('hire-artisan') + 1).join('/');
-    navigate(`${basePath}/time-location`);
+  // Function to get category name from ID
+  const getCategoryName = (categoryId) => {
+    const categoryData = categories.find((cat) => cat.id === categoryId);
+    return categoryData?.name || categoryId || 'Mot Specified';
   };
 
-  const handleSubmit = () => {
-    // In a real app, this would make an API call to submit the job request
-    // For now, just show the success modal
-    setShowSuccessModal(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState('');
+  const [price, setPrice] = useState(''); // Add price field
+
+  const handlePrevious = () => {
+    // Navigate to time-location step (relative navigation within nested routes)
+    navigate('../time-location');
+  };
+
+  const handleSubmit = async () => {
+    if (!price) {
+      setErrors('Please provide a price for this job.');
+      return;
+    }
+
+    // Debug: Check if artisanId is available
+    console.log('Debug - artisanId from params:', artisanId);
+    console.log('Debug - Current URL:', window.location.href);
+
+    if (!artisanId) {
+      setErrors('Artisan ID is missing. Please try again.');
+      return;
+    }
+
+    // Validate GUID format (more permissive for standard GUIDs)
+    const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!guidRegex.test(artisanId)) {
+      console.error('Invalid artisan ID format:', artisanId);
+      setErrors('Invalid artisan ID format. Please try again.');
+      return;
+    }
+
+    // Check for null GUID
+    const nullGuid = '00000000-0000-0000-0000-000000000000';
+    if (artisanId === nullGuid) {
+      console.error('Null GUID received as artisan ID');
+      setErrors('Invalid artisan selected. Please go back and select an artisan.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrors('');
+
+    try {
+      // Validate required fields (similar to post job logic)
+      const subcategoryId = category?.value || category;
+      const validSubcategoryId = String(subcategoryId);
+
+      if (
+        !jobTitle ||
+        !description ||
+        !validSubcategoryId ||
+        validSubcategoryId === 'undefined' ||
+        validSubcategoryId === 'null'
+      ) {
+        setErrors('Please ensure all required fields (Title, Description, and Category) are filled out.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const formData = new FormData();
+
+      // Required fields for API (same structure as post job)
+      formData.append('Title', jobTitle);
+      formData.append('Description', description);
+      formData.append('ArtisanSubcategoryId', validSubcategoryId);
+
+      // ScheduleType - API expects "ASAP" or "SCHEDULED"
+      const scheduleType = urgent ? 'ASAP' : 'SCHEDULED';
+      formData.append('ScheduleType', scheduleType);
+
+      // Optional budget fields - only include when "Set a budget" is selected (match PostJob structure)
+      if (budgetType === true) {
+        formData.append('ProposalRequiresPrice', true);
+        if (budgetAmount) {
+          formData.append('Budget', budgetAmount);
+        }
+      }
+
+      // Append images (if any)
+      const files = photos.filter((photo) => photo instanceof File);
+      files.forEach((file, index) => {
+        console.log(`Appending file ${index}:`, {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified
+        });
+        formData.append('Images', file);
+      });
+
+      // Use hireArtisan function (which will add ArtisanId and price)
+      await hireArtisan(
+        formData,
+        artisanId,
+        price,
+        // Success callback
+        () => {
+          dispatch({ type: 'RESET_JOB_DATA' });
+          setShowSuccessModal(true);
+          setIsSubmitting(false);
+        },
+        // Error callback
+        () => {
+          setErrors('Failed to submit job request. Please try again.');
+          setIsSubmitting(false);
+        }
+      );
+    } catch (error) {
+      console.error('Job submission failed:', error);
+      setErrors(error.message || 'An unexpected error occurred');
+      setIsSubmitting(false);
+    }
   };
 
   const handleViewJob = () => {
     // In a real app, navigate to the job details page
     // For this example, navigate to dashboard/jobs
     navigate('/jobs/ongoing');
-    dispatch(resetJobData());
+    dispatch({ type: 'RESET_JOB_DATA' });
   };
 
   const handleBackToDashboard = () => {
     // Navigate to dashboard
-    navigate('/dashboard');
-    dispatch(resetJobData());
+    navigate('/customer/dashboard/posted');
+    dispatch({ type: 'RESET_JOB_DATA' });
   };
 
   const handleEditJobDetails = () => {
-    // Get the path parts to construct the new path
-    const pathParts = location.pathname.split('/');
-    const basePath = pathParts.slice(0, pathParts.indexOf('hire-artisan') + 1).join('/');
-    navigate(`${basePath}/describe`);
+    // Navigate to describe step (relative navigation within nested routes)
+    navigate('../describe');
   };
 
   const handleEditTimeLocation = () => {
-    // Get the path parts to construct the new path
-    const pathParts = location.pathname.split('/');
-    const basePath = pathParts.slice(0, pathParts.indexOf('hire-artisan') + 1).join('/');
-    navigate(`${basePath}/time-location`);
+    // Navigate to time-location step (relative navigation within nested routes)
+    navigate('../time-location');
   };
 
   const formatDate = (dateString) => {
@@ -103,7 +226,12 @@ const ReviewSubmit = () => {
             <div className="space-y-8">
               <div>
                 <p className="text-sm text-neu-dark-1 mb-2.5">Service Category</p>
-                <p className="font-medium">{category || 'Electrical Repairs'}</p>
+                <p className="font-medium">{getCategoryName(category)}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-neu-dark-1 mb-2.5">Job Title</p>
+                <p className="font-medium">{jobTitle}</p>
               </div>
 
               <div>
@@ -155,13 +283,36 @@ const ReviewSubmit = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 mt-14">
-            <Button variant="grey-sec" size="small" onClick={handlePrevious} className="px-6 py-4.25">
+          {/* Price Section */}
+          <div className="border-b-[1.5px] border-neu-light-3 pb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Job Price</h3>
+            <div>
+              <label htmlFor="price" className="text-sm text-neu-dark-1 mb-2.5 block">
+                Enter your price for this job (NGN)
+              </label>
+              <input
+                type="number"
+                id="price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="0.00"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pri-norm-1 focus:border-transparent"
+                min="0"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          {/* Error Display */}
+          {errors && <div className="p-4 bg-red-50 text-red-700 rounded-lg">{errors}</div>}
+
+          <div className="flex items-center gap-2.5 mt-14">
+            <Button variant="grey-sec" onClick={handlePrevious} className="px-6 py-4.25">
               Previous
             </Button>
 
-            <Button variant="primary" size="small" onClick={handleSubmit} className="px-6 py-4.25">
-              Submit Job Request
+            <Button variant="primary" onClick={handleSubmit} className="px-6 py-4.25" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Submit Job Request'}
             </Button>
           </div>
         </div>

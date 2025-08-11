@@ -1,5 +1,6 @@
-import React, { createContext, useReducer, useContext, useCallback } from 'react';
+import React, { createContext, useReducer, useContext, useCallback, useRef } from 'react';
 import axios from 'axios';
+import { handleAuthError, getAuthToken } from '../utils/authUtils';
 
 const initialState = {
   proposalPost: { loading: false, data: {}, error: {} },
@@ -9,7 +10,7 @@ const initialState = {
   negotiate: { loading: false, data: {}, error: {} }
 };
 
-const ProposalContext = createContext();
+const ProposalContext = createContext(null);
 
 function proposalReducer(state, action) {
   switch (action.type) {
@@ -52,75 +53,248 @@ export function ProposalProvider({ children }) {
   const [state, dispatch] = useReducer(proposalReducer, initialState);
   const baseUrl = 'https://distrolink-001-site1.anytempurl.com/api/Proposal';
 
+  // Add call guards to prevent duplicate API calls
+  const callGuards = useRef({
+    fetchArtisanProposal: false,
+    fetchJobProposal: new Map(),
+    fetchNegotiation: new Map(),
+    lastFetchTimestamps: new Map()
+  });
+
   // Post a proposal
   const postProposal = useCallback(async (postState, onSuccess, onError) => {
     dispatch({ type: 'POST_PROPOSAL_REQUEST' });
     try {
-      const datas = JSON.parse(localStorage.getItem('auth'));
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
       const res = await axios.post(`${baseUrl}/`, postState, {
-        headers: { Authorization: `Bearer ${datas?.token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       dispatch({ type: 'POST_PROPOSAL_SUCCESS', payload: res.data });
       if (onSuccess) onSuccess();
     } catch (error) {
+      // Handle authentication errors first
+      if (handleAuthError(error)) {
+        return; // Early return if redirected to login
+      }
+
       dispatch({ type: 'POST_PROPOSAL_FAILURE', payload: error?.response?.data?.message || error.message });
       if (onError) onError();
     }
   }, []);
 
-  // Fetch job proposals
-  const fetchJobProposal = useCallback(async (id) => {
-    dispatch({ type: 'JOB_PROPOSAL_REQUEST' });
-    try {
-      const datas = JSON.parse(localStorage.getItem('auth'));
-      const response = await axios.get(`${baseUrl}/joblisting/${id}`, {
-        headers: { Authorization: `Bearer ${datas?.token}` }
-      });
-      dispatch({ type: 'JOB_PROPOSAL_SUCCESS', payload: response.data });
-    } catch (error) {
-      dispatch({ type: 'JOB_PROPOSAL_FAILURE', payload: error?.response?.data?.message || error.message });
-    }
-  }, []);
+  // Fetch job proposals with call guard
+  const fetchJobProposal = useCallback(
+    async (id, forceRefresh = false) => {
+      // Check if we already have valid data for this job proposal ID
+      const hasValidData = state.jobProposal.data && state.jobProposal.data.data;
+      const isCurrentlyLoading = state.jobProposal.loading;
+      const hasRecentFetch =
+        callGuards.current.lastFetchTimestamps.get(`job_proposal_${id}`) &&
+        Date.now() - callGuards.current.lastFetchTimestamps.get(`job_proposal_${id}`) < 120000; // 2 minutes cache
 
-  // Fetch artisan proposals
-  const fetchArtisanProposal = useCallback(async () => {
-    dispatch({ type: 'ARTISAN_PROPOSAL_REQUEST' });
-    try {
-      const datas = JSON.parse(localStorage.getItem('auth'));
-      const response = await axios.get(`${baseUrl}/Artisan`, {
-        headers: { Authorization: `Bearer ${datas?.token}` }
-      });
-      dispatch({ type: 'ARTISAN_PROPOSAL_SUCCESS', payload: response.data });
-    } catch (error) {
-      dispatch({ type: 'ARTISAN_PROPOSAL_FAILURE', payload: error?.response?.data?.message || error.message });
-    }
-  }, []);
+      if (!forceRefresh && hasValidData && !isCurrentlyLoading) {
+        console.log('✅ fetchJobProposal: Using cached job proposal data for ID:', id);
+        return state.jobProposal.data;
+      }
 
-  // Fetch negotiation
-  const fetchNegotiation = useCallback(async (id) => {
-    dispatch({ type: 'GET_NEGOTIATION_REQUEST' });
-    try {
-      const datas = JSON.parse(localStorage.getItem('auth'));
-      const response = await axios.get(`${baseUrl}/${id}/negotiations`, {
-        headers: { Authorization: `Bearer ${datas?.token}` }
-      });
-      dispatch({ type: 'GET_NEGOTIATION_SUCCESS', payload: response.data });
-    } catch (error) {
-      dispatch({ type: 'GET_NEGOTIATION_FAILURE', payload: error?.response?.data?.message || error.message });
-    }
-  }, []);
+      if (!forceRefresh && isCurrentlyLoading) {
+        console.log('⏳ fetchJobProposal: Already loading, skipping duplicate call for ID:', id);
+        return;
+      }
+
+      if (!forceRefresh && hasRecentFetch && !isCurrentlyLoading) {
+        console.log('⏰ fetchJobProposal: Recent fetch detected, skipping duplicate call for ID:', id);
+        return state.jobProposal.data;
+      }
+
+      // Prevent concurrent calls for the same job proposal ID
+      if (callGuards.current.fetchJobProposal.get(id)) {
+        console.log('🚫 fetchJobProposal: Call already in progress for ID:', id);
+        return;
+      }
+
+      callGuards.current.fetchJobProposal.set(id, true);
+      dispatch({ type: 'JOB_PROPOSAL_REQUEST' });
+      try {
+        const token = getAuthToken();
+        console.log('Auth token for fetchJobProposal:', token ? 'Token exists' : 'No token');
+
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(`${baseUrl}/joblisting/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        callGuards.current.lastFetchTimestamps.set(`job_proposal_${id}`, Date.now());
+        dispatch({ type: 'JOB_PROPOSAL_SUCCESS', payload: response.data });
+        return response.data;
+      } catch (error) {
+        console.error('fetchJobProposal error:', error.response?.status, error.response?.data);
+
+        // Handle authentication errors first
+        if (handleAuthError(error)) {
+          return; // Early return if redirected to login
+        }
+
+        dispatch({ type: 'JOB_PROPOSAL_FAILURE', payload: error?.response?.data?.message || error.message });
+        throw error;
+      } finally {
+        callGuards.current.fetchJobProposal.delete(id);
+      }
+    },
+    [state.jobProposal.data, state.jobProposal.loading]
+  );
+
+  // Fetch artisan proposals with call guard
+  const fetchArtisanProposal = useCallback(
+    async (forceRefresh = false) => {
+      // Check if we already have valid data and it's not currently loading
+      const hasValidData =
+        state.artisanProposal.data &&
+        Array.isArray(state.artisanProposal.data.data) &&
+        state.artisanProposal.data.data.length >= 0; // Even empty array is valid data
+      const isCurrentlyLoading = state.artisanProposal.loading;
+      const hasRecentFetch =
+        callGuards.current.lastFetchTimestamps.get('artisan_proposals') &&
+        Date.now() - callGuards.current.lastFetchTimestamps.get('artisan_proposals') < 180000; // 3 minutes cache
+
+      if (!forceRefresh && hasValidData && !isCurrentlyLoading) {
+        console.log('✅ fetchArtisanProposal: Using cached proposal data');
+        return state.artisanProposal.data;
+      }
+
+      if (!forceRefresh && isCurrentlyLoading) {
+        console.log('⏳ fetchArtisanProposal: Already loading, skipping duplicate call');
+        return;
+      }
+
+      if (!forceRefresh && hasRecentFetch && !isCurrentlyLoading) {
+        console.log('⏰ fetchArtisanProposal: Recent fetch detected, skipping duplicate call');
+        return state.artisanProposal.data;
+      }
+
+      // Prevent concurrent calls
+      if (callGuards.current.fetchArtisanProposal) {
+        console.log('🚫 fetchArtisanProposal: Call already in progress, skipping duplicate');
+        return;
+      }
+
+      callGuards.current.fetchArtisanProposal = true;
+      dispatch({ type: 'ARTISAN_PROPOSAL_REQUEST' });
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(`${baseUrl}/Artisan`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        callGuards.current.lastFetchTimestamps.set('artisan_proposals', Date.now());
+        dispatch({ type: 'ARTISAN_PROPOSAL_SUCCESS', payload: response.data });
+        return response.data;
+      } catch (error) {
+        // Handle authentication errors first
+        if (handleAuthError(error)) {
+          return; // Early return if redirected to login
+        }
+
+        dispatch({ type: 'ARTISAN_PROPOSAL_FAILURE', payload: error?.response?.data?.message || error.message });
+        throw error;
+      } finally {
+        callGuards.current.fetchArtisanProposal = false;
+      }
+    },
+    [state.artisanProposal.data, state.artisanProposal.loading]
+  );
+
+  // Fetch negotiation with call guard
+  const fetchNegotiation = useCallback(
+    async (id, forceRefresh = false) => {
+      // Check if we already have valid data for this negotiation ID
+      const hasValidData = state.negotiate.data && state.negotiate.data.data;
+      const isCurrentlyLoading = state.negotiate.loading;
+      const hasRecentFetch =
+        callGuards.current.lastFetchTimestamps.get(`negotiation_${id}`) &&
+        Date.now() - callGuards.current.lastFetchTimestamps.get(`negotiation_${id}`) < 120000; // 2 minutes cache
+
+      if (!forceRefresh && hasValidData && !isCurrentlyLoading) {
+        console.log('✅ fetchNegotiation: Using cached negotiation data for ID:', id);
+        return state.negotiate.data;
+      }
+
+      if (!forceRefresh && isCurrentlyLoading) {
+        console.log('⏳ fetchNegotiation: Already loading, skipping duplicate call for ID:', id);
+        return;
+      }
+
+      if (!forceRefresh && hasRecentFetch && !isCurrentlyLoading) {
+        console.log('⏰ fetchNegotiation: Recent fetch detected, skipping duplicate call for ID:', id);
+        return state.negotiate.data;
+      }
+
+      // Prevent concurrent calls for the same negotiation ID
+      if (callGuards.current.fetchNegotiation.get(id)) {
+        console.log('🚫 fetchNegotiation: Call already in progress for ID:', id);
+        return;
+      }
+
+      callGuards.current.fetchNegotiation.set(id, true);
+      dispatch({ type: 'GET_NEGOTIATION_REQUEST' });
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(`${baseUrl}/${id}/negotiations`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        callGuards.current.lastFetchTimestamps.set(`negotiation_${id}`, Date.now());
+        dispatch({ type: 'GET_NEGOTIATION_SUCCESS', payload: response.data });
+        return response.data;
+      } catch (error) {
+        // Handle authentication errors first
+        if (handleAuthError(error)) {
+          return; // Early return if redirected to login
+        }
+
+        dispatch({ type: 'GET_NEGOTIATION_FAILURE', payload: error?.response?.data?.message || error.message });
+        throw error;
+      } finally {
+        callGuards.current.fetchNegotiation.delete(id);
+      }
+    },
+    [state.negotiate.data, state.negotiate.loading]
+  );
 
   // Negotiate proposal
   const negotiateProposal = useCallback(async (id, postState, onSuccess, onError) => {
     dispatch({ type: 'NEGOTIATE_PROPOSAL_REQUEST' });
     try {
-      const datas = JSON.parse(localStorage.getItem('auth'));
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
       const res = await axios.post(`${baseUrl}/${id}/negotiate`, postState, {
-        headers: { Authorization: `Bearer ${datas?.token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       dispatch({ type: 'NEGOTIATE_PROPOSAL_SUCCESS', payload: res.data });
       if (onSuccess) onSuccess();
     } catch (error) {
+      // Handle authentication errors first
+      if (handleAuthError(error)) {
+        return; // Early return if redirected to login
+      }
+
       dispatch({ type: 'NEGOTIATE_PROPOSAL_FAILURE', payload: error?.response?.data?.message || error.message });
       if (onError) onError();
     }

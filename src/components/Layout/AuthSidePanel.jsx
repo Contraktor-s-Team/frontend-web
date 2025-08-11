@@ -22,7 +22,7 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
     },
     {
       title: 'Post a Job in Just a Few Clicks',
-      description: "Easily describe your need, choose a time, and get connected with trusted artisans",
+      description: 'Easily describe your need, choose a time, and get connected with trusted artisans',
       image: '/post-a-job.png' // Would be replaced with actual image component
     },
     {
@@ -43,21 +43,20 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
   }, [externalCurrentSlide, slides.length]);
 
   return (
-    <div className={`hidden md:flex w-[40%] flex-col justify-between bg-[url('/onboarding-bg.png')] bg-cover bg-center md:p-[30px] xl:p-[54px] text-white rounded-[20px] h-full ${className}`}>
+    <div
+      className={`hidden md:flex w-[40%] flex-col justify-between bg-[url('/onboarding-bg.png')] bg-cover bg-center md:p-[30px] xl:p-[54px] text-white rounded-[20px] h-full ${className}`}
+    >
       {/* Logo */}
-      <div className="font-manrope font-bold text-white text-4xl">ContraKtor</div>
-      
+      <div className="font-manrope font-bold text-white text-4xl">Contraktor</div>
+
       {/* Slider Content */}
       <div className="flex flex-col items-center space-y-6">
         {/* Image Placeholder - Replace with actual image component */}
         {/* <div className="w-[168px] h-[96px] bg-gray-300 rounded"></div> */}
         <img src={slides[currentSlide]?.image} alt={slides[currentSlide]?.title} className="w-70" />
 
-
         {/* Current Slide Content */}
-        <h2 className="font-manrope font-bold md:text-2xl text-center text-white">
-          {slides[currentSlide]?.title}
-        </h2>
+        <h2 className="font-manrope font-bold md:text-2xl text-center text-white">{slides[currentSlide]?.title}</h2>
         <p className="font-inter font-normal leading-6 text-center text-neu-light-2 max-w-[400px]">
           {slides[currentSlide]?.description}
         </p>
@@ -69,9 +68,7 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
               key={index}
               onClick={() => setInternalCurrentSlide(index)}
               className={`rounded-full transition-all duration-300 ${
-                index === currentSlide
-                  ? 'w-3 h-3 bg-pri-norm-1'
-                  : 'w-2 h-2 bg-neu-light-2/40 hover:bg-opacity-50'
+                index === currentSlide ? 'w-3 h-3 bg-pri-norm-1' : 'w-2 h-2 bg-neu-light-2/40 hover:bg-opacity-50'
               }`}
               aria-label={`Go to slide ${index + 1}`}
               aria-current={index === currentSlide}

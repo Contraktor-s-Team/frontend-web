@@ -5,7 +5,7 @@ import { ArrowLeft, Map, Check, MessageSquareText, Banknote, RotateCw, Download,
 import { GoStarFill } from 'react-icons/go';
 import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
-import { useJobs } from '../../../contexts/JobsContext.jsx';
+import { useJobListings } from '../../../contexts/JobListingContext.jsx';
 import { useProposal } from '../../../contexts/ProposalContext.jsx';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
 import SuccessModal from '../../../components/Modal/SuccessModal';
@@ -13,11 +13,16 @@ import ConfirmationModal from '../../../components/Modal/ComfirmationModal';
 import SuccessPopup from '../../../components/Modal/SuccessPopup';
 
 const JobDetails = () => {
-  const { state: jobsState, fetchJobById, deleteJob } = useJobs();
+  const { state: jobListingState, fetchJobListingById, deleteJobListing } = useJobListings();
   const { state: proposalState, fetchJobProposal, fetchNegotiation, negotiateProposal } = useProposal();
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
-  const [job, setJob] = useState(data);
+
+  const jobLoading = jobListingState.jobListingById.loading;
+  const data = jobListingState.jobListingById.data;
+  const proposalData = proposalState.jobProposal.data;
+
+  const [job, setJob] = useState(data?.data || null);
   const [isOpen, setIsOpen] = useState(false);
   // Star rating state
   const [rating, setRating] = useState(0);
@@ -28,6 +33,19 @@ const JobDetails = () => {
   const [modalError, setModalError] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  // Extract data from contexts
+  const loading = jobListingState.jobListingById.loading;
+  const error = jobListingState.jobListingById.error;
+  const proposals = proposalState.jobProposal.data?.data;
+  const negotiations = proposalState.negotiate.data;
+  const negotiationsLoading = proposalState.negotiate.loading;
+  const negotiationsError = proposalState.negotiateProposal.error;
+  const deleteLoading = jobListingState.jobListingDelete.loading;
+  const deleteSuccess = jobListingState.jobListingDelete.data?.isSuccess;
+  const deleteError = jobListingState.jobListingDelete.error;
+  const userData = {}; // TODO: get user data from context if needed
+
   // Handle star click
   const handleStarClick = (star) => {
     if (star === rating) {
@@ -40,21 +58,24 @@ const JobDetails = () => {
   };
 
   useEffect(() => {
-    fetchJobById(jobId);
+    console.log('JobDetails: Starting fetch for jobId:', jobId);
+    fetchJobListingById(jobId);
     fetchJobProposal(jobId);
   }, [jobId]);
 
   useEffect(() => {
-    if (jobsState.jobById.data) {
-      setJob(jobsState.jobById.data);
+    if (jobListingState.jobListingById.data?.data) {
+      const jobData = jobListingState.jobListingById.data.data;
+      console.log('JobDetails - Job data structure:', jobData);
+      console.log('JobDetails - Image URLs:', jobData.imageUrls);
+      setJob(jobData);
     }
-  }, [jobsState.jobById.data]);
+  }, [jobListingState.jobListingById.data]);
 
   // Handle back navigation while preserving tab state
   const handleBack = () => {
     navigate(-1);
   };
-  console.log('Job not found for ID:', job);
 
   const openModal = (proposal) => {
     setSelectedProposal(proposal);
@@ -67,7 +88,7 @@ const JobDetails = () => {
   };
 
   const confirmDeleteJob = () => {
-    deleteJob(jobId, () => {
+    deleteJobListing(jobId, () => {
       setShowDeleteModal(false);
       setShowSuccessPopup(true);
       navigate('/customer/jobs/posted');
@@ -94,16 +115,6 @@ const JobDetails = () => {
       console.error('Failed to delete job:', deleteError);
     }
   }, [deleteError]);
-  const loading = jobsState.jobById.loading;
-  const error = jobsState.jobById.error;
-  const proposals = proposalState.jobProposal.data?.data;
-  const negotiations = proposalState.negotiate.data;
-  const negotiationsLoading = proposalState.negotiate.loading;
-  const negotiationsError = proposalState.negotiateProposal.error;
-  const deleteLoading = jobsState.jobDelete.loading;
-  const deleteSuccess = jobsState.jobDelete.data?.isSuccess;
-  const deleteError = jobsState.jobDelete.error;
-  const userData = {}; // TODO: get user data from context if needed
   if (loading) {
     return <div className="p-6">Loading job details...</div>;
   }
@@ -191,10 +202,10 @@ const JobDetails = () => {
               <span className="">catergory:</span>
               <span className="text-black">{job.subcategoryName}</span>
             </p>
-            <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+            <div className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span className="">status badge:</span>
               <StatusBadge status={job?.status} />
-            </p>
+            </div>
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span className="">scheduled date & time:</span>
               <span className="text-black">
@@ -228,7 +239,7 @@ const JobDetails = () => {
             <div className="space-y-4.25">
               <p className="font-medium text-neu-norm-2">Attached Photos</p>
               <div className="flex flex-wrap gap-2">
-                {job?.imageUrls > 0 ? (
+                {job?.imageUrls?.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {job?.imageUrls?.map((photo, index) => (
                       <img

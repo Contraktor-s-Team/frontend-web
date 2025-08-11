@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Search, Calendar, Plus, ChevronDown, AlertCircle } from 'lucide-react';
 import { Select, TextInput } from '../../../components/Form';
@@ -7,12 +7,15 @@ import Pagination from '../../../components/Pagination';
 import TabNav from '../../../components/Navigation/TabNav';
 import ServiceTable from '../../../components/Tables/ServiceTable';
 import PageHeader from '../../../components/PageHeader/PageHeader';
+import { useArtisanJobs } from '../../../contexts/ArtisanJobsContext';
 
 const MyJobs = () => {
   const { tab: activeTab = 'newRequests' } = useParams();
   const navigate = useNavigate();
 
-  const [allJobs, setAllJobs] = useState([]);
+  // Use the shared jobs context
+  const { allJobs, loading, error, fetchJobs, retryFetch, cleanup } = useArtisanJobs();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('status');
   const [dateRange, setDateRange] = useState('date-range');
@@ -24,7 +27,7 @@ const MyJobs = () => {
     setCurrentPage(1);
   }, [activeTab]);
 
-  // // Format job title to URL-friendly slug
+  // Format job title to URL-friendly slug
   const formatJobSlug = (title) => {
     return title
       .toLowerCase()
@@ -32,20 +35,14 @@ const MyJobs = () => {
       .replace(/[^\w-]/g, '');
   };
 
+  // Initial data fetch
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await fetch('/artisan-jobs.json');
-        const data = await response.json();
-        setAllJobs(data);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-      }
-    };
     fetchJobs();
-  }, []);
 
-  console.log('All Jobs:', allJobs);
+    // Cleanup function
+    return cleanup;
+  }, []); // Empty dependency array - only run once
+
   // Filter jobs based on active tab and search query
   const filteredJobs = allJobs?.filter((job) => {
     const matchesCategory = job.tab === activeTab;
@@ -128,10 +125,7 @@ const MyJobs = () => {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="My Jobs"
-        subtitle="Manage your posted jobs and track their progress"
-      />
+      <PageHeader title="My Jobs" subtitle="Manage your posted jobs and track their progress" />
 
       {/* Tabs */}
       <TabNav
@@ -197,7 +191,24 @@ const MyJobs = () => {
         </div>
 
         {/* Table or Empty State */}
-        {allJobs?.length > 0 ? (
+        {loading ? (
+          <div className="p-6 text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-gray-600">Loading jobs...</p>
+          </div>
+        ) : error ? (
+          <div className="p-6">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <div className="flex items-center">
+                <AlertCircle className="h-5 w-5 mr-2" />
+                <p>{error}</p>
+              </div>
+              <button onClick={retryFetch} className="mt-2 text-blue-600 hover:underline font-medium">
+                Try again
+              </button>
+            </div>
+          </div>
+        ) : allJobs?.length > 0 ? (
           <>
             <ServiceTable
               items={currentJobs}
@@ -226,18 +237,18 @@ const MyJobs = () => {
         )}
       </div>
 
-    {/* Pagination - only show if there are jobs */}
+      {/* Pagination - only show if there are jobs */}
       {filteredJobs?.length > jobsPerPage && (
-              <div className="mt-4">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={Math.ceil(totalFilteredJobs / jobsPerPage) || 1}
-                  totalResults={totalFilteredJobs}
-                  resultsPerPage={jobsPerPage}
-                  onPageChange={paginate}
-                />
-              </div>
-            )}
+        <div className="mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(totalFilteredJobs / jobsPerPage) || 1}
+            totalResults={totalFilteredJobs}
+            resultsPerPage={jobsPerPage}
+            onPageChange={paginate}
+          />
+        </div>
+      )}
     </div>
   );
 };
