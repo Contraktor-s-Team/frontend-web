@@ -17,6 +17,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { JobListingProvider } from './contexts/JobListingContext';
 import { UserProvider } from './contexts/UserContext';
 import { ArtisanProvider } from './contexts/ArtisanContext';
+import { ArtisanJobsProvider } from './contexts/ArtisanJobsContext';
 import { ProposalProvider } from './contexts/ProposalContext';
 import { JobPostProvider } from './contexts/JobPostContext';
 import { HireArtisanProvider } from './contexts/HireArtisanContext';
@@ -190,19 +191,21 @@ function App() {
     <AuthProvider>
       <UserProvider>
         <ArtisanProvider>
-          <JobListingProvider>
-            <ProposalProvider>
-              <JobPostProvider>
-                <HireArtisanProvider>
-                  <Router>
-                    <UserInitializer />
-                    <ScrollToTop />
-                    <AppRoutes />
-                  </Router>
-                </HireArtisanProvider>
-              </JobPostProvider>
-            </ProposalProvider>
-          </JobListingProvider>
+          <ArtisanJobsProvider>
+            <JobListingProvider>
+              <ProposalProvider>
+                <JobPostProvider>
+                  <HireArtisanProvider>
+                    <Router>
+                      <UserInitializer />
+                      <ScrollToTop />
+                      <AppRoutes />
+                    </Router>
+                  </HireArtisanProvider>
+                </JobPostProvider>
+              </ProposalProvider>
+            </JobListingProvider>
+          </ArtisanJobsProvider>
         </ArtisanProvider>
       </UserProvider>
     </AuthProvider>

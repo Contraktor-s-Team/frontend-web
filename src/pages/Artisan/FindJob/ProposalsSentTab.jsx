@@ -79,8 +79,9 @@ const ProposalsSentTab = ({
       // Process proposals with only basic data
       const processedData = proposalData.map((proposal, index) => ({
         ...proposal,
-        id: `${proposal.jobListingId || proposal.id}-${index}`, // Ensure unique ID
+        id: `${proposal.jobListingId || proposal.id}-${index}`, // Ensure unique ID for React keys
         proposalId: proposal.id,
+        jobListingId: proposal.jobListingId, // Keep the original clean job listing ID
         title: `Proposal #${proposal.id?.slice(0, 8) || 'Unknown'}`,
         description: proposal.message || 'No proposal message available',
         subcategoryName: 'Category unavailable',

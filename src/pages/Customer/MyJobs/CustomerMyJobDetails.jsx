@@ -14,7 +14,7 @@ import SuccessPopup from '../../../components/Modal/SuccessPopup.jsx';
 
 const CustomerJobDetails = () => {
   const { state: jobListingState, fetchJobListingById, deleteJobListing } = useJobListings();
-  const { state: proposalState, fetchJobProposal, fetchNegotiation, negotiateProposal } = useProposal();
+  const { state: proposalState, fetchJobProposal, fetchNegotiation, negotiateProposal, selectProposal } = useProposal();
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
 
@@ -33,6 +33,7 @@ const CustomerJobDetails = () => {
   const [modalError, setModalError] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showAcceptSuccessPopup, setShowAcceptSuccessPopup] = useState(false);
 
   // Extract data from contexts
   const loading = jobListingState.jobListingById.loading;
@@ -41,6 +42,8 @@ const CustomerJobDetails = () => {
   const negotiations = proposalState.negotiate.data;
   const negotiationsLoading = proposalState.negotiate.loading;
   const negotiationsError = proposalState.negotiateProposal.error;
+  const selectLoading = proposalState.selectProposal.loading;
+  const selectError = proposalState.selectProposal.error;
   const deleteLoading = jobListingState.jobListingDelete.loading;
   const deleteSuccess = jobListingState.jobListingDelete.data?.isSuccess;
   const deleteError = jobListingState.jobListingDelete.error;
@@ -61,7 +64,24 @@ const CustomerJobDetails = () => {
     console.log('JobDetails: Starting fetch for jobId:', jobId);
     fetchJobListingById(jobId);
     fetchJobProposal(jobId);
+    // Clear any previous error states when navigating to a new job
+    setModalError('');
   }, [jobId]);
+
+  // Clear error states when component mounts
+  useEffect(() => {
+    setModalError('');
+  }, []);
+
+  // Auto-dismiss error after 5 seconds
+  useEffect(() => {
+    if (modalError) {
+      const timer = setTimeout(() => {
+        setModalError('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [modalError]);
 
   useEffect(() => {
     if (jobListingState.jobListingById.data?.data) {
@@ -83,11 +103,38 @@ const CustomerJobDetails = () => {
     setIsOpen(true);
   };
 
+  const handleAcceptProposal = (proposal) => {
+    // Clear any previous errors
+    setModalError('');
+
+    selectProposal(
+      proposal.id,
+      (response) => {
+        // Success callback
+        console.log('Proposal accepted successfully:', response);
+        setShowAcceptSuccessPopup(true);
+        // Refresh the job data to reflect the accepted proposal
+        fetchJobListingById(jobId);
+        fetchJobProposal(jobId);
+      },
+      (error) => {
+        // Error callback
+        console.error('Failed to accept proposal:', error);
+        setModalError(typeof error === 'string' ? error : error?.message || 'Failed to accept proposal');
+      }
+    );
+  };
+
   const handleDeleteJob = () => {
+    // Clear any previous errors
+    setModalError('');
     setShowDeleteModal(true);
   };
 
   const confirmDeleteJob = () => {
+    // Clear any previous errors
+    setModalError('');
+
     deleteJobListing(jobId, () => {
       setShowDeleteModal(false);
       setShowSuccessPopup(true);
@@ -375,33 +422,41 @@ const CustomerJobDetails = () => {
                   <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Proposal yet</h3>
                 ) : (
                   <div className="space-y-4">
-                    {proposals?.map((quote) => (
-                      <div key={quote.artisan} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    {proposals?.map((quote, index) => (
+                      <div
+                        key={quote?.id || `quote-${index}`}
+                        className="bg-white rounded-xl shadow-sm border border-gray-100 p-4"
+                      >
                         {/* Artisan Info Header */}
                         <div className="flex items-start gap-4 mb-4">
-                          <div className="relative">
+                          {/* <div className="relative">
                             <img
                               src={quote?.avatar || Avatar}
-                              alt={quote?.artisan}
+                              alt={`${quote?.artisan?.firstName || 'Artisan'} ${quote?.artisan?.lastName || ''}`}
                               className="w-42.5 h-42.5 rounded-lg object-cover"
                             />
                             <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
                               <GoStarFill size={12} className="text-warning-norm-1" />
                               <span className="text-xs font-medium text-gray-900">{quote?.rating}</span>
                             </div>
-                          </div>
+                          </div> */}
 
                           <div className="flex-1 space-y-4.25">
                             <div>
                               <h3 className="font-semibold mb-1">
-                                {quote?.artisan?.firstName} {quote?.artisan?.lastName}
+                                {quote?.artisan?.firstName || 'Unknown'} {quote?.artisan?.lastName || 'Artisan'}
                               </h3>
-                              <p className="text-neu-dark-1 text-sm mb-2">{quote?.category}</p>
+                              <p className="text-neu-dark-1 text-sm mb-2">{quote?.category || 'N/A'}</p>
                             </div>
 
                             <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
                               <Banknote size={20} className="text-pri-norm-1" />
-                              <p className="font-semibold">{quote?.proposedPrice}</p>
+                              <p className="font-semibold">
+                                ₦
+                                {typeof quote?.proposedPrice === 'number'
+                                  ? quote.proposedPrice.toLocaleString()
+                                  : quote?.proposedPrice || 'N/A'}
+                              </p>
                             </div>
 
                             <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
@@ -416,13 +471,18 @@ const CustomerJobDetails = () => {
                         {/* Message */}
                         <div className="mb-4">
                           <p className="text-sm text-neu-dark-1 mb-2">Message From artisan</p>
-                          <p className="leading-relaxed">{quote?.message}</p>
+                          <p className="leading-relaxed">{quote?.message || 'No message provided'}</p>
                         </div>
 
                         {/* Action Buttons */}
                         <div className="flex gap-4">
-                          <Button variant="secondary" rightIcon={<Check size={20} />}>
-                            Accept Proposal
+                          <Button
+                            variant="secondary"
+                            rightIcon={<Check size={20} />}
+                            onClick={() => handleAcceptProposal(quote)}
+                            disabled={selectLoading}
+                          >
+                            {selectLoading ? 'Accepting...' : 'Accept Proposal'}
                           </Button>
                           <Button
                             variant="grey-sec"
@@ -488,23 +548,28 @@ const CustomerJobDetails = () => {
           )}
         </div>
       </div>
-      <NegotiationModal
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        closeModal={() => {
-          setIsOpen(false);
-          setSelectedProposal(null);
-        }}
-        selectedProposal={selectedProposal}
-        proposals={proposals}
-        negotiateProposal={negotiateProposal}
-        negotiations={negotiations?.data || []} // Pass negotiations from Redux state
-        negotiationsLoading={negotiationsLoading} // Pass loading state
-        negotiateSuccess={negotiations?.isSuccess}
-        errors={negotiationsError}
-        currentUserId={userData?.id} // Replace with actual current user ID from Redux
-        currentUserRole="User" // Replace with actual current user role from Redux
-      />
+
+      {/* Modals - positioned at the end for proper overlay */}
+      {isOpen && (
+        <NegotiationModal
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          closeModal={() => {
+            setIsOpen(false);
+            setSelectedProposal(null);
+          }}
+          selectedProposal={selectedProposal}
+          proposals={proposals}
+          negotiateProposal={negotiateProposal}
+          negotiations={negotiations?.data || []} // Pass negotiations from Redux state
+          negotiationsLoading={negotiationsLoading} // Pass loading state
+          negotiateSuccess={negotiations?.isSuccess}
+          errors={negotiationsError}
+          currentUserId={userData?.id} // Replace with actual current user ID from Redux
+          currentUserRole="User" // Replace with actual current user role from Redux
+        />
+      )}
+
       <ConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -522,6 +587,48 @@ const CustomerJobDetails = () => {
           isVisible={showSuccessPopup}
           onClose={() => setShowSuccessPopup(false)}
         />
+      )}
+
+      {showAcceptSuccessPopup && (
+        <SuccessPopup
+          message="Proposal accepted successfully!"
+          isVisible={showAcceptSuccessPopup}
+          onClose={() => setShowAcceptSuccessPopup(false)}
+        />
+      )}
+
+      {/* Error display for operations - only show local errors */}
+      {modalError && (
+        <div className="fixed top-4 right-4 bg-red-50 border border-red-200 rounded-lg p-4 shadow-lg z-50">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <div className="text-sm text-red-700">
+                <p>{modalError}</p>
+              </div>
+            </div>
+            <div className="ml-auto pl-3">
+              <button onClick={() => setModalError('')} className="text-red-400 hover:text-red-600">
+                <span className="sr-only">Dismiss</span>
+                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

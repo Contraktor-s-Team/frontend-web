@@ -9,6 +9,7 @@ const ProposalCard = ({ proposal, activeTab }) => {
     description,
     customer,
     postedAt,
+    jobListingId, // Add jobListingId for navigation
     // Negotiation-related props
     canAccept,
     hasNegotiation,
@@ -17,10 +18,54 @@ const ProposalCard = ({ proposal, activeTab }) => {
     negotiations = []
   } = proposal;
 
+  // Use jobListingId for navigation to job details, fallback to proposal.id if not available
+  // If the ID is composite (contains -0, -1, etc.), extract the original job listing ID
+  const extractCleanJobId = (id) => {
+    if (!id) return null;
+    // If ID contains a dash followed by a number at the end, remove it
+    const match = id.match(/^(.+)-\d+$/);
+    return match ? match[1] : id;
+  };
+
+  const navigationId = extractCleanJobId(jobListingId) || extractCleanJobId(proposal.id);
+
   // Check if the current user is the sender (artisan) of the proposal
   const isCurrentUserSender = senderId === currentUserId;
 
-  // Render negotiation buttons based on conditions
+  // Render proposal status - for proposal-sent tab, always show status instead of action buttons
+  const renderProposalStatus = () => {
+    // For proposal-sent tab, the user is always the sender, so show status
+    if (activeTab === 'proposal-sent') {
+      // Determine the status based on negotiations
+      let statusText = 'Proposal Sent';
+      let statusClass = 'bg-blue-100 text-blue-700';
+
+      if (hasNegotiation && negotiations.length > 0) {
+        const latestNegotiation = negotiations[0];
+        if (latestNegotiation.status === 'accepted') {
+          statusText = 'Proposal Accepted';
+          statusClass = 'bg-green-100 text-green-700';
+        } else if (latestNegotiation.status === 'rejected') {
+          statusText = 'Proposal Rejected';
+          statusClass = 'bg-red-100 text-red-700';
+        } else {
+          statusText = 'Awaiting Response';
+          statusClass = 'bg-yellow-100 text-yellow-700';
+        }
+      }
+
+      return (
+        <div className="flex justify-center">
+          <div className={`px-4 py-2 rounded-full text-sm font-medium ${statusClass}`}>{statusText}</div>
+        </div>
+      );
+    }
+
+    // For other tabs, use the original logic
+    return renderNegotiationButtons();
+  };
+
+  // Render negotiation buttons based on conditions (original logic for non-proposal-sent tabs)
   const renderNegotiationButtons = () => {
     // If user is the sender (artisan), they can only view status (no actions)
     if (isCurrentUserSender) {
@@ -79,12 +124,14 @@ const ProposalCard = ({ proposal, activeTab }) => {
     <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 hover:border-blue-200">
       {/* Clickable area for navigation */}
       <Link
-        to={`/artisan/find-jobs/${activeTab}/${proposal.id}`}
+        to={`/artisan/find-jobs/${activeTab}/${navigationId}`}
         className="block"
         onClick={() => {
-          console.log('🔗 ProposalCard: Navigating to proposal with ID:', proposal.id);
-          console.log('🔗 ProposalCard: Proposal object:', proposal);
-          console.log('🔗 ProposalCard: Generated URL:', `/artisan/find-jobs/${activeTab}/${proposal.id}`);
+          console.log('🔗 ProposalCard: Navigating to job details with ID:', navigationId);
+          console.log('🔗 ProposalCard: Original Job Listing ID:', jobListingId);
+          console.log('🔗 ProposalCard: Original Proposal ID:', proposal.id);
+          console.log('🔗 ProposalCard: Cleaned Navigation ID:', navigationId);
+          console.log('🔗 ProposalCard: Generated URL:', `/artisan/find-jobs/${activeTab}/${navigationId}`);
         }}
       >
         {/* Main content */}
@@ -161,7 +208,7 @@ const ProposalCard = ({ proposal, activeTab }) => {
 
       {/* Action buttons - outside the Link to prevent navigation conflicts */}
       <div className="mt-6.5">
-        <div className="flex gap-2">{renderNegotiationButtons()}</div>
+        <div className="flex gap-2">{renderProposalStatus()}</div>
       </div>
     </div>
   );

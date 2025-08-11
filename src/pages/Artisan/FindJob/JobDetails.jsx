@@ -6,7 +6,7 @@ import Avatar from '/img/avatar1.jpg';
 import { useJobListings } from '../../../contexts/JobListingContext';
 import { useProposal } from '../../../contexts/ProposalContext';
 import { useUser } from '../../../contexts/UserContext';
-import QuoteModal from '../../../components/Modal/QuoteModal';
+import ProposalModal from '../../../components/Modal/ProposalModal';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
 import FallbackImage from '../../../components/FallbackImage';
 
@@ -18,7 +18,7 @@ const ArtisanJobDetails = () => {
 
   console.log('🔍 JobDetails: tab from useParams:', tab, 'jobId:', jobId);
   const { fetchJobListingById, state: jobListingState } = useJobListings();
-  const { fetchJobProposal, fetchNegotiation, submitProposal, state: proposalState } = useProposal();
+  const { fetchJobProposal, fetchNegotiation, postProposal, state: proposalState } = useProposal();
 
   const loading = jobListingState.jobListingById.loading;
   const data = jobListingState.jobListingById.data;
@@ -482,12 +482,12 @@ const ArtisanJobDetails = () => {
       </div>
 
       {/* Quote Modal for listings tab */}
-      <QuoteModal
+      <ProposalModal
         isOpen={isQuoteModalOpen}
         setIsOpen={setIsQuoteModalOpen}
         closeModal={() => setIsQuoteModalOpen(false)}
         job={job}
-        postProposal={submitProposal}
+        postProposal={postProposal}
       />
 
       {/* Negotiation Modal for requests tab */}

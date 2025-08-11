@@ -169,12 +169,13 @@ const MyJobs = () => {
     return tabFilters[tab] || {};
   };
 
-  // Fetch job listings when filters change
+  // Fetch job listings when filters or activeTab change
   useEffect(() => {
     const apiFilters = buildApiFilters();
     console.log('Fetching job listings with filters:', apiFilters);
     fetchJobListings(apiFilters);
-  }, [buildApiFilters, fetchJobListings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, activeTab]);
 
   // Reset filters when tab changes
   useEffect(() => {

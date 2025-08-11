@@ -1,19 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { useProposal } from '../../contexts/ProposalContext';
 import { X } from 'lucide-react';
 import SuccessModal from './SuccessModal';
 
-export default function NegotiationModal({ 
-  isOpen, 
-  setIsOpen, 
-  closeModal, 
-  selectedProposal, 
+export default function NegotiationModal({
+  isOpen,
+  setIsOpen,
+  closeModal,
+  selectedProposal,
   negotiateProposal,
   proposals,
   negotiations = [], // Array of negotiations from API
   negotiateSuccess,
   negotiationsLoading = false, // Loading state for negotiations
   currentUserId, // Current user's ID to determine sender/receiver
-  currentUserRole = "User", // Current user's role (User/Artisan)
+  currentUserRole = 'User', // Current user's role (User/Artisan)
   errors
 }) {
   const [currentView, setCurrentView] = useState('list'); // 'list', 'typing', 'sent'
@@ -24,6 +25,9 @@ export default function NegotiationModal({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [modalError, setModalError] = useState(false);
 
+  // Get acceptNegotiation and rejectNegotiation from context
+  const { acceptNegotiation, rejectNegotiation } = useProposal();
+
   // Reset form when modal opens/closes or proposal changes
   useEffect(() => {
     if (!isOpen) {
@@ -33,7 +37,7 @@ export default function NegotiationModal({
   }, [isOpen, selectedProposal]);
 
   const handleInputChange = (field, value) => {
-    setNegotiationData(prev => ({
+    setNegotiationData((prev) => ({
       ...prev,
       [field]: value
     }));
@@ -59,21 +63,21 @@ export default function NegotiationModal({
     };
 
     console.log('Sending negotiation:', negotiationPayload);
-    
+
     // Call the negotiate function from props
     if (negotiateProposal) {
       negotiateProposal(
-        selectedProposal.id, 
+        selectedProposal.id,
         negotiationPayload,
         () => {
           // Success callback - move to sent view
-          setShowSuccessModal(true)
+          setShowSuccessModal(true);
           setCurrentView('sent');
           setNegotiationData({ message: '', proposedPrice: '' });
         },
         () => {
           // Error callback
-          setModalError(true)
+          setModalError(true);
           console.error('Failed to send negotiation:', errors);
         }
       );
@@ -82,14 +86,35 @@ export default function NegotiationModal({
 
   const handleAcceptLatestOffer = () => {
     const latestNegotiation = negotiations[0];
-    if (!latestNegotiation) return;
+    if (!latestNegotiation || !acceptNegotiation) return;
+    acceptNegotiation(
+      latestNegotiation.id,
+      () => {
+        setShowSuccessModal(true);
+        closeModal();
+      },
+      (error) => {
+        setModalError(error || 'Failed to accept negotiation');
+      }
+    );
+  };
 
-    console.log('Accepting offer:', latestNegotiation);
-    closeModal();
+  const handleRejectLatestOffer = () => {
+    const latestNegotiation = negotiations[0];
+    if (!latestNegotiation || !rejectNegotiation) return;
+    rejectNegotiation(
+      latestNegotiation.id,
+      () => {
+        setShowSuccessModal(true);
+        closeModal();
+      },
+      (error) => {
+        setModalError(error || 'Failed to reject negotiation');
+      }
+    );
   };
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    
   };
   const handleRenegotiate = () => {
     setCurrentView('typing');
@@ -107,31 +132,56 @@ export default function NegotiationModal({
   const initialBudget = selectedProposal?.proposedPrice || 0;
 
   // Get artisan name
-  const artisanName = selectedProposal?.artisan ? 
-    `${selectedProposal.artisan.firstName} ${selectedProposal.artisan.lastName}` : 
-    'Artisan';
+  const artisanName = selectedProposal?.artisan
+    ? `${selectedProposal.artisan.firstName} ${selectedProposal.artisan.lastName}`
+    : 'Artisan';
+
+  console.log('NegotiationModal Debug:', {
+    isOpen,
+    selectedProposal,
+    artisanName,
+    negotiations,
+    currentView,
+    initialBudget
+  });
 
   if (!isOpen) return null;
-  console.log("this is negotiation error", modalError, errors)
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-hidden">
-          {modalError && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <div className="text-sm text-red-700">
-                    <p>{errors}</p>
-                  </div>
+    <div
+      className="fixed inset-0 bg-gray bg-opacity-50 z-50 flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden relative min-h-[300px]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {modalError && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <div className="text-sm text-red-700">
+                  <p>{errors}</p>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
         {/* List View - Shows negotiation history */}
         {currentView === 'list' && (
           <>
@@ -143,21 +193,16 @@ export default function NegotiationModal({
                   Negotiate price with <span className="text-gray-900 font-medium">{artisanName}</span>
                 </p>
               </div>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={24} />
               </button>
             </div>
-          
+
             {/* Content */}
             <div className="px-6 pb-6">
               {/* Initial Budget */}
               <div className="bg-gray-100 rounded-2xl p-4 mb-4 text-center">
-                <div className="text-2xl font-bold text-gray-900 mb-1">
-                  ₦{initialBudget.toLocaleString()}
-                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-1">₦{initialBudget.toLocaleString()}</div>
                 <p className="text-sm text-gray-600">Your initial Budget</p>
               </div>
 
@@ -180,10 +225,7 @@ export default function NegotiationModal({
 
                     {/* All negotiations in chronological order */}
                     {sortedNegotiations.map((negotiation, index) => (
-                      <div
-                        key={negotiation.id}
-                        className="bg-gray-100 rounded-2xl p-4"
-                      >
+                      <div key={negotiation.id} className="bg-gray-100 rounded-2xl p-4">
                         <div className="text-2xl font-bold text-gray-900 mb-2">
                           ₦{negotiation.proposedPrice?.toLocaleString()}
                         </div>
@@ -194,21 +236,64 @@ export default function NegotiationModal({
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={handleAcceptLatestOffer}
-                  className="flex-1 bg-green-500 text-white py-3 px-4 rounded-full font-medium hover:bg-green-600 transition-colors"
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={handleRenegotiate}
-                  className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-full font-medium hover:bg-blue-600 transition-colors"
-                >
-                  Renegotiate
-                </button>
-              </div>
+              {/* Action Buttons: Only show if the latest negotiation is from the other party */}
+              {(() => {
+                // If there are negotiations, check the latest sender
+                const latest = sortedNegotiations[0];
+                // If no negotiations, allow actions (first proposal)
+                if (!latest) {
+                  return (
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleAcceptLatestOffer}
+                        className="flex-1 bg-green-500 text-white py-3 px-4 rounded-full font-medium hover:bg-green-600 transition-colors"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={handleRenegotiate}
+                        className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-full font-medium hover:bg-blue-600 transition-colors"
+                      >
+                        Renegotiate
+                      </button>
+                    </div>
+                  );
+                }
+                // If the latest negotiation was sent by the current user (by id or role), hide actions
+                if (
+                  (latest.senderId && latest.senderId === currentUserId) ||
+                  (latest.senderRole && latest.senderRole === currentUserRole)
+                ) {
+                  return (
+                    <div className="text-center text-gray-500 text-sm mt-2">
+                      Waiting for a response from the other party...
+                    </div>
+                  );
+                }
+                // Otherwise, show actions
+                return (
+                  <div className="flex gap-3">
+                    <button
+                      onClick={handleAcceptLatestOffer}
+                      className="flex-1 bg-green-500 text-white py-3 px-4 rounded-full font-medium hover:bg-green-600 transition-colors"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={handleRejectLatestOffer}
+                      className="flex-1 bg-red-500 text-white py-3 px-4 rounded-full font-medium hover:bg-red-600 transition-colors"
+                    >
+                      Reject
+                    </button>
+                    <button
+                      onClick={handleRenegotiate}
+                      className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-full font-medium hover:bg-blue-600 transition-colors"
+                    >
+                      Renegotiate
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
           </>
         )}
@@ -224,10 +309,7 @@ export default function NegotiationModal({
                   Negotiate price with <span className="text-gray-900 font-medium">{artisanName}</span>
                 </p>
               </div>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={24} />
               </button>
             </div>
@@ -236,9 +318,7 @@ export default function NegotiationModal({
             <div className="px-6 pb-6">
               {/* Initial Budget */}
               <div className="bg-gray-100 rounded-2xl p-4 mb-4 text-center">
-                <div className="text-2xl font-bold text-gray-900 mb-1">
-                  ₦{initialBudget.toLocaleString()}
-                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-1">₦{initialBudget.toLocaleString()}</div>
                 <p className="text-sm text-gray-600">Your initial Budget</p>
               </div>
 
@@ -254,10 +334,7 @@ export default function NegotiationModal({
 
                 {/* All negotiations in chronological order */}
                 {sortedNegotiations.map((negotiation, index) => (
-                  <div
-                    key={negotiation.id}
-                    className="bg-gray-100 rounded-2xl p-4"
-                  >
+                  <div key={negotiation.id} className="bg-gray-100 rounded-2xl p-4">
                     <div className="text-2xl font-bold text-gray-900 mb-2">
                       ₦{negotiation.proposedPrice?.toLocaleString()}
                     </div>
@@ -315,10 +392,7 @@ export default function NegotiationModal({
                   Negotiate price with <span className="text-gray-900 font-medium">{artisanName}</span>
                 </p>
               </div>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={24} />
               </button>
             </div>
@@ -327,9 +401,7 @@ export default function NegotiationModal({
             <div className="px-6 pb-6">
               {/* Initial Budget */}
               <div className="bg-gray-100 rounded-2xl p-4 mb-4 text-center">
-                <div className="text-2xl font-bold text-gray-900 mb-1">
-                  ₦{initialBudget.toLocaleString()}
-                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-1">₦{initialBudget.toLocaleString()}</div>
                 <p className="text-sm text-gray-600">Your initial Budget</p>
               </div>
 
@@ -345,10 +417,7 @@ export default function NegotiationModal({
 
                 {/* Previous negotiations */}
                 {sortedNegotiations.map((negotiation, index) => (
-                  <div
-                    key={negotiation.id}
-                    className="bg-gray-100 rounded-2xl p-4"
-                  >
+                  <div key={negotiation.id} className="bg-gray-100 rounded-2xl p-4">
                     <div className="text-2xl font-bold text-gray-900 mb-2">
                       ₦{negotiation.proposedPrice?.toLocaleString()}
                     </div>
@@ -359,11 +428,12 @@ export default function NegotiationModal({
                 {/* Latest sent negotiation */}
                 <div className="bg-gray-100 rounded-2xl p-4">
                   <div className="text-2xl font-bold text-gray-900 mb-2">
-                    ₦{negotiationData.proposedPrice ? parseFloat(negotiationData.proposedPrice.replace(/[^0-9]/g, '')).toLocaleString() : '0'}
+                    ₦
+                    {negotiationData.proposedPrice
+                      ? parseFloat(negotiationData.proposedPrice.replace(/[^0-9]/g, '')).toLocaleString()
+                      : '0'}
                   </div>
-                  <p className="text-sm text-gray-700">
-                    {negotiationData.message || 'Your latest offer'}
-                  </p>
+                  <p className="text-sm text-gray-700">{negotiationData.message || 'Your latest offer'}</p>
                 </div>
               </div>
 

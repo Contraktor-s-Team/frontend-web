@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import JobRequestsTab from './JobRequestsTab';
 import ProposalsSentTab from './ProposalsSentTab';
 
-const FindJob = () => {
+const ArtisanFindJob = () => {
   console.log('🚀 FindJob component is mounting/rendering');
 
   // Get activeTab from URL params
@@ -49,7 +49,7 @@ const FindJob = () => {
 
   // Tab configuration
   const tabs = [
-    { id: 'requests', label: 'Job Requests', path: '/artisan/find-jobs/requests' },
+    { id: 'requests', label: 'Job Listings', path: '/artisan/find-jobs/requests' },
     { id: 'proposal-sent', label: 'Proposal Sent', path: '/artisan/find-jobs/proposal-sent' }
   ];
 
@@ -122,4 +122,4 @@ const FindJob = () => {
   );
 };
 
-export default FindJob;
+export default ArtisanFindJob;

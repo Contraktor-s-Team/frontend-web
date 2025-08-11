@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Plus, CheckCircle } from 'lucide-react';
+import { X, Plus, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Success Toast Component
 const SuccessPopup = ({ message, isVisible, onClose }) => {
@@ -40,7 +40,46 @@ const SuccessPopup = ({ message, isVisible, onClose }) => {
   );
 };
 
-export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navigate }) {
+// Error Toast Component
+const ErrorPopup = ({ message, isVisible, onClose }) => {
+  useState(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 7000); // Auto-close after 7 seconds (longer for errors)
+
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onClose]);
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed top-4 right-4 z-50 max-w-sm">
+      <div className="bg-white border border-red-200 rounded-lg shadow-lg p-4 transform transition-all duration-300 ease-in-out">
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0">
+            <AlertCircle className="h-5 w-5 text-red-500" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 font-inter">Error</p>
+            <p className="text-sm text-gray-600 font-inter mt-1">{message}</p>
+          </div>
+          <div className="flex-shrink-0">
+            <button
+              onClick={onClose}
+              className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-md"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function ProposalModal({ isOpen, setIsOpen, job, postProposal, navigate }) {
   const [formData, setFormData] = useState({
     topEstimatedCost: '',
     costBreakdown: [{ name: '', amount: '' }],
@@ -49,6 +88,8 @@ export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navig
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -85,12 +126,14 @@ export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navig
 
   const validateForm = () => {
     if (!formData.topEstimatedCost.trim()) {
-      alert('Please enter the top estimated cost');
+      setErrorMessage('Please enter the top estimated cost');
+      setShowErrorToast(true);
       return false;
     }
 
     if (!formData.message.trim()) {
-      alert('Please enter a message for the customer');
+      setErrorMessage('Please enter a message for the customer');
+      setShowErrorToast(true);
       return false;
     }
 
@@ -100,7 +143,8 @@ export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navig
     // );
 
     // if (validCostItems.length === 0) {
-    //   alert('Please add at least one cost breakdown item');
+    //   setErrorMessage('Please add at least one cost breakdown item');
+    //   setShowErrorToast(true);
     //   return false;
     // }
 
@@ -138,8 +182,9 @@ export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navig
         },
         (errors) => {
           console.error('Proposal submission errors:', errors);
-          // Handle errors here
-          alert('Failed to submit proposal. Please try again.');
+          // Handle errors here with toast instead of alert
+          setErrorMessage('Failed to submit proposal. Please try again.');
+          setShowErrorToast(true);
         }
       );
 
@@ -153,7 +198,8 @@ export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navig
       setIsOpen(false);
     } catch (error) {
       console.error('Error submitting proposal:', error);
-      alert('Failed to submit proposal. Please try again.');
+      setErrorMessage('Failed to submit proposal. Please try again.');
+      setShowErrorToast(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -172,6 +218,11 @@ export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navig
 
   const handleCloseSuccessToast = () => {
     setShowSuccessToast(false);
+  };
+
+  const handleCloseErrorToast = () => {
+    setShowErrorToast(false);
+    setErrorMessage('');
   };
 
   return (
@@ -200,17 +251,17 @@ export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navig
                   Please read requirements and breakdown so that we can negotiate cost on fair
                 </p>
                 {job?.budget != null ? (
-                  <div class="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
-                    <span class="text-[#005790]">Customer Budget: </span>
-                    <span class="font-bold text-[#005790]">
+                  <div className="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
+                    <span className="text-[#005790]">Customer Budget: </span>
+                    <span className="font-bold text-[#005790]">
                       {' '}
                       {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(job?.budget || 0)}
                     </span>
                   </div>
                 ) : (
-                  <div class="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
-                    <span class="text-[#005790]">Consultation Fee: </span>
-                    <span class="font-bold text-[#005790]">₦18,000</span>
+                  <div className="w-full bg-blue-100 rounded-lg px-4 py-4 inline-block">
+                    <span className="text-[#005790]">Consultation Fee: </span>
+                    <span className="font-bold text-[#005790]">Not Specified</span>
                   </div>
                 )}
 
@@ -316,6 +367,9 @@ export default function QuoteModal({ isOpen, setIsOpen, job, postProposal, navig
         isVisible={showSuccessToast}
         onClose={handleCloseSuccessToast}
       />
+
+      {/* Error Toast */}
+      <ErrorPopup message={errorMessage} isVisible={showErrorToast} onClose={handleCloseErrorToast} />
     </>
   );
 }

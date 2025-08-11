@@ -24,7 +24,7 @@ import FallbackImage from '../../../components/FallbackImage';
 import Avatar from '/img/avatar1.jpg';
 import { FaRegBookmark } from 'react-icons/fa6';
 
-const ArtisanDetails = () => {
+const CustomerArtisanDetails = () => {
   const { artisanId, tab } = useParams();
   const navigate = useNavigate();
   const { state: artisanState, fetchArtisanById } = useArtisan();
@@ -409,4 +409,4 @@ const ArtisanDetails = () => {
   );
 };
 
-export default ArtisanDetails;
+export default CustomerArtisanDetails;

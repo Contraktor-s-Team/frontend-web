@@ -5,45 +5,6 @@ import ServiceTable from '../../../../components/Tables/ServiceTable';
 import { useJobListings } from '../../../../contexts/JobListingContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
-const services = [
-  {
-    id: 1,
-    title: 'AC Installation',
-    artisan: 'Musa Ibrahim',
-    status: 'Completed',
-    date: '6 Jul, 2023',
-    time: '1:00 PM',
-    image: '/img/avatar1.jpg'
-  },
-  {
-    id: 2,
-    title: 'Plumbing Leak Repair',
-    artisan: 'Fatima Bello',
-    status: 'In Progress',
-    date: '12 June 2023',
-    time: '1:00 PM',
-    image: '/img/avatar2.jpg'
-  },
-  {
-    id: 3,
-    title: 'House Cleaning',
-    artisan: 'Chinedu Okafor',
-    status: 'Completed',
-    date: '13 June 2023',
-    time: '1:00 PM',
-    image: '/img/avatar3.jpg'
-  },
-  {
-    id: 4,
-    title: 'Generator Service',
-    artisan: 'Ayodele Akinwumi',
-    status: 'In Progress',
-    date: '14 June 2023',
-    time: '1:00 PM',
-    image: ''
-  }
-];
-
 const RecentServices = ({ activeTab }) => {
   const { tab: routeTab = 'posted' } = useParams();
   const navigate = useNavigate();
@@ -54,6 +15,7 @@ const RecentServices = ({ activeTab }) => {
 
   // Use activeTab prop if provided, otherwise fall back to route tab
   const currentTab = activeTab || routeTab;
+
   const formatJobSlug = (title) => {
     return title
       .toLowerCase()
@@ -103,7 +65,36 @@ const RecentServices = ({ activeTab }) => {
     return 'posted'; // Default to posted if no proposals
   };
 
-  const allJobListings = jobListingData?.data ? jobListingData.data.map(transformJobListingData) : [];
+  // Debug logging to understand data structure
+  console.log('📊 RecentServices Debug:', {
+    hasJobListingData: !!jobListingData,
+    jobListingDataKeys: jobListingData ? Object.keys(jobListingData) : 'no data',
+    dataType: jobListingData?.data ? typeof jobListingData.data : 'no data property',
+    isDataArray: Array.isArray(jobListingData?.data),
+    dataLength: Array.isArray(jobListingData?.data) ? jobListingData.data.length : 'not array',
+    fullJobListingData: jobListingData
+  });
+
+  // Handle different possible API response structures with proper error handling
+  let jobListingsArray = [];
+
+  if (jobListingData) {
+    // Try different possible paths for the job listings array
+    if (Array.isArray(jobListingData.data)) {
+      jobListingsArray = jobListingData.data;
+    } else if (Array.isArray(jobListingData.data?.items)) {
+      jobListingsArray = jobListingData.data.items;
+    } else if (Array.isArray(jobListingData.data?.data)) {
+      jobListingsArray = jobListingData.data.data;
+    } else if (Array.isArray(jobListingData)) {
+      jobListingsArray = jobListingData;
+    } else {
+      console.warn('⚠️ RecentServices: Unable to find job listings array in API response:', jobListingData);
+      jobListingsArray = []; // Ensure it's always an array
+    }
+  }
+
+  const allJobListings = jobListingsArray.length > 0 ? jobListingsArray.map(transformJobListingData) : [];
 
   // Filter job listings by current tab and limit to 5 for dashboard display
   const filteredJobListings = allJobListings
@@ -160,6 +151,11 @@ const RecentServices = ({ activeTab }) => {
               <>
                 <p>Loading job listings...</p>
               </>
+            ) : error ? (
+              <>
+                <p>Error loading job listings</p>
+                <p className="text-sm mt-1">Please try again later</p>
+              </>
             ) : (
               <>
                 <p>No {currentTab} job listings found</p>
@@ -169,7 +165,6 @@ const RecentServices = ({ activeTab }) => {
           </div>
         </div>
       )}
-      {/* <ServiceTable items={services} /> */}
     </div>
   );
 };

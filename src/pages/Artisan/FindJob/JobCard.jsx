@@ -1,9 +1,11 @@
 import React from 'react';
 import { Calendar, MapPin, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../../components/Button/Button';
 
 const JobCard = ({ job, activeTab }) => {
+  const navigate = useNavigate();
+
   const {
     subcategoryName,
     title,
@@ -19,6 +21,14 @@ const JobCard = ({ job, activeTab }) => {
   } = job;
 
   const isRequest = activeTab === 'proposal-sent';
+
+  // Handle Apply button click to navigate to job details
+  const handleApplyClick = (e) => {
+    e.preventDefault(); // Prevent the parent Link from being triggered
+    e.stopPropagation(); // Stop event bubbling
+    console.log('🔗 JobCard: Apply button clicked for job ID:', job.id);
+    navigate(`/artisan/find-jobs/${activeTab}/${job.id}`);
+  };
 
   // Check if the current user is the sender (artisan) of the proposal
   const isCurrentUserSender = senderId === currentUserId;
@@ -173,7 +183,7 @@ const JobCard = ({ job, activeTab }) => {
             renderNegotiationButtons()
           ) : (
             <div className="">
-              <Button variant="primary" className="px-4.25 py-2">
+              <Button variant="primary" className="px-4.25 py-2" onClick={handleApplyClick}>
                 Apply
               </Button>
             </div>

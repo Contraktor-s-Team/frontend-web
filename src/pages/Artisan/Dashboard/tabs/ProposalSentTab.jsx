@@ -118,6 +118,7 @@ const ProposalSentTab = () => {
             ...proposal,
             negotiations: proposalNegotiationsData,
             id: proposal.id,
+            jobListingId: proposal.jobListingId, // Ensure job listing ID is available for navigation
             title: `Proposal #${proposal.id?.slice(0, 8) || 'Unknown'}`,
             description: 'Proposal submitted - details available in negotiations',
             subcategoryName: 'Proposal',
@@ -141,7 +142,7 @@ const ProposalSentTab = () => {
   }, [proposals, proposalNegotiations]);
 
   const handleViewAll = () => {
-    navigate('/artisan/find-jobs/requests');
+    navigate('/artisan/find-jobs/proposal-sent');
   };
 
   const handleBrowseJobs = () => {
@@ -150,11 +151,23 @@ const ProposalSentTab = () => {
 
   // Handle clicking on a proposal item to view details
   const handleProposalClick = (proposal) => {
-    if (proposal.id) {
-      console.log('Navigating to proposal details for ID:', proposal.id);
-      navigate(`/artisan/proposals/${proposal.id}`);
+    // Extract clean job listing ID (remove any composite ID suffix)
+    const extractCleanJobId = (id) => {
+      if (!id) return null;
+      // If ID contains a dash followed by a number at the end, remove it
+      const match = id.match(/^(.+)-\d+$/);
+      return match ? match[1] : id;
+    };
+
+    const jobId = extractCleanJobId(proposal.jobListingId) || extractCleanJobId(proposal.id);
+
+    if (jobId) {
+      console.log('Navigating to job details for Proposal ID:', proposal.id);
+      console.log('Using Job Listing ID:', jobId);
+      // Navigate to job details using the proposal-sent tab
+      navigate(`/artisan/find-jobs/proposal-sent/${jobId}`);
     } else {
-      console.warn('Proposal ID not found for navigation:', proposal);
+      console.warn('Job listing ID not found for navigation:', proposal);
     }
   };
 

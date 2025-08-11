@@ -7,7 +7,10 @@ const initialState = {
   jobProposal: { loading: false, data: {}, error: {} },
   artisanProposal: { loading: false, data: {}, error: {} },
   negotiateProposal: { loading: false, data: {}, error: {} },
-  negotiate: { loading: false, data: {}, error: {} }
+  negotiate: { loading: false, data: {}, error: {} },
+  selectProposal: { loading: false, data: {}, error: {} },
+  acceptNegotiation: { loading: false, data: {}, error: {} },
+  rejectNegotiation: { loading: false, data: {}, error: {} }
 };
 
 const ProposalContext = createContext(null);
@@ -44,8 +47,27 @@ function proposalReducer(state, action) {
       return { ...state, negotiate: { loading: false, data: action.payload, error: {} } };
     case 'GET_NEGOTIATION_FAILURE':
       return { ...state, negotiate: { loading: false, data: {}, error: action.payload } };
+    case 'SELECT_PROPOSAL_REQUEST':
+      return { ...state, selectProposal: { ...state.selectProposal, loading: true } };
+    case 'SELECT_PROPOSAL_SUCCESS':
+      return { ...state, selectProposal: { loading: false, data: action.payload, error: {} } };
+    case 'SELECT_PROPOSAL_FAILURE':
+      return { ...state, selectProposal: { loading: false, data: {}, error: action.payload } };
+    case 'ACCEPT_NEGOTIATION_REQUEST':
+      return { ...state, acceptNegotiation: { ...state.acceptNegotiation, loading: true } };
+    case 'ACCEPT_NEGOTIATION_SUCCESS':
+      return { ...state, acceptNegotiation: { loading: false, data: action.payload, error: {} } };
+    case 'ACCEPT_NEGOTIATION_FAILURE':
+      return { ...state, acceptNegotiation: { loading: false, data: {}, error: action.payload } };
+    case 'REJECT_NEGOTIATION_REQUEST':
+      return { ...state, rejectNegotiation: { ...state.rejectNegotiation, loading: true } };
+    case 'REJECT_NEGOTIATION_SUCCESS':
+      return { ...state, rejectNegotiation: { loading: false, data: action.payload, error: {} } };
+    case 'REJECT_NEGOTIATION_FAILURE':
+      return { ...state, rejectNegotiation: { loading: false, data: {}, error: action.payload } };
     default:
       return state;
+    // Accept negotiation
   }
 }
 
@@ -311,6 +333,89 @@ export function ProposalProvider({ children }) {
     }
   }, []);
 
+  // Select/Accept proposal
+  const selectProposal = useCallback(async (proposalId, onSuccess, onError) => {
+    dispatch({ type: 'SELECT_PROPOSAL_REQUEST' });
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const res = await axios.post(
+        `${baseUrl}/select/${proposalId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      dispatch({ type: 'SELECT_PROPOSAL_SUCCESS', payload: res.data });
+      if (onSuccess) onSuccess(res.data);
+    } catch (error) {
+      // Handle authentication errors first
+      if (handleAuthError(error)) {
+        return; // Early return if redirected to login
+      }
+
+      const errorMessage = error?.response?.data?.message || error.message;
+      dispatch({ type: 'SELECT_PROPOSAL_FAILURE', payload: errorMessage });
+      if (onError) onError(errorMessage);
+    }
+  }, []);
+
+  const acceptNegotiation = useCallback(async (negotiationId, onSuccess, onError) => {
+    dispatch({ type: 'ACCEPT_NEGOTIATION_REQUEST' });
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      const res = await axios.post(
+        `${baseUrl}/${negotiationId}/accept`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      dispatch({ type: 'ACCEPT_NEGOTIATION_SUCCESS', payload: res.data });
+      if (onSuccess) onSuccess(res.data);
+    } catch (error) {
+      if (handleAuthError(error)) {
+        return;
+      }
+      const errorMessage = error?.response?.data?.message || error.message;
+      dispatch({ type: 'ACCEPT_NEGOTIATION_FAILURE', payload: errorMessage });
+      if (onError) onError(errorMessage);
+    }
+  }, []);
+
+  // Reject negotiation
+  const rejectNegotiation = useCallback(async (negotiationId, onSuccess, onError) => {
+    dispatch({ type: 'REJECT_NEGOTIATION_REQUEST' });
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      const res = await axios.post(
+        `${baseUrl}/${negotiationId}/reject`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      dispatch({ type: 'REJECT_NEGOTIATION_SUCCESS', payload: res.data });
+      if (onSuccess) onSuccess(res.data);
+    } catch (error) {
+      if (handleAuthError(error)) {
+        return;
+      }
+      const errorMessage = error?.response?.data?.message || error.message;
+      dispatch({ type: 'REJECT_NEGOTIATION_FAILURE', payload: errorMessage });
+      if (onError) onError(errorMessage);
+    }
+  }, []);
+
   return (
     <ProposalContext.Provider
       value={{
@@ -319,7 +424,10 @@ export function ProposalProvider({ children }) {
         fetchJobProposal,
         fetchArtisanProposal,
         fetchNegotiation,
-        negotiateProposal
+        negotiateProposal,
+        selectProposal,
+        acceptNegotiation,
+        rejectNegotiation
       }}
     >
       {children}
