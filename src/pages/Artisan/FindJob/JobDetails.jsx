@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Map, MessageSquareText, Phone } from 'lucide-react';
 import Button from '../../../components/Button/Button';
@@ -10,12 +10,12 @@ import QuoteModal from '../../../components/Modal/QuoteModal';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
 import FallbackImage from '../../../components/FallbackImage';
 
-const JobDetails = () => {
+const ArtisanJobDetails = () => {
   console.log('🚀 JobDetails component is mounting/rendering');
-  
+
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
-  
+
   console.log('🔍 JobDetails: tab from useParams:', tab, 'jobId:', jobId);
   const { fetchJobListingById, state: jobListingState } = useJobListings();
   const { fetchJobProposal, fetchNegotiation, submitProposal, state: proposalState } = useProposal();
@@ -33,6 +33,11 @@ const JobDetails = () => {
   const [selectedProposal, setSelectedProposal] = useState(null);
   const [proposalNegotiations, setProposalNegotiations] = useState([]);
 
+  // Ref to prevent duplicate API calls
+  const fetchedJobId = useRef(null);
+  const fetchedProposalJobId = useRef(null);
+  const fetchedNegotiationId = useRef(null);
+
   // Get current user info
   const { state: userState } = useUser();
   const userData = userState.user;
@@ -42,12 +47,20 @@ const JobDetails = () => {
   useEffect(() => {
     console.log('🔍 JobDetails: useParams jobId:', jobId);
     console.log('🔍 JobDetails: current tab:', tab);
-    if (jobId) {
+
+    // Prevent duplicate calls for the same job
+    if (jobId && fetchJobListingById && fetchedJobId.current !== jobId) {
       console.log('🔍 JobDetails: Calling fetchJobListingById with ID:', jobId);
+      fetchedJobId.current = jobId;
       fetchJobListingById(jobId);
+    }
+
+    // Fetch proposals only if different job or not fetched yet
+    if (jobId && fetchJobProposal && fetchedProposalJobId.current !== jobId) {
+      fetchedProposalJobId.current = jobId;
       fetchJobProposal(jobId);
     }
-  }, [jobId, tab, fetchJobListingById, fetchJobProposal]);
+  }, [jobId]); // Only depend on jobId
 
   useEffect(() => {
     if (data?.data) {
@@ -57,20 +70,23 @@ const JobDetails = () => {
 
   // Find the current user's proposal for this job when in proposal-sent tab
   useEffect(() => {
-    if (tab === 'proposal-sent' && proposalData?.data && currentUserId) {
+    if (tab === 'proposal-sent' && proposalData?.data && currentUserId && fetchNegotiation) {
       // The proposalData.data should be an array of proposals for this job
       const proposals = Array.isArray(proposalData.data) ? proposalData.data : [proposalData.data];
 
       // Find the proposal that matches current user
       const userProposal = proposals.find((proposal) => proposal.senderId === currentUserId);
 
-      if (userProposal) {
+      if (userProposal && userProposal.id !== selectedProposal?.id) {
         setSelectedProposal(userProposal);
-        // Fetch negotiations for this proposal
-        fetchNegotiation(userProposal.id);
+        // Fetch negotiations for this proposal only if not already fetched
+        if (fetchedNegotiationId.current !== userProposal.id) {
+          fetchedNegotiationId.current = userProposal.id;
+          fetchNegotiation(userProposal.id);
+        }
       }
     }
-  }, [tab, proposalData, currentUserId, jobId, fetchNegotiation]);
+  }, [tab, proposalData?.data, currentUserId]); // Removed fetchNegotiation and jobId from dependencies
 
   // Update negotiations when they are received
   useEffect(() => {
@@ -179,28 +195,26 @@ const JobDetails = () => {
 
       if (isCurrentUserSender) {
         // User is the artisan who sent the proposal - they can only view status, no actions
-        let statusText = "Proposal Sent";
-        let statusClass = "bg-blue-100 text-blue-700";
-        
+        let statusText = 'Proposal Sent';
+        let statusClass = 'bg-blue-100 text-blue-700';
+
         if (hasOngoingNegotiation()) {
           const latestNegotiation = proposalNegotiations[0];
           if (latestNegotiation?.status === 'accepted') {
-            statusText = "Proposal Accepted";
-            statusClass = "bg-green-100 text-green-700";
+            statusText = 'Proposal Accepted';
+            statusClass = 'bg-green-100 text-green-700';
           } else if (latestNegotiation?.status === 'rejected') {
-            statusText = "Proposal Rejected";
-            statusClass = "bg-red-100 text-red-700";
+            statusText = 'Proposal Rejected';
+            statusClass = 'bg-red-100 text-red-700';
           } else {
-            statusText = "Awaiting Response";
-            statusClass = "bg-yellow-100 text-yellow-700";
+            statusText = 'Awaiting Response';
+            statusClass = 'bg-yellow-100 text-yellow-700';
           }
         }
-        
+
         return (
           <div className="flex items-center gap-5">
-            <div className={`px-4 py-3 rounded-lg text-sm font-medium ${statusClass}`}>
-              {statusText}
-            </div>
+            <div className={`px-4 py-3 rounded-lg text-sm font-medium ${statusClass}`}>{statusText}</div>
             <Button variant="grey-sec" className="px-4 py-3.75">
               Report Issue
             </Button>
@@ -296,7 +310,10 @@ const JobDetails = () => {
               <p className="text-sm text-gray-600 mb-2">Latest Message:</p>
               <p className="text-gray-800">{proposalNegotiations[0]?.message || 'No message available'}</p>
               <p className="text-xs text-gray-500 mt-2">
-                Sent {proposalNegotiations[0]?.sentAt ? new Date(proposalNegotiations[0].sentAt).toLocaleString() : 'Unknown date'}
+                Sent{' '}
+                {proposalNegotiations[0]?.sentAt
+                  ? new Date(proposalNegotiations[0].sentAt).toLocaleString()
+                  : 'Unknown date'}
               </p>
             </div>
           )}
@@ -339,16 +356,16 @@ const JobDetails = () => {
             </p>
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span>Job Location:</span>
-              <span className="text-black">
-                {job?.customer?.location || job?.location || 'Location not specified'}
-              </span>
+              <span className="text-black">{job?.customer?.location || job?.location || 'Location not specified'}</span>
             </p>
             <Button
               variant="secondary"
               rightIcon={<Map size={20} />}
               onClick={() =>
                 window.open(
-                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job?.customer?.location || job?.location || '')}`,
+                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    job?.customer?.location || job?.location || ''
+                  )}`,
                   '_blank'
                 )
               }
@@ -403,7 +420,9 @@ const JobDetails = () => {
                   <span>Name:</span>
                   <div className="flex items-center gap-2.5">
                     <FallbackImage src={job?.customer?.avatar} alt="customer" className="w-10 h-10 rounded-full" />
-                    <div className="">{job?.customer?.name || job?.userFullName || 'Customer information unavailable'}</div>
+                    <div className="">
+                      {job?.customer?.name || job?.userFullName || 'Customer information unavailable'}
+                    </div>
                   </div>
                 </p>
                 <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
@@ -416,7 +435,9 @@ const JobDetails = () => {
                 </p>
                 <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
                   <span>Location:</span>
-                  <span className="text-black">{job?.customer?.location || job?.location || 'Location not specified'}</span>
+                  <span className="text-black">
+                    {job?.customer?.location || job?.location || 'Location not specified'}
+                  </span>
                 </p>
               </>
             ) : (
@@ -457,4 +478,4 @@ const JobDetails = () => {
   );
 };
 
-export default JobDetails;
+export default ArtisanJobDetails;

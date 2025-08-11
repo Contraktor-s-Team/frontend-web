@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBadge } from '../../../components/Tables/ServiceTable';
+import { StatusBadge } from '../../../components/Tables/ServiceTable.jsx';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Map, Check, MessageSquareText, Banknote, RotateCw, Download, Pencil, Phone } from 'lucide-react';
 import { GoStarFill } from 'react-icons/go';
-import Button from '../../../components/Button/Button';
+import Button from '../../../components/Button/Button.jsx';
 import Avatar from '/img/avatar1.jpg';
 import { useJobListings } from '../../../contexts/JobListingContext.jsx';
 import { useProposal } from '../../../contexts/ProposalContext.jsx';
-import NegotiationModal from '../../../components/Modal/NegotiateModal';
-import SuccessModal from '../../../components/Modal/SuccessModal';
-import ConfirmationModal from '../../../components/Modal/ComfirmationModal';
-import SuccessPopup from '../../../components/Modal/SuccessPopup';
+import NegotiationModal from '../../../components/Modal/NegotiateModal.jsx';
+import SuccessModal from '../../../components/Modal/SuccessModal.jsx';
+import ConfirmationModal from '../../../components/Modal/ComfirmationModal.jsx';
+import SuccessPopup from '../../../components/Modal/SuccessPopup.jsx';
 
-const JobDetails = () => {
+const CustomerJobDetails = () => {
   const { state: jobListingState, fetchJobListingById, deleteJobListing } = useJobListings();
   const { state: proposalState, fetchJobProposal, fetchNegotiation, negotiateProposal } = useProposal();
   const { tab, jobId } = useParams();
@@ -526,4 +526,4 @@ const JobDetails = () => {
     </div>
   );
 };
-export default JobDetails;
+export default CustomerJobDetails;

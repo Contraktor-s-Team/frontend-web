@@ -462,13 +462,13 @@ const Signup = () => {
     const hasLoginToken =
       authState.login.data?.token || (localStorage.getItem('auth') && JSON.parse(localStorage.getItem('auth'))?.token);
 
-    if (hasLoginToken && !authState.user.data && !authState.user.loading) {
+    if (hasLoginToken && !userState.user.data && !userState.user.loading) {
       console.log('Signup: Fetching current user with token validation');
       fetchCurrentUser().catch((error) => {
         console.error('Failed to fetch current user on login:', error);
       });
     }
-  }, [authState.login.data, authState.user.data, authState.user.loading, fetchCurrentUser]);
+  }, [authState.login.data, userState.user.data, userState.user.loading, fetchCurrentUser]);
   useEffect(() => {
     // console.log('📍 Step changed to:', step, '| Profile completed:', isProfileCompleted);
   }, [step, isProfileCompleted]);

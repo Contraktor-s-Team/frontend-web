@@ -264,7 +264,7 @@ const JobRequestsTab = ({
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentPageData.map((job) => (
-          <JobRequestCard key={`job-${job.id}`} job={job} />
+          <JobRequestCard key={`job-${job.id}`} job={job} activeTab="requests" />
         ))}
       </div>
 

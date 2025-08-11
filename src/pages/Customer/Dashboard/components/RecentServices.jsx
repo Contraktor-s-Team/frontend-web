@@ -111,8 +111,30 @@ const RecentServices = ({ activeTab }) => {
     : [];
 
   useEffect(() => {
-    fetchJobListings();
-  }, [fetchJobListings]);
+    // Add guards to prevent unnecessary API calls
+    const authData = localStorage.getItem('auth');
+    if (!authData) {
+      console.log('🚫 RecentServices: No auth token found, skipping fetchJobListings');
+      return;
+    }
+
+    // Check if we already have data or are currently loading
+    if (loading) {
+      console.log('⏳ RecentServices: Already loading, skipping fetchJobListings');
+      return;
+    }
+
+    // Check if we have recent valid data (avoid fetching if we just got data)
+    if (jobListingData?.data && Array.isArray(jobListingData.data) && jobListingData.data.length >= 0) {
+      console.log('✅ RecentServices: Using existing job listings data');
+      return;
+    }
+
+    console.log('🚀 RecentServices: Fetching job listings for current tab:', currentTab);
+    fetchJobListings().catch((error) => {
+      console.error('RecentServices: Failed to fetch job listings:', error);
+    });
+  }, [currentTab]); // Only re-fetch when tab changes
 
   return (
     <div className="font-inter bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">

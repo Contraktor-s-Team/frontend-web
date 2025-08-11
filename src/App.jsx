@@ -40,7 +40,7 @@ import CustomerHireArtisanTimeLocation from './pages/Customer/FindArtisans/HireA
 import CustomerHireArtisanReviewSubmit from './pages/Customer/FindArtisans/HireArtisan/ReviewSubmit';
 
 import CustomerArtisanDetails from './pages/Customer/FindArtisans/ArtisanDetails';
-import CustomerJobDetails from './pages/Customer/MyJobs/JobDetails';
+import CustomerJobDetails from './pages/Customer/MyJobs/CustomerMyJobDetails';
 
 // Artisan Pages
 import ArtisanDashboard from './pages/Artisan/Dashboard/Dashboard';
@@ -58,6 +58,7 @@ import NotificationsModal from './components/Notifications/NotificationsModal';
 
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './ProtectedRoute';
+import UserInitializer from './components/UserInitializer';
 
 // Layout Wrapper for protected routes
 const ProtectedLayout = ({ children }) => (
@@ -194,6 +195,7 @@ function App() {
               <JobPostProvider>
                 <HireArtisanProvider>
                   <Router>
+                    <UserInitializer />
                     <ScrollToTop />
                     <AppRoutes />
                   </Router>

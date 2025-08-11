@@ -26,6 +26,7 @@ const Dashboard = () => {
       const hasToken = !!parsedAuth?.token;
       const hasUserData = user?.data?.id || user?.id;
 
+      // Prevent duplicate calls - only fetch if we really need to
       if (hasToken && !hasUserData && !loading) {
         console.log('🚀 Customer Dashboard: Fetching current user with valid token');
         fetchCurrentUser().catch((error) => {
@@ -41,7 +42,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Customer Dashboard: Error parsing auth data:', error);
     }
-  }, []); // Empty dependency array - only run once on mount
+  }, [user, loading]); // Add dependencies to prevent unnecessary calls
 
   const tabs = [
     { id: 'posted', label: 'Posted' },

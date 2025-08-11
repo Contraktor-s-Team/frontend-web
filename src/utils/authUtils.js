@@ -56,3 +56,31 @@ export const getAuthToken = () => {
     return null;
   }
 };
+
+/**
+ * Gets the user role from localStorage auth data
+ * @returns {string|null} - Returns the user role or null if not found
+ */
+export const getUserRole = () => {
+  try {
+    const authData = JSON.parse(localStorage.getItem('auth') || '{}');
+    return authData?.role || authData?.data?.role || null;
+  } catch (error) {
+    console.error('Error getting user role:', error);
+    return null;
+  }
+};
+
+/**
+ * Gets the user data from localStorage auth data
+ * @returns {object|null} - Returns the user data or null if not found
+ */
+export const getUserData = () => {
+  try {
+    const authData = JSON.parse(localStorage.getItem('auth') || '{}');
+    return authData?.data || authData || null;
+  } catch (error) {
+    console.error('Error getting user data:', error);
+    return null;
+  }
+};

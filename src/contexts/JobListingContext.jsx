@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useContext, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { handleAuthError, getAuthToken } from '../utils/authUtils';
+import { handleAuthError, getAuthToken, getUserRole as getStoredUserRole } from '../utils/authUtils';
 
 const initialState = {
   jobListings: { loading: false, data: {}, error: {} },
@@ -83,6 +83,51 @@ export function JobListingProvider({ children }) {
     lastFetchTimestamps: new Map()
   });
 
+  // Helper function to get user role from localStorage and user API
+  const getUserRole = useCallback(async () => {
+    // First try to get role from localStorage
+    const storedRole = getStoredUserRole();
+    if (storedRole) {
+      return storedRole;
+    }
+
+    // If no role in localStorage, try to fetch from user API
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      console.log('🔄 JobListingContext: Fetching user role from API...');
+      const response = await axios.get('https://distrolink-001-site1.anytempurl.com/api/Users/GetCurrentUser', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const userData = response.data?.data || response.data;
+      const role = userData?.role;
+
+      if (role) {
+        // Update localStorage with the role for faster future access
+        const authData = localStorage.getItem('auth');
+        if (authData) {
+          try {
+            const parsedAuth = JSON.parse(authData);
+            parsedAuth.role = role;
+            localStorage.setItem('auth', JSON.stringify(parsedAuth));
+            console.log('✅ JobListingContext: Updated localStorage with user role:', role);
+          } catch (error) {
+            console.error('Error updating auth data with role:', error);
+          }
+        }
+        return role;
+      }
+    } catch (error) {
+      console.error('❌ JobListingContext: Error fetching user role from API:', error);
+    }
+
+    return null;
+  }, []);
+
   // Fetch all job listings (for artisan filtering)
   const fetchAllJobListings = useCallback(async () => {
     dispatch({ type: 'JOB_LISTING_REQUEST' });
@@ -106,34 +151,72 @@ export function JobListingProvider({ children }) {
   }, []);
 
   // Fetch all job listings
-  const fetchJobListings = useCallback(async (filters = {}) => {
-    dispatch({ type: 'JOB_LISTING_REQUEST' });
-    try {
-      const token = getAuthToken();
-      if (!token) {
-        throw new Error('No authentication token found');
+  const fetchJobListings = useCallback(
+    async (filters = {}) => {
+      // Prevent duplicate calls if already loading
+      if (state.jobListings.loading) {
+        console.log('⏳ fetchJobListings: Already loading, skipping duplicate call');
+        return;
       }
 
-      const validFilters = Object.entries(filters)
-        .filter(([key, value]) => value !== null && value !== undefined && value !== '')
-        .reduce((acc, [key, value]) => {
-          const apiKey = key.charAt(0).toUpperCase() + key.slice(1);
-          acc[apiKey] = typeof value === 'string' ? value.trim() : value;
-          return acc;
-        }, {});
-      const response = await axios.get(`${baseUrl}/customer`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: validFilters
-      });
-      dispatch({ type: 'JOB_LISTING_SUCCESS', payload: response.data });
-    } catch (error) {
-      // Handle authentication errors first
-      if (handleAuthError(error)) {
-        return; // Early return if redirected to login
+      dispatch({ type: 'JOB_LISTING_REQUEST' });
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        // Get user role to determine the correct endpoint
+        const userRole = await getUserRole();
+        console.log('🔍 fetchJobListings: User role detected:', userRole);
+
+        // Use appropriate endpoint based on user role
+        let endpoint = `${baseUrl}/customer`; // Default to customer endpoint
+        if (userRole === 'artisan' || userRole === 'Artisan') {
+          endpoint = `${baseUrl}/all`; // Use all endpoint for artisans
+        }
+
+        const validFilters = Object.entries(filters)
+          .filter(([key, value]) => value !== null && value !== undefined && value !== '')
+          .reduce((acc, [key, value]) => {
+            const apiKey = key.charAt(0).toUpperCase() + key.slice(1);
+            acc[apiKey] = typeof value === 'string' ? value.trim() : value;
+            return acc;
+          }, {});
+
+        console.log(`🔍 fetchJobListings: Using endpoint ${endpoint} for role ${userRole}`);
+
+        const response = await axios.get(endpoint, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: validFilters
+        });
+        dispatch({ type: 'JOB_LISTING_SUCCESS', payload: response.data });
+      } catch (error) {
+        console.error('❌ fetchJobListings error:', error.response?.status, error.response?.data);
+
+        // Handle authentication errors first
+        if (handleAuthError(error)) {
+          return; // Early return if redirected to login
+        }
+
+        // Handle 403 Forbidden specifically
+        if (error.response?.status === 403) {
+          console.warn('🚫 fetchJobListings: Access forbidden. User may not have permission for this endpoint.');
+          dispatch({
+            type: 'JOB_LISTING_FAILURE',
+            payload: {
+              message: 'Access denied. Please check your permissions or contact support.',
+              status: 403
+            }
+          });
+          return;
+        }
+
+        dispatch({ type: 'JOB_LISTING_FAILURE', payload: error.response?.data?.message || error.message });
       }
-      dispatch({ type: 'JOB_LISTING_FAILURE', payload: error.response?.data?.message || error.message });
-    }
-  }, []); // Fetch job by ID
+    },
+    [state.jobListings.loading, getUserRole]
+  ); // Fetch job by ID
   const fetchJobListingById = useCallback(
     async (id) => {
       console.log('🚀 fetchJobListingById called with ID:', id);

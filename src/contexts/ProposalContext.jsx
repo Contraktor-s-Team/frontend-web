@@ -193,19 +193,30 @@ export function ProposalProvider({ children }) {
           throw new Error('No authentication token found');
         }
 
+        console.log('📡 Fetching artisan proposals from:', `${baseUrl}/Artisan`);
         const response = await axios.get(`${baseUrl}/Artisan`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        console.log('✅ Artisan proposals response:', response.data);
         callGuards.current.lastFetchTimestamps.set('artisan_proposals', Date.now());
         dispatch({ type: 'ARTISAN_PROPOSAL_SUCCESS', payload: response.data });
         return response.data;
       } catch (error) {
+        console.error('❌ fetchArtisanProposal error:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          message: error.message,
+          url: `${baseUrl}/Artisan`
+        });
+
         // Handle authentication errors first
         if (handleAuthError(error)) {
           return; // Early return if redirected to login
         }
 
-        dispatch({ type: 'ARTISAN_PROPOSAL_FAILURE', payload: error?.response?.data?.message || error.message });
+        const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error.message;
+        dispatch({ type: 'ARTISAN_PROPOSAL_FAILURE', payload: errorMessage });
         throw error;
       } finally {
         callGuards.current.fetchArtisanProposal = false;

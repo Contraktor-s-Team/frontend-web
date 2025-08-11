@@ -3,21 +3,22 @@ import { Calendar, MapPin, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../../../components/Button/Button';
 
-const JobRequestCard = ({ job, activeTab }) => {
+const JobRequestCard = ({ job, activeTab = 'requests' }) => {
   const { subcategoryName, title, description, customer, postedAt } = job;
+
+  // Generate the correct navigation URL
+  const navigateToJobDetails = () => {
+    const jobDetailUrl = `/artisan/find-jobs/${activeTab}/${job.id}`;
+    console.log('🔗 JobRequestCard: Navigating to job with ID:', job.id);
+    console.log('🔗 JobRequestCard: Job object:', job);
+    console.log('🔗 JobRequestCard: Generated URL:', jobDetailUrl);
+    return jobDetailUrl;
+  };
 
   return (
     <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 hover:border-blue-200">
       {/* Clickable area for navigation */}
-      <Link
-        to={`/artisan/find-jobs/${activeTab}/${job.id}`}
-        className="block"
-        onClick={() => {
-          console.log('🔗 JobRequestCard: Navigating to job with ID:', job.id);
-          console.log('🔗 JobRequestCard: Job object:', job);
-          console.log('🔗 JobRequestCard: Generated URL:', `/artisan/find-jobs/${activeTab}/${job.id}`);
-        }}
-      >
+      <Link to={navigateToJobDetails()} className="block">
         {/* Main content */}
         <div className="">
           <div className="flex items-center justify-between mb-2">
