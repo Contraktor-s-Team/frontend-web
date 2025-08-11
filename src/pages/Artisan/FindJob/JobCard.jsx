@@ -82,7 +82,7 @@ const JobCard = ({ job, activeTab }) => {
 
   return (
     <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 hover:border-blue-200">
-      {/* Clickable area for navigation */}
+      {/* Clickable area for navigation - FIXED URL */}
       <Link
         to={`/artisan/find-jobs/${activeTab}/${job.id}`}
         className="block"

@@ -63,8 +63,25 @@ const ArtisanJobDetails = () => {
   }, [jobId]); // Only depend on jobId
 
   useEffect(() => {
-    if (data?.data) {
-      setJob(data.data);
+    console.log('🔍 JobDetails: data received:', data);
+
+    // Fix: Check if data exists and has the correct structure
+    if (data) {
+      // If data has isSuccess and data properties, use data.data
+      if (data.isSuccess && data.data) {
+        console.log('🔍 JobDetails: Setting job from data.data:', data.data);
+        setJob(data.data);
+      }
+      // If data is the job object itself, use it directly
+      else if (data.id) {
+        console.log('🔍 JobDetails: Setting job from data directly:', data);
+        setJob(data);
+      }
+      // If data has a data property but no isSuccess, try data.data
+      else if (data.data && data.data.id) {
+        console.log('🔍 JobDetails: Setting job from data.data (fallback):', data.data);
+        setJob(data.data);
+      }
     }
   }, [data]);
 
@@ -149,7 +166,7 @@ const ArtisanJobDetails = () => {
     return <div className="p-6">Loading job details...</div>;
   }
 
-  if (error) {
+  if (error && Object.keys(error).length > 0) {
     return (
       <div className="p-6">
         <Button variant="destructive-sec" onClick={handleBack} leftIcon={<ArrowLeft size={20} />}>
@@ -158,6 +175,12 @@ const ArtisanJobDetails = () => {
         <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">
           <h3 className="font-medium mb-2">Unable to load job details</h3>
           <p className="text-sm">{typeof error === 'string' ? error : 'An error occurred while loading job details'}</p>
+          <details className="mt-2">
+            <summary className="cursor-pointer text-xs text-red-600">Debug Info</summary>
+            <pre className="text-xs mt-1 bg-red-100 p-2 rounded overflow-auto">
+              {JSON.stringify({ data, error, loading }, null, 2)}
+            </pre>
+          </details>
         </div>
       </div>
     );
@@ -169,7 +192,15 @@ const ArtisanJobDetails = () => {
         <Button variant="destructive-sec" onClick={handleBack} leftIcon={<ArrowLeft size={20} />}>
           Back to {tab}
         </Button>
-        <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">Job not found</div>
+        <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">
+          <h3 className="font-medium mb-2">Job not found</h3>
+          <details className="mt-2">
+            <summary className="cursor-pointer text-xs text-red-600">Debug Info</summary>
+            <pre className="text-xs mt-1 bg-red-100 p-2 rounded overflow-auto">
+              Data received: {JSON.stringify(data, null, 2)}
+            </pre>
+          </details>
+        </div>
       </div>
     );
   }
