@@ -11,23 +11,29 @@ const ReviewPost = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: jobData, dispatch } = useJobPost();
-  const { postJobListing, state: jobListingState, fetchCategories } = useJobListings();
+  const { postJobListing, state: jobListingContextState, fetchCategories } = useJobListings();
   const [posted, setPosted] = useState(false);
   const [errors, setErrors] = useState(false);
   const [jobLoading, setJobLoading] = useState(false);
+
+  // Extract the correct state objects from JobListingContext
+  const jobPostState = jobListingContextState?.jobListingPost || { loading: false, data: {}, error: {} };
+  const categoriesState = jobListingContextState?.categories || { loading: false, data: {}, error: {} };
 
   // Clear any previous errors when component mounts and fetch categories
   useEffect(() => {
     setErrors(false);
     // Fetch categories if not already loaded to display category names
-    if (!jobListingState.categories.data?.data?.length && !jobListingState.categories.loading) {
+    if (!categoriesState.data?.data?.length && !categoriesState.loading) {
       fetchCategories();
     }
-  }, [fetchCategories, jobListingState.categories.data, jobListingState.categories.loading]);
+  }, [fetchCategories, categoriesState.data, categoriesState.loading]);
 
   const handlePrev = () => navigate('/customer/post-job/time-location');
 
-  // CHANGE 2: Updated to use JobListingContext postJobListing function
+  // Updated handlePost function in ReviewPost.jsx
+  // Updated handlePost function in ReviewPost.jsx with fixed budget logic
+
   const handlePost = async () => {
     setErrors(false);
     setJobLoading(true);
@@ -40,11 +46,17 @@ const ReviewPost = () => {
       const budgetType = jobData.budgetType;
       const budgetAmount = jobData.budgetAmount;
 
+      // Get urgent flag from multiple sources
+      const urgent = jobData.urgent || location?.state?.urgent || false;
+
       // Debug: Log actual data to see the structure
       console.log('Validation Debug:', {
         jobTitle,
         description,
         subcategory,
+        urgent,
+        budgetType,
+        budgetAmount,
         subcategoryType: typeof subcategory,
         subcategoryValue: subcategory?.value,
         jobData,
@@ -65,13 +77,9 @@ const ReviewPost = () => {
       const date = jobData.date || location?.state?.date;
       const time = jobData.time || location?.state?.time;
       const address = jobData.address || location?.state?.formAddress;
-      const urgent = jobData.urgent || location?.state?.urgent;
 
       // Validate required fields (Title, Description, ArtisanSubCategoryId)
-      // Note: subcategory can be either an ID (from jobData) or an object (from location state)
       const subcategoryId = subcategory?.value || subcategory;
-
-      // Convert to string for API (API expects string format)
       const validSubcategoryId = String(subcategoryId);
 
       if (
@@ -100,17 +108,42 @@ const ReviewPost = () => {
       formData.append('Description', description);
       formData.append('ArtisanSubcategoryId', validSubcategoryId);
 
-      // ScheduleType - API expects "ASAP" or "SCHEDULED"
-      // ASAP: when user checks "set as urgent"
-      // SCHEDULED: when user selects specific date/time
-      const scheduleType = urgent ? 'ASAP' : 'SCHEDULED';
-      formData.append('ScheduleType', scheduleType);
-
-      // Optional budget fields - only include when "Set a budget" is selected
+      // FIXED: Budget logic - handle consultation vs custom budget
       if (budgetType === true) {
+        // User chose "Set a budget" - use their custom amount
         formData.append('ProposalRequiresPrice', true);
         if (budgetAmount) {
           formData.append('Budget', budgetAmount);
+        }
+      } else {
+        // User chose "I will negotiate the price" - this means consultation
+        // Set default consultation budget of 18,000
+        formData.append('ProposalRequiresPrice', false);
+        formData.append('Budget', '18000'); // Default consultation budget
+      }
+
+      // ScheduleType - FIXED: Properly implement urgent functionality
+      // ASAP: when user checks "set as urgent" checkbox
+      // SCHEDULED: when user selects specific date/time and doesn't check urgent
+      const scheduleType = urgent ? 'ASAP' : 'SCHEDULED';
+      formData.append('ScheduleType', scheduleType);
+
+      // Additional scheduling fields based on urgent status
+      if (urgent) {
+        // For urgent jobs, we still want to include date/time if provided
+        if (date) {
+          formData.append('PreferredDate', date);
+        }
+        if (time) {
+          formData.append('PreferredTime', time);
+        }
+      } else {
+        // For scheduled jobs, date/time are required
+        if (date) {
+          formData.append('ScheduledDate', date);
+        }
+        if (time) {
+          formData.append('ScheduledTime', time);
         }
       }
 
@@ -135,18 +168,20 @@ const ReviewPost = () => {
         }
       }
 
-      console.log('Submitting job data with required API fields:', {
+      console.log('Submitting job data with fixed budget logic:', {
         Title: jobTitle,
         Description: description,
         ArtisanSubcategoryId: validSubcategoryId,
         ScheduleType: scheduleType,
-        ProposalRequiresPrice: budgetType === true ? true : undefined,
-        Budget: budgetType === true && budgetAmount ? budgetAmount : undefined,
+        IsUrgent: urgent,
+        BudgetType: budgetType,
+        ProposalRequiresPrice: budgetType === true,
+        Budget: budgetType === true ? budgetAmount || 'custom' : '18000',
+        BudgetLogic: budgetType === true ? 'Custom budget set by user' : 'Consultation budget (18k)',
         ImagesCount: files.length,
         hasDate: !!date,
         hasTime: !!time,
-        isUrgent: !!urgent,
-        scheduleLogic: `urgent: ${!!urgent} → ${scheduleType}`
+        urgentLogic: `urgent: ${urgent} → ScheduleType: ${scheduleType}`
       });
 
       // Use JobListingContext postJobListing function
@@ -190,13 +225,15 @@ const ReviewPost = () => {
   console.log('ReviewPost Debug:', {
     jobData,
     locationState: location?.state,
-    jobListingState: jobListingState.jobPost,
+    jobListingContextState,
+    jobPostState,
+    categoriesState,
     categoryData: {
       fromJobData: jobData.subcategory,
       fromLocation: location?.state?.category,
       categoryId: jobData.category,
       subcategoryId: jobData.subcategory,
-      availableCategories: jobListingState.categories.data?.data
+      availableCategories: categoriesState.data?.data
     }
   });
 
@@ -206,7 +243,7 @@ const ReviewPost = () => {
         <h2 className="font-manrope font-semibold text-2xl">Make sure everything looks good before posting</h2>
 
         {/* Success message display */}
-        {jobListingState.jobPost.data && Object.keys(jobListingState.jobPost.data).length > 0 && !posted && (
+        {jobPostState.data && Object.keys(jobPostState.data).length > 0 && !posted && (
           <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -227,14 +264,12 @@ const ReviewPost = () => {
           </div>
         )}
 
-        {/* CHANGE 4: Fixed error display to prevent showing errors on initial state */}
+        {/* Fixed error display to prevent showing errors on initial state */}
         {(errors ||
-          (jobListingState.jobPost.error &&
-            typeof jobListingState.jobPost.error === 'string' &&
-            jobListingState.jobPost.error.trim() !== '') ||
-          (typeof jobListingState.jobPost.error === 'object' &&
-            jobListingState.jobPost.error &&
-            Object.keys(jobListingState.jobPost.error).length > 0)) && (
+          (jobPostState.error && typeof jobPostState.error === 'string' && jobPostState.error.trim() !== '') ||
+          (typeof jobPostState.error === 'object' &&
+            jobPostState.error &&
+            Object.keys(jobPostState.error).length > 0)) && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -251,10 +286,10 @@ const ReviewPost = () => {
                   <p>
                     {typeof errors === 'string'
                       ? errors
-                      : typeof jobListingState.jobPost.error === 'string'
-                      ? jobListingState.jobPost.error
-                      : typeof jobListingState.jobPost.error === 'object' && jobListingState.jobPost.error
-                      ? JSON.stringify(jobListingState.jobPost.error)
+                      : typeof jobPostState.error === 'string'
+                      ? jobPostState.error
+                      : typeof jobPostState.error === 'object' && jobPostState.error
+                      ? JSON.stringify(jobPostState.error)
                       : 'An error occurred while posting the job. Please try again.'}
                   </p>
                 </div>
@@ -268,7 +303,6 @@ const ReviewPost = () => {
           <div className="space-y-3 pl-7.5 md:max-w-[496px] border-l-2 border-neu-light-3 h-auto self-start">
             <div className="flex gap-2.5 items-center">
               <h3 className="font-semibold text-gray-900">Service Description</h3>
-              {/* CHANGE 5: Updated edit button to go to describe job page */}
               <Button
                 variant="text-pri"
                 size="small"
@@ -283,7 +317,7 @@ const ReviewPost = () => {
               <p className="text-sm">
                 {(() => {
                   // Get category data from JobListingContext to display category name
-                  const categories = jobListingState.categories.data?.data || [];
+                  const categories = categoriesState.data?.data || [];
                   const categoryId = jobData.category || location?.state?.categoryId;
                   const selectedCategory = categories.find((cat) => cat.id === categoryId);
 
@@ -307,7 +341,7 @@ const ReviewPost = () => {
               <p className="text-sm">
                 {(() => {
                   // Get subcategory data from JobListingContext to display subcategory name
-                  const categories = jobListingState.categories.data?.data || [];
+                  const categories = categoriesState.data?.data || [];
                   const categoryId = jobData.category || location?.state?.categoryId;
                   const subcategoryId = jobData.subcategory || location?.state?.subcategoryId;
                   const selectedCategory = categories.find((cat) => cat.id === categoryId);
@@ -353,7 +387,7 @@ const ReviewPost = () => {
 
             <div className="flex flex-col gap-2.5 mt-11">
               <p className="text-sm text-neu-dark-1">Photos</p>
-              {/* CHANGE: Updated to properly handle files from multiple sources */}
+              {/* Updated to properly handle files from multiple sources */}
               {(() => {
                 // Get files from multiple possible sources
                 let files = [];
@@ -501,14 +535,14 @@ const ReviewPost = () => {
           <Button variant="grey-sec" onClick={handlePrev} className="px-6 py-4.25">
             Previous
           </Button>
-          {/* CHANGE 6: Updated Post Job button with loading state from context */}
+          {/* Updated Post Job button with loading state from context */}
           <Button
             variant="primary"
             onClick={handlePost}
             className="px-6 py-4.25"
-            disabled={jobLoading || jobListingState.jobPost.loading}
+            disabled={jobLoading || jobPostState.loading}
           >
-            {jobLoading || jobListingState.jobPost.loading ? <LoaderComp /> : 'Post Job'}
+            {jobLoading || jobPostState.loading ? <LoaderComp /> : 'Post Job'}
           </Button>
         </div>
       </div>

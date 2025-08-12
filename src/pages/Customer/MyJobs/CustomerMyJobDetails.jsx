@@ -38,7 +38,10 @@ const CustomerJobDetails = () => {
   // Extract data from contexts
   const loading = jobListingState.jobListingById.loading;
   const error = jobListingState.jobListingById.error;
-  const proposals = proposalState.jobProposal.data?.data;
+
+  // FIXED: Get proposals from the job object directly since they're nested in the job data
+  const proposals = job?.proposals || [];
+
   const negotiations = proposalState.negotiate.data;
   const negotiationsLoading = proposalState.negotiate.loading;
   const negotiationsError = proposalState.negotiateProposal.error;
@@ -63,7 +66,7 @@ const CustomerJobDetails = () => {
   useEffect(() => {
     console.log('JobDetails: Starting fetch for jobId:', jobId);
     fetchJobListingById(jobId);
-    fetchJobProposal(jobId);
+    // REMOVED: fetchJobProposal(jobId) since proposals come with the job data
     // Clear any previous error states when navigating to a new job
     setModalError('');
   }, [jobId]);
@@ -87,6 +90,7 @@ const CustomerJobDetails = () => {
     if (jobListingState.jobListingById.data?.data) {
       const jobData = jobListingState.jobListingById.data.data;
       console.log('JobDetails - Job data structure:', jobData);
+      console.log('JobDetails - Proposals:', jobData.proposals); // Updated log
       console.log('JobDetails - Image URLs:', jobData.imageUrls);
       setJob(jobData);
     }
@@ -115,7 +119,6 @@ const CustomerJobDetails = () => {
         setShowAcceptSuccessPopup(true);
         // Refresh the job data to reflect the accepted proposal
         fetchJobListingById(jobId);
-        fetchJobProposal(jobId);
       },
       (error) => {
         // Error callback
@@ -162,11 +165,13 @@ const CustomerJobDetails = () => {
       console.error('Failed to delete job:', deleteError);
     }
   }, [deleteError]);
+
   if (loading) {
     return <div className="p-6">Loading job details...</div>;
   }
+
   if (!job) {
-    console.log('Job not found for ID:', job);
+    console.log('Job not found for ID:', jobId); // Fixed log
     return (
       <div className="p-6">
         <Button variant="destructive-sec" onClick={handleBack} leftIcon={<ArrowLeft size={20} />}>
@@ -408,97 +413,113 @@ const CustomerJobDetails = () => {
               </ul>
             </div>
           )}
-          {proposals && (
-            <>
-              <div className="bg-white rounded-xl p-7 h-fit">
-                {/* Header */}
-                <div className="mb-6">
-                  <h1 className="font-manrope text-xl font-semibold mb-2.5">Proposal(s)</h1>
-                  <p className="text-neu-dark-1">You've received {proposals?.length || 0} proposals for this job</p>
-                </div>
 
-                {/* No Quotes Message */}
-                {!proposals || proposals?.length === 0 ? (
-                  <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Proposal yet</h3>
-                ) : (
-                  <div className="space-y-4">
-                    {proposals?.map((quote, index) => (
-                      <div
-                        key={quote?.id || `quote-${index}`}
-                        className="bg-white rounded-xl shadow-sm border border-gray-100 p-4"
-                      >
-                        {/* Artisan Info Header */}
-                        <div className="flex items-start gap-4 mb-4">
-                          {/* <div className="relative">
-                            <img
-                              src={quote?.avatar || Avatar}
-                              alt={`${quote?.artisan?.firstName || 'Artisan'} ${quote?.artisan?.lastName || ''}`}
-                              className="w-42.5 h-42.5 rounded-lg object-cover"
-                            />
-                            <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
-                              <GoStarFill size={12} className="text-warning-norm-1" />
-                              <span className="text-xs font-medium text-gray-900">{quote?.rating}</span>
-                            </div>
-                          </div> */}
+          {/* FIXED: Updated proposals section to use job.proposals directly */}
+          {proposals && proposals.length > 0 && (
+            <div className="bg-white rounded-xl p-7 h-fit">
+              {/* Header */}
+              <div className="mb-6">
+                <h1 className="font-manrope text-xl font-semibold mb-2.5">Proposal(s)</h1>
+                <p className="text-neu-dark-1">You've received {proposals.length} proposals for this job</p>
+              </div>
 
-                          <div className="flex-1 space-y-4.25">
-                            <div>
-                              <h3 className="font-semibold mb-1">
-                                {quote?.artisan?.firstName || 'Unknown'} {quote?.artisan?.lastName || 'Artisan'}
-                              </h3>
-                              <p className="text-neu-dark-1 text-sm mb-2">{quote?.category || 'N/A'}</p>
-                            </div>
-
-                            <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
-                              <Banknote size={20} className="text-pri-norm-1" />
-                              <p className="font-semibold">
-                                ₦
-                                {typeof quote?.proposedPrice === 'number'
-                                  ? quote.proposedPrice.toLocaleString()
-                                  : quote?.proposedPrice || 'N/A'}
-                              </p>
-                            </div>
-
-                            <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
-                              <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
-                              <span className="text-sm text-success-norm-3 font-medium">
-                                {quote?.availability ? quote?.availability : 'always available'}
-                              </span>
-                            </div>
-                          </div>
+              <div className="space-y-4">
+                {proposals.map((quote, index) => (
+                  <div
+                    key={quote?.id || `quote-${index}`}
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-4"
+                  >
+                    {/* Artisan Info Header */}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="flex-1 space-y-4.25">
+                        <div>
+                          <h3 className="font-semibold mb-1">
+                            {quote?.artisan?.firstName || 'Unknown'} {quote?.artisan?.lastName || 'Artisan'}
+                          </h3>
+                          <p className="text-neu-dark-1 text-sm mb-2">{quote?.category || 'N/A'}</p>
+                          <p className="text-neu-dark-1 text-xs">
+                            Submitted: {quote?.submittedAt ? new Date(quote.submittedAt).toLocaleDateString() : 'N/A'}
+                          </p>
                         </div>
 
-                        {/* Message */}
-                        <div className="mb-4">
-                          <p className="text-sm text-neu-dark-1 mb-2">Message From artisan</p>
-                          <p className="leading-relaxed">{quote?.message || 'No message provided'}</p>
+                        <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
+                          <Banknote size={20} className="text-pri-norm-1" />
+                          <p className="font-semibold">
+                            ₦
+                            {typeof quote?.proposedPrice === 'number'
+                              ? quote.proposedPrice.toLocaleString()
+                              : quote?.proposedPrice || 'N/A'}
+                          </p>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex gap-4">
-                          <Button
-                            variant="secondary"
-                            rightIcon={<Check size={20} />}
-                            onClick={() => handleAcceptProposal(quote)}
-                            disabled={selectLoading}
-                          >
-                            {selectLoading ? 'Accepting...' : 'Accept Proposal'}
-                          </Button>
-                          <Button
-                            variant="grey-sec"
-                            rightIcon={<MessageSquareText size={20} />}
-                            onClick={() => openModal(quote)}
-                          >
-                            Negotiate Proposal
-                          </Button>
+                        <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
+                          <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
+                          <span className="text-sm text-success-norm-3 font-medium">
+                            Available {/* Since availability field might not be in your data structure */}
+                          </span>
                         </div>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Message */}
+                    <div className="mb-4">
+                      <p className="text-sm text-neu-dark-1 mb-2">Message From Artisan</p>
+                      <p className="leading-relaxed">{quote?.message || 'No message provided'}</p>
+                    </div>
+
+                    {/* Proposal Status */}
+                    <div className="mb-4">
+                      <p className="text-sm text-neu-dark-1 mb-2">Status</p>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          quote?.status === 0
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : quote?.status === 1
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {quote?.status === 0 ? 'Pending' : quote?.status === 1 ? 'Accepted' : 'Rejected'}
+                      </span>
+                    </div>
+
+                    {/* Action Buttons - Only show if proposal is pending */}
+                    {quote?.status === 0 && (
+                      <div className="flex gap-4">
+                        <Button
+                          variant="secondary"
+                          rightIcon={<Check size={20} />}
+                          onClick={() => handleAcceptProposal(quote)}
+                          disabled={selectLoading}
+                        >
+                          {selectLoading ? 'Accepting...' : 'Accept Proposal'}
+                        </Button>
+                        <Button
+                          variant="grey-sec"
+                          rightIcon={<MessageSquareText size={20} />}
+                          onClick={() => openModal(quote)}
+                        >
+                          Negotiate Proposal
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
               </div>
-            </>
+            </div>
           )}
+
+          {/* Show message when no proposals */}
+          {(!proposals || proposals.length === 0) && (
+            <div className="bg-white rounded-xl p-7 h-fit">
+              <div className="mb-6">
+                <h1 className="font-manrope text-xl font-semibold mb-2.5">Proposal(s)</h1>
+                <p className="text-neu-dark-1">You haven't received any proposals for this job yet</p>
+              </div>
+              <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Proposals yet</h3>
+            </div>
+          )}
+
           {tab === 'completed' && (
             <div className="mt-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100 space-y-4.5">
               <h3 className="font-manrope text-xl font-semibold text-gray-900">
@@ -633,4 +654,5 @@ const CustomerJobDetails = () => {
     </div>
   );
 };
+
 export default CustomerJobDetails;

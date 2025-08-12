@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../Button/Button';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,7 @@ import AvailabilityToggle from '../AvailabilityToggle';
  * @param {boolean} [props.showAvailability] - Whether to show the availability toggle (for artisan view)
  * @param {boolean} [props.initialAvailability] - Initial state for availability toggle
  * @param {function} [props.onAvailabilityChange] - Callback when availability changes
+ * @param {boolean} [props.availabilityLoading] - Loading state for availability toggle
  */
 const PageHeader = ({
   title,
@@ -33,9 +34,15 @@ const PageHeader = ({
   showAvailability = false,
   initialAvailability = true,
   onAvailabilityChange,
+  availabilityLoading = false
 }) => {
   const navigate = useNavigate();
   const [isAvailable, setIsAvailable] = useState(initialAvailability);
+
+  // Update local state when initialAvailability prop changes
+  useEffect(() => {
+    setIsAvailable(initialAvailability);
+  }, [initialAvailability]);
 
   const handleButtonClick = (e) => {
     if (onButtonClick) {
@@ -45,11 +52,13 @@ const PageHeader = ({
     }
   };
 
-  const handleAvailabilityToggle = () => {
-    const newAvailability = !isAvailable;
-    setIsAvailable(newAvailability);
+  const handleAvailabilityToggle = async (newAvailability) => {
     if (onAvailabilityChange) {
-      onAvailabilityChange(newAvailability);
+      // Let the parent handle the API call and state management
+      await onAvailabilityChange(newAvailability);
+    } else {
+      // Fallback to local state if no parent handler
+      setIsAvailable(newAvailability);
     }
   };
 
@@ -59,24 +68,22 @@ const PageHeader = ({
         {title && <h1 className="font-manrope text-2xl font-semibold text-gray-900">{title}</h1>}
         {subtitle && <p className="text-neu-dark-1">{subtitle}</p>}
       </div>
-      
+
       {(buttonText || children || showAvailability) && (
         <div className="flex items-center gap-3">
           {children}
-          
+
           {showAvailability && (
             <AvailabilityToggle
               available={isAvailable}
               onChange={handleAvailabilityToggle}
+              loading={availabilityLoading}
+              disabled={availabilityLoading}
             />
           )}
-          
+
           {buttonText && (
-            <Button
-              variant={buttonVariant}
-              leftIcon={buttonIcon}
-              onClick={handleButtonClick}
-            >
+            <Button variant={buttonVariant} leftIcon={buttonIcon} onClick={handleButtonClick}>
               {buttonText}
             </Button>
           )}
@@ -99,6 +106,7 @@ PageHeader.propTypes = {
   showAvailability: PropTypes.bool,
   initialAvailability: PropTypes.bool,
   onAvailabilityChange: PropTypes.func,
+  availabilityLoading: PropTypes.bool
 };
 
 export default PageHeader;

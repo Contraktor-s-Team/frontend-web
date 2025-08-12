@@ -5,7 +5,8 @@ const initialState = {
   allArtisans: { loading: false, data: {}, error: {} },
   artisan: { loading: false, data: {}, error: {} },
   artisanAssignment: { loading: false, data: {}, error: {} },
-  categories: { loading: false, data: [], error: {} }
+  categories: { loading: false, data: [], error: {} },
+  availabilityToggle: { loading: false, error: {} }
 };
 
 const ArtisanContext = createContext();
@@ -30,6 +31,34 @@ function artisanReducer(state, action) {
       return { ...state, artisanAssignment: { loading: false, data: action.payload, error: {} } };
     case 'ARTISAN_ASSIGNMENT_FAILURE':
       return { ...state, artisanAssignment: { loading: false, data: {}, error: action.payload } };
+    case 'TOGGLE_AVAILABILITY_REQUEST':
+      return {
+        ...state,
+        availabilityToggle: { loading: true, error: {} }
+      };
+    case 'TOGGLE_AVAILABILITY_SUCCESS':
+      return {
+        ...state,
+        artisan: {
+          ...state.artisan,
+          data: {
+            ...state.artisan.data,
+            user: {
+              ...state.artisan.data?.user,
+              available: action.payload.available,
+              isAvailable: action.payload.isAvailable || action.payload.available
+            },
+            available: action.payload.available,
+            isAvailable: action.payload.isAvailable || action.payload.available
+          }
+        },
+        availabilityToggle: { loading: false, error: {} }
+      };
+    case 'TOGGLE_AVAILABILITY_FAILURE':
+      return {
+        ...state,
+        availabilityToggle: { loading: false, error: action.payload }
+      };
     default:
       return state;
   }
@@ -41,14 +70,14 @@ export function ArtisanProvider({ children }) {
 
   // Add call guards to prevent duplicate API calls
   const callGuards = useRef({
-    fetchArtisanById: new Map(), // Map to track calls by artisan ID
+    fetchArtisanById: new Map(),
     fetchAllArtisans: false,
-    lastFetchTimestamps: new Map()
+    lastFetchTimestamps: new Map(),
+    toggleAvailability: false
   });
 
   // Fetch all artisans with call guard
   const fetchAllArtisans = useCallback(async () => {
-    // Check if already loading or has recent data
     if (state.allArtisans.loading) {
       return;
     }
@@ -57,10 +86,8 @@ export function ArtisanProvider({ children }) {
       return;
     }
 
-    // Check if we have recent data (5 minutes cache)
     const lastFetchTime = callGuards.current.lastFetchTimestamps.get('allArtisans');
     if (lastFetchTime && Date.now() - lastFetchTime < 300000) {
-      // 5 minutes
       return;
     }
 
@@ -88,12 +115,11 @@ export function ArtisanProvider({ children }) {
         return;
       }
 
-      // Check if we already have valid data for this artisan ID
       const hasValidData = state.artisan.data && Object.keys(state.artisan.data).length > 0;
       const isCurrentlyLoading = state.artisan.loading;
       const hasRecentFetch =
         callGuards.current.lastFetchTimestamps.get(`artisan_${id}`) &&
-        Date.now() - callGuards.current.lastFetchTimestamps.get(`artisan_${id}`) < 60000; // 1 minute cache
+        Date.now() - callGuards.current.lastFetchTimestamps.get(`artisan_${id}`) < 60000;
 
       if (!forceRefresh && hasValidData && !isCurrentlyLoading) {
         return state.artisan.data;
@@ -107,7 +133,6 @@ export function ArtisanProvider({ children }) {
         return state.artisan.data;
       }
 
-      // Prevent concurrent calls for the same artisan ID
       if (callGuards.current.fetchArtisanById.get(id)) {
         return;
       }
@@ -132,14 +157,9 @@ export function ArtisanProvider({ children }) {
         return response.data;
       } catch (error) {
         console.error('🔥 ArtisanContext: Error occurred in fetchArtisanById:', error);
-        console.error('🔥 ArtisanContext: Error message:', error.message);
-        console.error('🔥 ArtisanContext: Error response:', error.response);
-        console.error('🔥 ArtisanContext: Error response status:', error.response?.status);
-        console.error('🔥 ArtisanContext: Error response data:', error.response?.data);
 
         let errorMessage = 'Unknown error occurred';
 
-        // Better error message extraction
         if (error.response?.status === 401) {
           errorMessage = 'Authentication failed. Please login again.';
         } else if (error.response?.status === 403) {
@@ -162,7 +182,6 @@ export function ArtisanProvider({ children }) {
           errorMessage = `Network error: ${error.code}`;
         }
 
-        console.error('🔥 ArtisanContext: Final error message:', errorMessage);
         dispatch({ type: 'ARTISAN_FAILURE', payload: errorMessage });
         throw error;
       } finally {
@@ -188,6 +207,134 @@ export function ArtisanProvider({ children }) {
     }
   }, []);
 
+  // Toggle artisan availability
+  const toggleArtisanAvailability = useCallback(
+    async (newAvailability, onSuccess, onError) => {
+      // Prevent concurrent calls
+      if (callGuards.current.toggleAvailability) {
+        return;
+      }
+
+      callGuards.current.toggleAvailability = true;
+      dispatch({ type: 'TOGGLE_AVAILABILITY_REQUEST' });
+
+      try {
+        const datas = JSON.parse(localStorage.getItem('auth'));
+        if (!datas?.token) {
+          throw new Error('No authentication token found');
+        }
+
+        // Try multiple ways to get the user ID
+        let userId = null;
+
+        // Try from artisan data
+        if (state.artisan.data?.id) {
+          userId = state.artisan.data.id;
+        } else if (state.artisan.data?.userId) {
+          userId = state.artisan.data.userId;
+        } else if (state.artisan.data?.user?.id) {
+          userId = state.artisan.data.user.id;
+        }
+
+        // Try from auth data
+        if (!userId && datas?.userId) {
+          userId = datas.userId;
+        } else if (!userId && datas?.user?.id) {
+          userId = datas.user.id;
+        } else if (!userId && datas?.id) {
+          userId = datas.id;
+        }
+
+        // Try from nested data structures
+        if (!userId && datas?.data?.id) {
+          userId = datas.data.id;
+        } else if (!userId && datas?.data?.userId) {
+          userId = datas.data.userId;
+        }
+
+        console.log('Available user data sources:', {
+          artisanData: state.artisan.data,
+          authData: datas,
+          extractedUserId: userId
+        });
+
+        if (!userId) {
+          throw new Error('User ID not found. Please ensure you are logged in properly.');
+        }
+
+        console.log('🔄 Starting availability toggle request...', {
+          userId,
+          newAvailability,
+          currentAvailability: state.artisan.data?.user?.isAvailable
+        });
+
+        // Use PATCH method as specified
+        const response = await axios.patch(
+          `${baseUrl}/api/Users/toggle-availability`,
+          {
+            id: userId,
+            available: newAvailability
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${datas?.token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        console.log('✅ API Response received:', response.data);
+        console.log('✅ Response status:', response.status);
+
+        dispatch({
+          type: 'TOGGLE_AVAILABILITY_SUCCESS',
+          payload: {
+            available: newAvailability,
+            isAvailable: newAvailability // Also update isAvailable for API consistency
+          }
+        });
+
+        console.log('✅ Redux state updated successfully');
+
+        if (onSuccess) {
+          onSuccess(response.data);
+          console.log('✅ Success callback executed');
+        }
+
+        return response.data;
+      } catch (error) {
+        console.error('❌ Toggle availability failed:', error);
+        console.error('❌ Error response status:', error.response?.status);
+        console.error('❌ Error response data:', error.response?.data);
+
+        let errorMessage = 'Failed to update availability';
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        console.error('❌ Final error message:', errorMessage);
+
+        dispatch({
+          type: 'TOGGLE_AVAILABILITY_FAILURE',
+          payload: errorMessage
+        });
+
+        if (onError) {
+          onError(errorMessage);
+          console.log('❌ Error callback executed');
+        }
+
+        throw error;
+      } finally {
+        callGuards.current.toggleAvailability = false;
+        console.log('🔄 Toggle availability call guard released');
+      }
+    },
+    [state.artisan.data]
+  );
+
   return (
     <ArtisanContext.Provider
       value={{
@@ -195,9 +342,12 @@ export function ArtisanProvider({ children }) {
         fetchAllArtisans,
         fetchArtisanById,
         postArtisanAssignment,
-        postAssignment: postArtisanAssignment, // Add alias for compatibility
+        postAssignment: postArtisanAssignment,
+        toggleArtisanAvailability,
         assignmentLoading: state.artisanAssignment.loading,
-        assignmentError: state.artisanAssignment.error
+        assignmentError: state.artisanAssignment.error,
+        availabilityLoading: state.availabilityToggle.loading,
+        availabilityError: state.availabilityToggle.error
       }}
     >
       {children}

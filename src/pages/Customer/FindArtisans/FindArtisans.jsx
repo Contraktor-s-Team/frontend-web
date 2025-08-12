@@ -39,6 +39,8 @@ const FindArtisans = () => {
   }, []);
 
   // Transform API data to match frontend expectations
+  // In FindArtisans.jsx, update the transformArtisanData function:
+
   const transformArtisanData = (apiData) => {
     if (!apiData || !Array.isArray(apiData)) return [];
 
@@ -57,7 +59,7 @@ const FindArtisans = () => {
         location: artisan.address || 'Location not specified',
         image: artisan.imageUrl || '/api/placeholder/300/200', // Fallback image
         rating: 4.5, // Default rating since not in API
-        available: artisan.isActive,
+        available: artisan.isAvailable, // ✅ FIXED: Use isAvailable instead of isActive
         services: subcategoryNames.length > 0 ? subcategoryNames : [primaryCategory],
         priceRange: '₦5,000 – ₦15,000', // Default range since not in API
         description: subcategories[0]?.subcategory?.description || '',
@@ -69,7 +71,6 @@ const FindArtisans = () => {
       };
     });
   };
-
   useEffect(() => {
     // Check for data from the API response - it might be nested in data.data
     const artisanData = data?.data || data;
