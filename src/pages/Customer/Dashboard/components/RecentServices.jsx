@@ -13,7 +13,6 @@ const RecentServices = ({ activeTab }) => {
   const jobListingData = jobListingState.jobListings.data;
   const error = jobListingState.jobListings.error;
 
-  // Use activeTab prop if provided, otherwise fall back to route tab
   const currentTab = activeTab || routeTab;
 
   const formatJobSlug = (title) => {
@@ -34,7 +33,7 @@ const RecentServices = ({ activeTab }) => {
   const transformJobListingData = (apiJobListing) => {
     return {
       id: apiJobListing.id,
-      title: apiJobListing.title.trim(), // Remove any trailing whitespace
+      title: apiJobListing.title.trim(),
       description: apiJobListing.description,
       postedAt: formatDate(apiJobListing.postedAt),
       userId: apiJobListing.userId,
@@ -43,43 +42,28 @@ const RecentServices = ({ activeTab }) => {
       subcategoryName: apiJobListing.subcategoryName || 'General',
       proposals: apiJobListing.proposals || [],
       proposalCount: apiJobListing.proposals?.length || 0,
-      // Add tab classification based on your business logic
       tab: determineJobListingTab(apiJobListing),
-      // Add artisan field if needed by your table
       artisan: apiJobListing.userFullName || 'N/A'
     };
   };
 
   const determineJobListingTab = (jobListing) => {
-    // Determine job listing tab based on status and proposals
     if (jobListing.status === 'completed' || jobListing.status === 'Completed') {
       return 'completed';
     }
-    if (jobListing.status === 'in-progress' || jobListing.status === 'In Progress' || jobListing.status === 'ongoing') {
+    if (jobListing.status === 'in-progress' || jobListing.status === 'In Progress') {
       return 'ongoing';
     }
     if (jobListing.proposals && jobListing.proposals.length > 0) {
-      // Has proposals but not completed/ongoing, consider it ongoing
       return 'ongoing';
     }
-    return 'posted'; // Default to posted if no proposals
+    return 'posted';
   };
-
-  // Debug logging to understand data structure
-  console.log('📊 RecentServices Debug:', {
-    hasJobListingData: !!jobListingData,
-    jobListingDataKeys: jobListingData ? Object.keys(jobListingData) : 'no data',
-    dataType: jobListingData?.data ? typeof jobListingData.data : 'no data property',
-    isDataArray: Array.isArray(jobListingData?.data),
-    dataLength: Array.isArray(jobListingData?.data) ? jobListingData.data.length : 'not array',
-    fullJobListingData: jobListingData
-  });
 
   // Handle different possible API response structures with proper error handling
   let jobListingsArray = [];
 
   if (jobListingData) {
-    // Try different possible paths for the job listings array
     if (Array.isArray(jobListingData.data)) {
       jobListingsArray = jobListingData.data;
     } else if (Array.isArray(jobListingData.data?.items)) {
@@ -89,7 +73,6 @@ const RecentServices = ({ activeTab }) => {
     } else if (Array.isArray(jobListingData)) {
       jobListingsArray = jobListingData;
     } else {
-      console.warn('⚠️ RecentServices: Unable to find job listings array in API response:', jobListingData);
       jobListingsArray = []; // Ensure it's always an array
     }
   }

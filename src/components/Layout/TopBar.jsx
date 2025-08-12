@@ -1,22 +1,129 @@
-import React, { useState } from 'react';
-import { MapPin, Bell, ChevronDown, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { MapPin, Bell, Search, Loader2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import TextInput from '../Form/TextInput';
 import Button from '../Button/Button';
 import avatar from '/img/avatarnew.png';
-import { useNavigate } from 'react-router-dom';
 
 const TopBar = ({ logout, userType = 'customer', data }) => {
-  const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
-  const [userLocation] = useState('Ikeja GRA, Lagos');
+  const [userLocation, setUserLocation] = useState('Detecting location...');
+  const [isLocationLoading, setIsLocationLoading] = useState(true);
   const location = useLocation();
+
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const geoApiKey = import.meta.env.VITE_GEOLOCATION_KEY;
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
+
+  const getCurrentLocation = () => {
+    try {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            setLatitude(lat);
+            setLongitude(lng);
+            // Fetch readable address from coordinates
+            fetchLocationName(lat, lng);
+          },
+          (error) => {
+            console.error('Error getting location:', error);
+            setUserLocation('Location unavailable');
+            setIsLocationLoading(false);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000
+          }
+        );
+      } else {
+        setUserLocation('Location not supported');
+        setIsLocationLoading(false);
+      }
+    } catch (error) {
+      console.error('Error with geolocation:', error);
+      setUserLocation('Location error');
+      setIsLocationLoading(false);
+    }
+  };
+
+  const fetchLocationName = async (lat, lng) => {
+    if (!geoApiKey) {
+      console.warn('Google Maps API key not found');
+      setUserLocation('Location unavailable');
+      setIsLocationLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${geoApiKey}`
+      );
+
+      const data = await response.json();
+
+      console.log('Geocoding response:', data);
+
+      if (data.status === 'OK' && data.results.length > 0) {
+        const locationString = extractReadableLocation(data.results);
+        setUserLocation(locationString);
+      } else {
+        console.error('Geocoding failed:', data.status);
+        setUserLocation('Location unavailable');
+      }
+    } catch (error) {
+      console.error('Error fetching location name:', error);
+      setUserLocation('Location unavailable');
+    } finally {
+      setIsLocationLoading(false);
+    }
+  };
+
+  const extractReadableLocation = (results) => {
+    for (const result of results) {
+      const components = result.address_components;
+
+      const locality = components.find(
+        (comp) => comp.types.includes('locality') || comp.types.includes('administrative_area_level_2')
+      );
+
+      const state = components.find((comp) => comp.types.includes('administrative_area_level_1'));
+
+      if (locality && state) {
+        return `${locality.long_name}, ${state.long_name}`;
+      }
+
+      if (state) {
+        const area = components.find(
+          (comp) =>
+            comp.types.includes('administrative_area_level_2') || comp.types.includes('administrative_area_level_3')
+        );
+
+        if (area) {
+          return `${area.long_name}, ${state.long_name}`;
+        }
+
+        return state.long_name;
+      }
+    }
+
+    const firstResult = results[0];
+    let formatted = firstResult.formatted_address;
+
+    const parts = formatted.split(',').slice(0, 2);
+    return parts.join(',').trim();
+  };
 
   return (
     <header className="font-inter bg-white border-b border-gray-100 px-2 sm:px-4 md:px-6 py-4 sm:py-5">
       <div className="flex w-full items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 justify-between">
-        {/* Search Bar aligned left */}
         <div className="w-full max-w-full sm:w-72 md:w-96 lg:w-[420px]">
           <TextInput
             placeholder={
@@ -27,15 +134,25 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
             inputClassName="pr-10 rounded-full"
           />
         </div>
-        {/* Right group: location, notification, profile */}
+
         <div className="flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8">
           <Button
             variant="secondary"
-            className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3.5 text-xs sm:text-base"
+            className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3.5 text-xs sm:text-base min-w-[120px]"
           >
-            <MapPin size={20} />
-            <span className="hidden sm:inline">{userLocation}</span>
+            {isLocationLoading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span className="hidden sm:inline">Locating...</span>
+              </>
+            ) : (
+              <>
+                <MapPin size={20} />
+                <span className="hidden sm:inline">{userLocation} State</span>
+              </>
+            )}
           </Button>
+
           <div className="relative flex-shrink-0">
             <Link
               to={`/${userType}/notifications`}
@@ -51,6 +168,7 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
               )}
             </Link>
           </div>
+
           <div className="relative flex-shrink-0">
             <button
               className="flex items-center p-1.5 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none transition-colors"
@@ -67,6 +185,7 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
                 }}
               />
             </button>
+
             {/* Dropdown menu */}
             {isProfileOpen && (
               <div
