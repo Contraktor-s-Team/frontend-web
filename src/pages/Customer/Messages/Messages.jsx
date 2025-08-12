@@ -16,6 +16,7 @@ import {
 import Button from '../../../components/Button';
 import messagesData from '../../../../public/msg.json';
 import EmojiPicker from 'emoji-picker-react';
+import FallbackImage from '../../../components/FallbackImage';
 
 // Format message timestamp
 const formatMessageTime = (timestamp) => {
@@ -42,7 +43,7 @@ const Avatar = ({ name, avatar, className = '', online = false, showOnlineStatus
   if (avatar) {
     return (
       <div className={`relative ${className}`}>
-        <img src={avatar} alt={name || 'User'} className={`w-full h-full rounded-${radSize} object-cover`} />
+        <FallbackImage src={avatar} alt={name || 'User'} className={`w-full h-full rounded-${radSize} object-cover`} />
         {showOnlineStatus && online && (
           <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
         )}
@@ -251,7 +252,7 @@ const Messages = () => {
       >
         {message.type === 'image' && message.imageUrl && (
           <div className="mb-2 relative">
-            <img src={message.imageUrl} alt="Uploaded content" className="max-w-full rounded-lg" />
+            <FallbackImage src={message.imageUrl} alt="Uploaded content" className="max-w-full rounded-lg" />
           </div>
         )}
         {message.message && <p className="text-sm">{message.message}</p>}
@@ -385,18 +386,13 @@ const Messages = () => {
               <form onSubmit={handleSendMessage} className="p-4 border-t border-neu-light-1 relative">
                 {showEmojiPicker && (
                   <div className="absolute bottom-16 left-4 z-10">
-                    <EmojiPicker 
-                      onEmojiClick={handleEmojiSelect} 
-                      theme="light"
-                      width={300}
-                      height={400}
-                    />
+                    <EmojiPicker onEmojiClick={handleEmojiSelect} theme="light" width={300} height={400} />
                   </div>
                 )}
                 {imagePreview && (
                   <div className="bg-neu-light-2 w-full">
                     <div className="relative w-fit mb-4">
-                      <img src={imagePreview} alt="Preview" className="rounded-lg max-h-40 object-cover" />
+                      <FallbackImage src={imagePreview} alt="Preview" className="rounded-lg max-h-40 object-cover" />
                       <button
                         type="button"
                         onClick={removeImagePreview}
@@ -433,12 +429,7 @@ const Messages = () => {
                       onTrailingIconClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     />
                   </div>
-                  <Button
-                    variant="text-sec"
-                    type="button"
-                    leftIcon={<Mic size={20} />}
-                    className=""
-                  />
+                  <Button variant="text-sec" type="button" leftIcon={<Mic size={20} />} className="" />
                   <Button
                     type="submit"
                     variant="primary"

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import Button from "../../components/Button";
-import AuthSidePanel from "../../components/Layout/AuthSidePanel";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { forgotPasswordAction, validateAction } from "../../redux/Auth/Login/LoginAction";
-import { connect } from "react-redux";
-import LoaderComp from "../../assets/animation/loader";
+import React, { useEffect, useState } from 'react';
+import Button from '../../components/Button';
+import AuthSidePanel from '../../components/Layout/AuthSidePanel';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext.jsx';
+import LoaderComp from '../../assets/animation/loader';
 
-const VerificationCode = ({validate, forgotPassword, loading, error,  data}) => {
-  const [code, setCode] = useState(['', '', '', '', '','']);
-  const [errors, setErrors] = useState(false)
+const VerificationCode = () => {
+  const { forgotPassword, validate, state: authState } = useAuth();
+  const [code, setCode] = useState(['', '', '', '', '', '']);
+  const [errors, setErrors] = useState(false);
   const [countdown, setCountdown] = useState(40);
   const [canResend, setCanResend] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -38,78 +38,79 @@ const VerificationCode = ({validate, forgotPassword, loading, error,  data}) => 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle verification logic here
     const verificationCode = code.join('');
-    setErrors(false)
-    try{
-      const userData ={
+    setErrors(false);
+    try {
+      const userData = {
         email: email,
-        code: verificationCode,
-      }
-      await validate(userData, ()=>{
-        console.log("i got here in login")
-        navigate("/create-new-password", { state: { email, verificationCode } })
-      },()=>{
-        setErrors(true);
-      });
-      }
-    catch (error) {
-        console.error('Registration failed:', error);
+        code: verificationCode
+      };
+      await validate(
+        userData,
+        () => {
+          navigate('/create-new-password', { state: { email, verificationCode } });
+        },
+        () => {
+          setErrors(true);
+        }
+      );
+    } catch (error) {
+      console.error('Verification failed:', error);
     }
   };
 
   const handleResendCode = async (e) => {
     e.preventDefault();
-    const emailToUse ={ email};
+    const emailToUse = { email };
     if (!emailToUse) {
-        console.error('No email found to resend code');
-        return;
+      console.error('No email found to resend code');
+      return;
     }
-    try{
-        await forgotPassword(emailToUse);
-    }
-    catch (error) {
-        console.error('Registration failed:', error);
+    try {
+      await forgotPassword(emailToUse);
+    } catch (error) {
+      console.error('Resend code failed:', error);
     }
     setCountdown(40); // Restart countdown
     setCanResend(false);
   };
   useEffect(() => {
-      let timer;
-      if (countdown > 0) {
-        timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      } else {
-        setCanResend(true);
-      }
-      return () => clearTimeout(timer);
-    }, [countdown]);
+    let timer;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else {
+      setCanResend(true);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
-  const isCodeComplete = code.every(digit => digit !== '');
+  const isCodeComplete = code.every((digit) => digit !== '');
 
   return (
     <div className="flex h-screen bg-white p-[27px] gap-14 font-manrope">
-      <AuthSidePanel 
-        className="hidden md:flex" 
+      <AuthSidePanel
+        className="hidden md:flex"
         currentSlide={1} // Set to 1 for second step (0-indexed)
       />
-      
+
       <div className="px-2 py-6 lg:px-8 lg:py-[24px] xl:py-[60px] w-full md:w-[40%]">
         <div className="w-full mb-10">
-          <h2 className="text-3xl font-bold leading-9 tracking-tight text-gray-900">
-            Enter Verification Code
-          </h2>
+          <h2 className="text-3xl font-bold leading-9 tracking-tight text-gray-900">Enter Verification Code</h2>
           <p className="font-inter mt-4 font-medium text-[#101928] lg:text-sm xl:text-base  ">
             We've sent a 6-digit code to <span className="font-semibold">example@email.com</span>.
           </p>
           <p className="font-inter">Enter it below to continue.</p>
-
         </div>
         {errors && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
@@ -141,11 +142,11 @@ const VerificationCode = ({validate, forgotPassword, loading, error,  data}) => 
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-4 text-left font-inter font-medium text-[#101928] text-base">
-              <span className="">Didn't receive a code? </span>
+                <span className="">Didn't receive a code? </span>
                 {canResend ? (
-                  <button 
+                  <button
                     type="button"
                     onClick={handleResendCode}
                     className="text-blue-500 hover:text-blue-700 font-medium transition-colors focus:outline-none"
@@ -159,18 +160,13 @@ const VerificationCode = ({validate, forgotPassword, loading, error,  data}) => 
             </div>
 
             <Button
-            size='large'
+              size="large"
               type="submit"
               variant="primary"
               className="w-full py-3 font-semibold"
-              disabled={!isCodeComplete || loading}
+              disabled={!isCodeComplete || authState.validate.loading}
             >
-              {loading ? (
-                <LoaderComp/>
-              ) : (
-                " Verify Code"
-              )} 
-             
+              {authState.validate.loading ? <LoaderComp /> : ' Verify Code'}
             </Button>
           </form>
         </div>
@@ -180,18 +176,18 @@ const VerificationCode = ({validate, forgotPassword, loading, error,  data}) => 
 };
 
 const mapStoreToProps = (state) => {
-  console.log(state)
-    return {
-        loading: state?.reValidate?.loading,
-        error: state?.reValidate?.error,
-        data: state?.reValidate.data,
-    };
+  console.log(state);
+  return {
+    loading: state?.reValidate?.loading,
+    error: state?.reValidate?.error,
+    data: state?.reValidate.data
+  };
 };
 const mapDispatchToProps = (dispatch) => {
-    return {
-      forgotPassword: (poststate, history,errors) => dispatch(forgotPasswordAction(poststate, history, errors)),
-      validate: (poststate, history,errors) => dispatch(validateAction(poststate, history, errors)),
-    };
+  return {
+    forgotPassword: (poststate, history, errors) => dispatch(forgotPasswordAction(poststate, history, errors)),
+    validate: (poststate, history, errors) => dispatch(validateAction(poststate, history, errors))
+  };
 };
 
-export default connect(mapStoreToProps, mapDispatchToProps)(VerificationCode);
+export default VerificationCode;

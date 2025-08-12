@@ -1,10 +1,9 @@
 import React from 'react';
-import { Outlet, Link, useParams, Navigate } from 'react-router-dom';
+import { Outlet, Link, useParams, Navigate, useLocation } from 'react-router-dom';
 import { MessageSquareText, Phone } from 'lucide-react';
-import { connect, useDispatch } from 'react-redux';
+// import { useArtisan } from '../../../../contexts/ArtisanContext';
 import { useEffect } from 'react';
 import { StepIndicator } from '../../../../components/FormWorkflow';
-import { getArtisanIdAction } from '../../../../redux/Artisan/ArtisanAction';
 
 const steps = [
   { label: 'Describe the Job', path: 'describe' },
@@ -69,9 +68,7 @@ const ArtisanDetailsPanel = ({ artisan }) => {
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
             </svg>
             <span className="text-base font-semibold">{artisan.rating || '0.0'}</span>
-            <span className="text-gray-400 ml-1">
-              ({artisan.reviewCount || 0} reviews)
-            </span>
+            <span className="text-gray-400 ml-1">({artisan.reviewCount || 0} reviews)</span>
           </div>
         </div>
 
@@ -93,9 +90,7 @@ const ArtisanDetailsPanel = ({ artisan }) => {
               }`}
             ></span>
             <span
-              className={`text-base font-medium ${
-                artisan.available ? 'text-success-norm-3' : 'text-warning-norm-3'
-              }`}
+              className={`text-base font-medium ${artisan.available ? 'text-success-norm-3' : 'text-warning-norm-3'}`}
             >
               {artisan.available ? 'Available Now' : 'Not Available'}
             </span>
@@ -105,7 +100,7 @@ const ArtisanDetailsPanel = ({ artisan }) => {
         <div className="flex items-center gap-6">
           <span className="text-base text-gray-400 min-w-[120px]">Languages</span>
           <span className="text-base font-medium text-gray-900">
-            {Array.isArray(artisan.languages) ? artisan.languages.join(', ') : (artisan.languages || 'English')}
+            {Array.isArray(artisan.languages) ? artisan.languages.join(', ') : artisan.languages || 'English'}
           </span>
         </div>
 
@@ -127,80 +122,23 @@ const ArtisanDetailsPanel = ({ artisan }) => {
   );
 };
 
-const HireArtisanLayout = ({
-  loading,
-  data,
-  getArtisan,
-  error
-}) => {
-  const { artisanId } = useParams();
+const HireArtisanLayout = () => {
+  const { artisanId, tab } = useParams();
+  const location = useLocation();
+  const artisan = location.state?.artisan;
 
-  // Transform API data to match UI expectations
-  const transformArtisanData = (apiData) => {
-    if (!apiData || !apiData.user) return null;
-
-    const user = apiData.user;
-    const subcategories = apiData.subcategories?.result || [];
-    
-    // Get primary specialty from first subcategory
-    const primarySpecialty = subcategories.length > 0 
-      ? subcategories[0].subcategory.name 
-      : 'General Services';
-
-    // Get all service names
-    const services = subcategories.map(sub => sub.subcategory.name);
-
-    return {
-      id: user.id,
-      name: `${user.firstName} ${user.lastName}`,
-      specialty: primarySpecialty,
-      rating: 4.5, // Default rating - you might want to fetch this from another endpoint
-      reviewCount: 0, // Default - you might want to fetch this from another endpoint
-      location: user.address || 'Location not specified',
-      available: user.isActive,
-      phoneNumber: user.phoneNumber,
-      email: user.email,
-      languages: ['English'], // Default - you might want to add this to your API
-      image: user.imageUrl,
-      services: services
-    };
-  };
-
-  // Get transformed artisan data
-  const artisan = data ? transformArtisanData(data) : null;
-
-  // Fetch artisan data
-  useEffect(() => {
-    if (artisanId) {
-      getArtisan(artisanId);
-    }
-  }, [artisanId, getArtisan]);
-
-  // If no artisanId, redirect to FindArtisans
-  if (!artisanId) {
+  // If no artisanId or no artisan data, redirect to FindArtisans
+  if (!artisanId || !artisan) {
     return <Navigate to="/find-artisans" />;
   }
- const hasError = error && (
-    error.message || 
-    error.error || 
-    (typeof error === 'string' && error.length > 0)
-  );
-  // Error state
-  if (hasError) {
-    return (
-      <div className="font-medium">
-        <div className="bg-red-50 p-6 rounded-lg">
-          <h2 className="text-red-800 font-semibold mb-2">Error Loading Artisan</h2>
-          <p className="text-red-600">{error.message || 'Failed to load artisan details'}</p>
-          <Link 
-            to="/customer/artisans/all" 
-            className="inline-block mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Back to Artisans
-          </Link>
-        </div>
-      </div>
-    );
+
+  // If at base hire-artisan route, redirect to describe step
+  const isAtBaseRoute =
+    location.pathname.endsWith(`/hire-artisan/${tab}/${artisanId}`) ||
+    location.pathname.endsWith(`/hire-artisan/${tab}/${artisanId}/`);
+
+  if (isAtBaseRoute) {
+    return <Navigate to={`/customer/hire-artisan/${tab}/${artisanId}/describe`} replace />;
   }
 
   return (
@@ -238,35 +176,11 @@ const HireArtisanLayout = ({
 
         {/* Artisan details sidebar */}
         <div className="w-full md:max-w-[475px]">
-          {loading ? (
-            <div className="bg-white p-6 rounded-lg shadow-sm flex justify-center items-center min-h-[400px]">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pri-norm-1 mx-auto mb-4"></div>
-                <p>Loading artisan details...</p>
-              </div>
-            </div>
-          ) : (
-            <ArtisanDetailsPanel artisan={artisan} />
-          )}
+          <ArtisanDetailsPanel artisan={artisan} />
         </div>
       </div>
     </div>
   );
 };
 
-const mapStoreToProps = (state) => {
-  console.log('Redux State:', state);
-  return {
-    loading: state?.artisan?.loading,
-    data: state?.artisan?.data,
-    error: state?.artisan?.error,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getArtisan: (id) => dispatch(getArtisanIdAction(id)),
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(HireArtisanLayout);
+export default HireArtisanLayout;

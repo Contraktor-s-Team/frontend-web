@@ -31,6 +31,8 @@ const JobDescriptionForm = ({
   files = [],
   handleFileChange = () => {},
   categoryOptions = [],
+  categoriesLoading = false,
+  categoriesError = null,
   maxFiles = 3,
   subcategoryOptions = [],
   subcategory,
@@ -67,9 +69,14 @@ const JobDescriptionForm = ({
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           required
-          dropdownClassName='text-sm'
-          className='text-sm'
+          disabled={categoriesLoading}
+          placeholder={categoriesLoading ? 'Loading categories...' : 'Select a category'}
+          dropdownClassName="text-sm"
+          className="text-sm"
         />
+        {categoriesError && (
+          <div className="mt-1 text-sm text-red-600">Failed to load categories. Please try again.</div>
+        )}
       </div>
 
       {subcategoryOptions?.length > 0 && (
@@ -80,15 +87,19 @@ const JobDescriptionForm = ({
           <Select
             id="subCategory"
             options={subcategoryOptions}
-            value={subcategory?.value || ''}
-            onChange={(e) => {
-              const selectedOption = subcategoryOptions.find(opt => opt.value === e.target.value);
-              setSubcategory(selectedOption); // sets full { value, label }
-            }}
+            value={subcategory || ''}
+            onChange={(e) => setSubcategory(e.target.value)}
             required
-            dropdownClassName='text-sm'
-            className='text-sm'
+            placeholder="Select a subcategory"
+            dropdownClassName="text-sm"
+            className="text-sm"
           />
+        </div>
+      )}
+      {category && subcategoryOptions?.length === 0 && (
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-800 mb-2">Subcategory</label>
+          <p className="text-sm text-gray-500">No subcategories available for the selected category.</p>
         </div>
       )}
 
@@ -110,13 +121,7 @@ const JobDescriptionForm = ({
       {/* Photo/Video Upload using FileUploader */}
       <div className="mb-12">
         <p className="block text-sm font-medium text-gray-800 mb-2">Upload Photos or Videos</p>
-        <FileUploader
-          label=""
-          accept="image/*,video/*"
-          onChange={handleFileChange}
-          value={files}
-          maxFiles={maxFiles}
-        />
+        <FileUploader label="" accept="image/*,video/*" onChange={handleFileChange} value={files} maxFiles={maxFiles} />
       </div>
       <div className="mb-6">
         <div className="space-y-4 flex items-center justify-between">
@@ -176,7 +181,7 @@ const JobDescriptionForm = ({
             </div>
           </div>
         )}
-      </div> 
+      </div>
     </>
   );
 };

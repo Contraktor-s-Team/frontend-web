@@ -5,19 +5,22 @@ import { ArrowLeft, Map, Check, MessageSquareText, Banknote, RotateCw, Download,
 import { GoStarFill } from 'react-icons/go';
 import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
-import { connect } from 'react-redux';
-import { jobIdAction } from '../../../redux/Jobs/JobsAction';
+import FallbackImage from '../../../components/FallbackImage';
+import { useArtisanJobs } from '../../../contexts/ArtisanJobsContext';
 
 const MyJobDetails = () => {
   const { tab, jobId } = useParams();
   const navigate = useNavigate();
-  const [job, setJob] = useState();
+
+  // Use the shared jobs context
+  const { allJobs, loading, error, fetchJobs, getJobBySlug } = useArtisanJobs();
+
+  const [job, setJob] = useState(null);
 
   // Star rating state
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
-
 
   // Handle star click
   const handleStarClick = (star) => {
@@ -30,27 +33,21 @@ const MyJobDetails = () => {
     }
   };
 
-    useEffect(() => {
-      const fetchJobDetails = async () => {
-        try {
-          const response = await fetch('/artisan-jobs.json');
-          const jobs = await response.json();
-          console.log('😂');
-          
-          
-        //   Find the job with matching ID
-          const foundJob = jobs
-            .filter((job) => job.tab === tab)
-            .find((j) => j.title.toLowerCase().replaceAll(' ', '-') === jobId);
-  
-          console.log(jobId, tab);
-          setJob(foundJob);
-        } catch (error) {
-          console.error('Error fetching job details:', error);
-        }
-      };
-      fetchJobDetails();
-    }, [tab, jobId]);
+  useEffect(() => {
+    // Try to get job from context first
+    const foundJob = getJobBySlug(tab, jobId);
+
+    if (foundJob) {
+      setJob(foundJob);
+    } else if (allJobs && allJobs.length > 0) {
+      // Data is loaded but job not found
+      console.warn('Job not found:', { tab, jobId });
+      setJob(null);
+    } else if (!loading && !error) {
+      // No data loaded yet, fetch it
+      fetchJobs();
+    }
+  }, [tab, jobId, allJobs, getJobBySlug, fetchJobs, loading, error]);
 
   // Handle back navigation while preserving tab state
   const handleBack = () => {
@@ -58,7 +55,7 @@ const MyJobDetails = () => {
   };
 
   if (!job) {
-    console.log("Job not found for ID:", job);
+    console.log('Job not found for ID:', job);
     return (
       <div className="p-6">
         <Button variant="destructive-sec" onClick={handleBack} leftIcon={<ArrowLeft size={20} />}>
@@ -83,59 +80,81 @@ const MyJobDetails = () => {
 
         {['ongoing'].includes(tab?.toLowerCase()) && (
           <div className="flex items-center gap-5">
-            <Button variant="secondary" rightIcon={<Check size={20} />} className='px-4 py-3.75'>
+            <Button variant="secondary" rightIcon={<Check size={20} />} className="px-4 py-3.75">
               Mark as complete
             </Button>
-            <Button variant="grey-sec" className='px-4 py-3.75'>Cancel Job</Button>
-            <Button variant="destructive-sec" className='px-4 py-3.75'>Report Issue</Button>
-          </div>
-        )}
-
-{['scheduled'].includes(tab?.toLowerCase()) && (
-          <div className="flex items-center gap-5">
-            <Button variant="grey-sec" className='px-4 py-3.75'>Reject Job</Button>
-            <Button variant="destructive-sec" className='px-4 py-3.75'>Report Issue</Button>
-          </div>
-        )}
-
-{['pending'].includes(tab?.toLowerCase()) && (
-          <div className="flex items-center gap-5">
-            <Button variant="grey-sec" className='px-4 py-3.75'>Reject Job</Button>
-            <Button variant="destructive-sec" className='px-4 py-3.75'>Report Issue</Button>
-          </div>
-        )}
-
-{['newRequests'].includes(tab) && (
-          <div className="flex items-center gap-5">
-            <Button variant="secondary" rightIcon={<Check size={20} />} className='px-4 py-3.75'>
-            Accept Job
+            <Button variant="grey-sec" className="px-4 py-3.75">
+              Cancel Job
             </Button>
-            <Button variant="grey-sec" className='px-4 py-3.75'>Reject Job</Button>
-            <Button variant="destructive-sec" className='px-4 py-3.75'>Report Issue</Button>
+            <Button variant="destructive-sec" className="px-4 py-3.75">
+              Report Issue
+            </Button>
+          </div>
+        )}
+
+        {['scheduled'].includes(tab?.toLowerCase()) && (
+          <div className="flex items-center gap-5">
+            <Button variant="grey-sec" className="px-4 py-3.75">
+              Reject Job
+            </Button>
+            <Button variant="destructive-sec" className="px-4 py-3.75">
+              Report Issue
+            </Button>
+          </div>
+        )}
+
+        {['pending'].includes(tab?.toLowerCase()) && (
+          <div className="flex items-center gap-5">
+            <Button variant="grey-sec" className="px-4 py-3.75">
+              Reject Job
+            </Button>
+            <Button variant="destructive-sec" className="px-4 py-3.75">
+              Report Issue
+            </Button>
+          </div>
+        )}
+
+        {['newRequests'].includes(tab) && (
+          <div className="flex items-center gap-5">
+            <Button variant="secondary" rightIcon={<Check size={20} />} className="px-4 py-3.75">
+              Accept Job
+            </Button>
+            <Button variant="grey-sec" className="px-4 py-3.75">
+              Reject Job
+            </Button>
+            <Button variant="destructive-sec" className="px-4 py-3.75">
+              Report Issue
+            </Button>
           </div>
         )}
 
         {['posted'].includes(tab?.toLowerCase()) && (
           <div className="flex items-center gap-5">
-            <Button variant="secondary" rightIcon={<Pencil size={20} />} className='px-4 py-3.75'>
+            <Button variant="secondary" rightIcon={<Pencil size={20} />} className="px-4 py-3.75">
               Edit Job
             </Button>
-            <Button variant="grey-sec" className='px-4 py-3.75'>Cancel Job</Button>
+            <Button variant="grey-sec" className="px-4 py-3.75">
+              Cancel Job
+            </Button>
           </div>
         )}
 
         {['cancelled'].includes(tab?.toLowerCase()) && (
           <div className="flex items-center gap-5">
-            <Button variant="destructive-sec" className='px-4 py-3.75'>Report Issue</Button>
+            <Button variant="destructive-sec" className="px-4 py-3.75">
+              Report Issue
+            </Button>
           </div>
         )}
 
         {['completed'].includes(tab?.toLowerCase()) && (
           <div className="flex items-center gap-5">
-            <Button variant="grey-sec" className='px-4 py-3.75'>
+            <Button variant="grey-sec" className="px-4 py-3.75">
               Cancel Quote
             </Button>
-            <Button variant="destructive-sec" className='px-4 py-3.75'>Report Issue</Button>
+            <Button variant="destructive-sec" className="px-4 py-3.75">
+              Report Issue
+            </Button>
           </div>
         )}
       </div>
@@ -154,25 +173,25 @@ const MyJobDetails = () => {
               <span className="">catergory:</span>
               <span className="text-black">{job.category}</span>
             </p>
-            {
-              !tab === 'newRequests' && (
-                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+            {!tab === 'newRequests' && (
+              <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
                 <span className="">status badge:</span>
                 <StatusBadge status={job?.status} />
               </p>
-              )
-            }
+            )}
             <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
               <span className=""> date & time:</span>
               <span className="text-black">
-                {job?.jobDetails?.dateTime ? new Date(job.jobDetails.dateTime).toLocaleString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: true,
-                }) : 'N/A'}
+                {job?.jobDetails?.dateTime
+                  ? new Date(job.jobDetails.dateTime).toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true
+                    })
+                  : 'N/A'}
               </span>
             </p>
 
@@ -192,29 +211,28 @@ const MyJobDetails = () => {
 
             <div className="space-y-4.25">
               <p className="font-medium text-neu-norm-2">Job Location</p>
-               {job?.jobDetails?.jobLocation?.address ? (
-                  <>
-                    <p className="font-medium">{job.jobDetails.jobLocation.address}</p>
-                    <Button
-                      variant="secondary"
-                      rightIcon={<Map size={20} />}
-                      className="px-6.5 py-4"
-                      onClick={() =>
-                        window.open(
-                          `https://www.google.com/maps/search/?api=1&query=${job.jobDetails.jobLocation.address}`,
-                          '_blank'
-                        )
-                      }
-                    >
-                      View location on map
-                    </Button>
-                  </>
-                ) : (
-                  <p className="text-sm text-gray-500 italic">No address provided</p>
+              {job?.jobDetails?.jobLocation?.address ? (
+                <>
+                  <p className="font-medium">{job.jobDetails.jobLocation.address}</p>
+                  <Button
+                    variant="secondary"
+                    rightIcon={<Map size={20} />}
+                    className="px-6.5 py-4"
+                    onClick={() =>
+                      window.open(
+                        `https://www.google.com/maps/search/?api=1&query=${job.jobDetails.jobLocation.address}`,
+                        '_blank'
+                      )
+                    }
+                  >
+                    View location on map
+                  </Button>
+                </>
+              ) : (
+                <p className="text-sm text-gray-500 italic">No address provided</p>
               )}
             </div>
 
-            
             <div className="space-y-4.25">
               <p className="font-medium text-neu-norm-2">Attached Photos</p>
               <div className="flex flex-wrap gap-2">
@@ -251,42 +269,44 @@ const MyJobDetails = () => {
             </div>
           )}
 
-            <div className="bg-white rounded-xl p-7 h-fit">
-              <div className="flex items-center justify-between">
-                <h3 className="font-manrope text-xl font-semibold">Customer Details</h3>
-                <div className="flex items-center gap-4 text-pri-norm-1">
-                  <MessageSquareText size={24} />
-                  <Phone size={24} />
-                </div>
-              </div>
-
-              <div className="h-0.25 bg-neu-light-3 my-5.5"></div>
-
-
-              <div className=" space-y-6.5">
-                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-                  <span className="">artisan name:</span>
-                  <div className="flex items-center gap-2.5">
-                    <img src={job?.jobDetails?.customerDetails?.image} alt="artisan" className="w-10 h-10 rounded-full" />
-
-                    <div className="text-black">{job?.jobDetails?.customerDetails?.name}</div>
-                    </div>
-                </p>
-                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-                  <span className="">phone number:</span>
-                  <span className="text-black">{job?.jobDetails?.customerDetails?.phoneNumber}</span>
-                </p>
-                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-                  <span className="">email:</span>
-                  <span className="text-black">{job?.jobDetails?.customerDetails?.email}</span>
-
-                </p>
-                <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
-                  <span className="">location:</span>
-                  <span className="text-black">{job?.jobDetails?.customerDetails?.location}</span>
-                </p>
+          <div className="bg-white rounded-xl p-7 h-fit">
+            <div className="flex items-center justify-between">
+              <h3 className="font-manrope text-xl font-semibold">Customer Details</h3>
+              <div className="flex items-center gap-4 text-pri-norm-1">
+                <MessageSquareText size={24} />
+                <Phone size={24} />
               </div>
             </div>
+
+            <div className="h-0.25 bg-neu-light-3 my-5.5"></div>
+
+            <div className=" space-y-6.5">
+              <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+                <span className="">artisan name:</span>
+                <div className="flex items-center gap-2.5">
+                  <FallbackImage
+                    src={job?.jobDetails?.customerDetails?.image}
+                    alt="artisan"
+                    className="w-10 h-10 rounded-full"
+                  />
+
+                  <div className="text-black">{job?.jobDetails?.customerDetails?.name}</div>
+                </div>
+              </p>
+              <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+                <span className="">phone number:</span>
+                <span className="text-black">{job?.jobDetails?.customerDetails?.phoneNumber}</span>
+              </p>
+              <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+                <span className="">email:</span>
+                <span className="text-black">{job?.jobDetails?.customerDetails?.email}</span>
+              </p>
+              <p className="capitalize flex items-center gap-6 font-medium text-neu-norm-2">
+                <span className="">location:</span>
+                <span className="text-black">{job?.jobDetails?.customerDetails?.location}</span>
+              </p>
+            </div>
+          </div>
 
           {job?.jobDetails?.updates && (
             <div className="bg-white rounded-xl p-7 h-fit">
@@ -301,78 +321,78 @@ const MyJobDetails = () => {
             </div>
           )}
 
-      {job?.proposals && (
-  <>
-    <div className="bg-white rounded-xl p-7 h-fit">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="font-manrope text-xl font-semibold mb-2.5">Quotes</h1>
-        <p className="text-neu-dark-1">
-          You've received {job?.jobDetails?.quotes?.length || 0} quotes for this job
-        </p>
-      </div>
-
-      {/* No Quotes Message */}
-      {(!job?.jobDetails?.quotes || job.jobDetails.quotes.length === 0) ? (
-        <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Quotes yet</h3>
-      ) : (
-        <div className="space-y-4">
-          {job.jobDetails.quotes.map((quote) => (
-            <div key={quote.artisan} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-              {/* Artisan Info Header */}
-              <div className="flex items-start gap-4 mb-4">
-                <div className="relative">
-                  <img
-                    src={quote.avatar || Avatar}
-                    alt={quote.artisan}
-                    className="w-42.5 h-42.5 rounded-lg object-cover"
-                  />
-                  <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
-                    <GoStarFill size={12} className="text-warning-norm-1" />
-                    <span className="text-xs font-medium text-gray-900">{quote.rating}</span>
-                  </div>
+          {job?.proposals && (
+            <>
+              <div className="bg-white rounded-xl p-7 h-fit">
+                {/* Header */}
+                <div className="mb-6">
+                  <h1 className="font-manrope text-xl font-semibold mb-2.5">Quotes</h1>
+                  <p className="text-neu-dark-1">
+                    You've received {job?.jobDetails?.quotes?.length || 0} quotes for this job
+                  </p>
                 </div>
 
-                <div className="flex-1 space-y-4.25">
-                  <div>
-                    <h3 className="font-semibold mb-1">{quote.artisan}</h3>
-                    <p className="text-neu-dark-1 text-sm mb-2">{quote.category}</p>
+                {/* No Quotes Message */}
+                {!job?.jobDetails?.quotes || job.jobDetails.quotes.length === 0 ? (
+                  <h3 className="font-manrope font-semibold text-center text-neu-dark-2">No Quotes yet</h3>
+                ) : (
+                  <div className="space-y-4">
+                    {job.jobDetails.quotes.map((quote) => (
+                      <div key={quote.artisan} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                        {/* Artisan Info Header */}
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="relative">
+                            <img
+                              src={quote.avatar || Avatar}
+                              alt={quote.artisan}
+                              className="w-42.5 h-42.5 rounded-lg object-cover"
+                            />
+                            <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
+                              <GoStarFill size={12} className="text-warning-norm-1" />
+                              <span className="text-xs font-medium text-gray-900">{quote.rating}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex-1 space-y-4.25">
+                            <div>
+                              <h3 className="font-semibold mb-1">{quote.artisan}</h3>
+                              <p className="text-neu-dark-1 text-sm mb-2">{quote.category}</p>
+                            </div>
+
+                            <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
+                              <Banknote size={20} className="text-pri-norm-1" />
+                              <p className="font-semibold">{quote.price}</p>
+                            </div>
+
+                            <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
+                              <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
+                              <span className="text-sm text-success-norm-3 font-medium">{quote.availability}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Message */}
+                        <div className="mb-4">
+                          <p className="text-sm text-neu-dark-1 mb-2">Message From artisan</p>
+                          <p className="leading-relaxed">{quote.message}</p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-4">
+                          <Button variant="secondary" rightIcon={<Check size={20} />}>
+                            Accept Quote
+                          </Button>
+                          <Button variant="grey-sec" rightIcon={<MessageSquareText size={20} />}>
+                            Chat with artisan
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-
-                  <div className="flex items-center gap-2 bg-neu-light-1 px-4.25 py-2 w-fit rounded-full">
-                    <Banknote size={20} className="text-pri-norm-1" />
-                    <p className="font-semibold">{quote.price}</p>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-success-light-1 px-4.25 py-2 w-fit rounded-full">
-                    <div className="w-3.5 h-3.5 bg-success-norm-1 rounded-full"></div>
-                    <span className="text-sm text-success-norm-3 font-medium">{quote.availability}</span>
-                  </div>
-                </div>
+                )}
               </div>
-
-              {/* Message */}
-              <div className="mb-4">
-                <p className="text-sm text-neu-dark-1 mb-2">Message From artisan</p>
-                <p className="leading-relaxed">{quote.message}</p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-4">
-                <Button variant="secondary" rightIcon={<Check size={20} />}>
-                  Accept Quote
-                </Button>
-                <Button variant="grey-sec" rightIcon={<MessageSquareText size={20} />}>
-                  Chat with artisan
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  </>
-)}
+            </>
+          )}
 
           {tab === 'completed' && (
             <div className="mt-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100 space-y-4.5">
@@ -425,6 +445,6 @@ const MyJobDetails = () => {
       </div>
     </div>
   );
-};
+}; // Closing brace for MyJobDetails component
 
 export default MyJobDetails;

@@ -95,16 +95,6 @@ const AddressLocation = () => {
                 placeholder="Enter postal code"
               />
               <div className="flex flex-col sm:flex-row gap-4 pt-6 sm:pt-8">
-                {/* <Button 
-                onClick={() => {
-                  setIsEditing(false);
-                  navigate(-1);
-                }} 
-                variant="secondary" 
-                className="px-6 py-3.25"
-              >
-                Cancel
-              </Button> */}
                 <Button onClick={handleSave} variant="primary" className="px-6 py-3.25">
                   Save Changes
                 </Button>

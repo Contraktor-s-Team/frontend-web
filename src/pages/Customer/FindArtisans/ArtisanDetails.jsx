@@ -1,111 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
-  Map,
+  MessageSquare,
   MessageSquareText,
+  Heart,
   Phone,
+  Star,
+  MapPin,
+  CheckCircle,
+  Clock,
+  Shield,
   ChevronRight,
+  Map
 } from 'lucide-react';
-import { GoStarFill } from 'react-icons/go';
 import Button from '../../../components/Button/Button';
-import Avatar from '/img/avatar1.jpg';
+import { GoStarFill } from 'react-icons/go';
+import { useHireArtisan } from '../../../contexts/HireArtisanContext';
+import FallbackImage from '../../../components/FallbackImage';
 import { FaRegBookmark } from 'react-icons/fa6';
-import { connect, useDispatch } from 'react-redux';
-import { setArtisanDetails } from '../../../redux/slices/hireArtisanSlice';
-import { getArtisanIdAction } from '../../../redux/Artisan/ArtisanAction';
 
-const ArtisanDetails = ({
-  getArtisan,
-  data,
-  loading: artisanLoading,
-  error
-}) => {
+const CustomerArtisanDetails = () => {
   const { artisanId, tab } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const location = useLocation();
+  const { dispatch } = useHireArtisan();
 
-  // Transform API data to match UI expectations
-  const transformArtisanData = (apiData) => {
-    if (!apiData || !apiData.user) return null;
+  // Use artisan data from navigation state
+  const artisanData = location.state?.artisan;
+  const loading = !artisanData; // loading if no data in state
+  const error = !artisanData ? { message: 'No artisan data found in navigation state.' } : null;
 
-    const user = apiData.user;
-    const subcategories = apiData.subcategories?.result || [];
-    
-    // Get primary specialty from first subcategory
-    const primarySpecialty = subcategories.length > 0 
-      ? subcategories[0].subcategory.name 
-      : 'General Services';
+  // Use the artisan data as-is from location.state
+  const artisan = artisanData || null;
 
-    // Get all service names
-    const services = subcategories.map(sub => sub.subcategory.name);
-
-    return {
-      id: user.id,
-      name: `${user.firstName} ${user.lastName}`,
-      specialty: primarySpecialty,
-      rating: 4.5, // Default rating - you might want to fetch this from another endpoint
-      reviewCount: 0, // Default - you might want to fetch this from another endpoint
-      location: user.address || 'Location not specified',
-      available: user.isActive,
-      phoneNumber: user.phoneNumber || '------------',
-      email: user.email,
-      languages: ['English'], // Default - you might want to add this to your API
-      image: user.imageUrl || Avatar,
-      about: `Professional ${primarySpecialty} with years of experience in the field.`, // Default bio
-      priceRange: '₦5,000 - ₦50,000', // Default - you might want to add this to your API
-      availabilitySchedule: 'Monday - Saturday, 8AM - 6PM', // Default
-      services: services,
-      serviceAreas: 'Lagos, Nigeria', // Default - you might want to add this to your API
-      workPhotos: [], // Default empty array - you might want to add this to your API
-      reviews: [] // Default empty array - you might want to fetch from another endpoint
-    };
-  };
-
-  // Get transformed artisan data
-  const artisan = data ? transformArtisanData(data) : null;
-
-  useEffect(() => {
-    if (artisanId) {
-      getArtisan(artisanId);
-    }
-  }, [artisanId, getArtisan]);
-
-  console.log('API Data:', data);
-  console.log('Transformed Artisan:', artisan);
+  console.log('Artisan Data:', artisan);
+  console.log('Loading:', loading);
+  console.log('Error:', error);
 
   // Handle back navigation
   const handleBack = () => {
     navigate(-1);
   };
-  
+
   // Handle hiring the artisan
   const handleHireArtisan = () => {
-    if (artisan) {
-      dispatch(setArtisanDetails({
-        id: artisan.id,
-        name: artisan.name,
-        specialty: artisan.specialty,
-        rating: artisan.rating,
-        image: artisan.image,
-        location: artisan.location,
-        availability: artisan.available ? "Available" : "Not Available",
-        languages: Array.isArray(artisan.languages) ? artisan.languages.join(', ') : artisan.languages
-      }));
+    if (artisan && dispatch) {
+      dispatch({
+        type: 'SET_ARTISAN_DETAILS',
+        payload: {
+          id: artisan.id,
+          name: artisan.name,
+          specialty: artisan.specialty,
+          rating: artisan.rating,
+          image: artisan.imageUrl,
+          location: artisan.location,
+          availability: artisan.isAvailable ? 'Available' : 'Not Available',
+          languages: Array.isArray(artisan.languages) ? artisan.languages.join(', ') : artisan.languages || 'English'
+        }
+      });
     }
-    
-    // Navigate to the hire artisan workflow with the new route structure
-    navigate(`/customer/hire-artisan/${tab}/${artisanId}/describe`);
+    navigate(`/customer/hire-artisan/${tab}/${artisanId}/describe`, { state: { artisan } });
   };
 
-  if (artisanLoading) {
+  if (loading) {
     return <div className="p-6">Loading artisan details...</div>;
   }
-  const hasError = error && (
-    error.message || 
-    error.error || 
-    (typeof error === 'string' && error.length > 0)
-  );
+  const hasError = error && (error.message || error.error || (typeof error === 'string' && error.length > 0));
 
   if (hasError) {
     return (
@@ -136,7 +97,7 @@ const ArtisanDetails = ({
       <div className="">
         <p className="capitalize text-sm text-pri-norm-1">
           <Link to="/customer/artisans/all">browse artisans</Link> /{' '}
-          <Link to={`/customer/artisans/${artisanId}`}>{artisanId === '1' ? 'all artisans' : 'saved artisans'}</Link> /{' '}
+          <Link to={`/customer/artisans/${tab || 'all'}`}>{tab === 'saved' ? 'saved artisans' : 'all artisans'}</Link> /{' '}
           <span className="text-black">artisan details</span>
         </p>
       </div>
@@ -144,11 +105,15 @@ const ArtisanDetails = ({
       <div className="flex items-center justify-between my-6.25 ">
         <h3 className="font-manrope text-2xl font-semibold">Artisan Details</h3>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" className='capitalize' onClick={handleHireArtisan}>hire this artisan</Button>
-          <Button variant="grey-sec" rightIcon={<FaRegBookmark size={20} />} className='capitalize'>
+          <Button variant="secondary" className="capitalize" onClick={handleHireArtisan}>
+            hire this artisan
+          </Button>
+          <Button variant="grey-sec" rightIcon={<FaRegBookmark size={20} />} className="capitalize">
             save for later
           </Button>
-          <Button variant="destructive-sec" className='capitalize'>report artisan</Button>
+          <Button variant="destructive-sec" className="capitalize">
+            report artisan
+          </Button>
         </div>
       </div>
 
@@ -193,38 +158,41 @@ const ArtisanDetails = ({
                     render: () => (
                       <div
                         className={`inline-flex items-center gap-2 ${
-                          artisan.available ? 'bg-success-light-1' : 'bg-warning-light-1'
+                          artisan.isAvailable ? 'bg-success-light-1' : 'bg-warning-light-1'
                         } px-3 py-1.5 rounded-full`}
                       >
                         <div
                           className={`w-3 h-3 ${
-                            artisan.available ? 'bg-success-norm-1' : 'bg-warning-norm-1'
+                            artisan.isAvailable ? 'bg-success-norm-1' : 'bg-warning-norm-1'
                           } rounded-full`}
                         ></div>
                         <span
                           className={`text-sm font-medium ${
-                            artisan.available ? 'text-success-norm-3' : 'text-warning-norm-3'
+                            artisan.isAvailable ? 'text-success-norm-3' : 'text-warning-norm-3'
                           }`}
                         >
-                          {artisan.available ? 'Available Now' : 'Not Available'}
+                          {artisan.isAvailable ? 'Available' : 'Unavailable'}
                         </span>
                       </div>
                     )
                   },
-                  { label: 'Phone Number', value: artisan.phoneNumber },
+                  { label: 'Phone Number', value: artisan.phone || 'Not provided' },
                   { label: 'Email', value: artisan.email },
-                  { label: 'Languages', value: artisan.languages?.join(', ') || 'English' }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-6">
-                    <span className="text-neu-norm-2">{item.label}</span>
-                    {item.custom ? item.render() : <span>{item.value}</span>}
-                  </div>
-                ))}
+                  { label: 'Languages', value: artisan.languages?.join(', ') || 'English' },
+                  { label: 'Description', value: artisan.description }
+                ]
+                  .filter((item) => item.value || item.custom)
+                  .map((item, index) => (
+                    <div key={index} className="flex items-center gap-6">
+                      <span className="text-neu-norm-2">{item.label}</span>
+                      {item.custom ? item.render() : <span>{item.value}</span>}
+                    </div>
+                  ))}
               </div>
 
               {/* Right side - Image */}
               <div className="relative">
-                <img
+                <FallbackImage
                   src={artisan.image}
                   alt={artisan.name}
                   className="w-26.25 h-26.25 rounded-full object-cover"
@@ -238,7 +206,7 @@ const ArtisanDetails = ({
                 <span className="text-neu-norm-2">Biography</span>
               </div>
               <p className="font-medium">
-                {artisan.about}
+                {artisan.description || 'Professional artisan ready to help with your needs.'}
               </p>
             </div>
           </div>
@@ -286,11 +254,14 @@ const ArtisanDetails = ({
               <div className="mb-6">
                 <span className="text-neu-norm-2 block mb-4">Subcategories</span>
                 <div className="flex flex-wrap gap-3">
-                  {artisan.services.length > 0 ? (
+                  {artisan.services && artisan.services.length > 0 ? (
                     artisan.services.map((service, index) => (
-                      <span key={index} className="bg-neu-light-1 text-neu-dark-1 px-4 py-2 rounded-full text-sm">
-                        {service}
-                      </span>
+                      <div key={index} className="bg-neu-light-1 text-neu-dark-1 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-sm">{service.name}</div>
+                        {service.description && (
+                          <div className="text-xs text-neu-norm-2 mt-1">{service.description}</div>
+                        )}
+                      </div>
                     ))
                   ) : (
                     <span className="text-neu-norm-2">No specific services listed</span>
@@ -300,13 +271,24 @@ const ArtisanDetails = ({
 
               <div className="mb-6">
                 <span className="text-neu-norm-2 block mb-4">Service Areas</span>
-                <p className="">{artisan.serviceAreas}</p>
+                <p className="">{artisan.location || 'Service areas not specified'}</p>
               </div>
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-8">
                   <span className="text-neu-norm-2">Base Location</span>
-                  <span className="">{artisan.location}</span>
+                  <span className="">{artisan.location || 'Location not specified'}</span>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <div className="flex items-baseline gap-8">
+                  <span className="text-neu-norm-2">Email Verified</span>
+                  <span
+                    className={`${artisanData?.user?.emailConfirmed ? 'text-success-norm-3' : 'text-warning-norm-3'}`}
+                  >
+                    {artisanData?.user?.emailConfirmed ? 'Verified' : 'Not Verified'}
+                  </span>
                 </div>
               </div>
 
@@ -330,11 +312,15 @@ const ArtisanDetails = ({
 
               <div>
                 <span className="text-neu-norm-2 block mb-4">Work Photos</span>
-                {artisan.workPhotos.length > 0 ? (
+                {artisan.workPhotos && artisan.workPhotos.length > 0 ? (
                   <div className="grid grid-cols-3 gap-3">
                     {artisan.workPhotos.map((photo, index) => (
                       <div key={index} className="h-[100px] bg-gray-200 rounded-lg">
-                        <img src={photo} alt={`work-photo-${index}`} className="w-full h-full object-cover rounded-lg" />
+                        <img
+                          src={photo}
+                          alt={`work-photo-${index}`}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                       </div>
                     ))}
                   </div>
@@ -374,13 +360,13 @@ const ArtisanDetails = ({
                       <p className="flex-1 text-neu-norm-2">{review.user}</p>
                     </div>
 
-                    {index !== artisan.reviews.length - 1 && <div className="h-0.25 bg-neu-light-3 my-5.5"></div>}
+                    {index !== (artisan.reviews?.length || 0) - 1 && (
+                      <div className="h-0.25 bg-neu-light-3 my-5.5"></div>
+                    )}
                   </div>
                 ))
               ) : (
-                <div className="text-neu-norm-2 text-center py-8">
-                  No reviews available yet
-                </div>
+                <div className="text-neu-norm-2 text-center py-8">No reviews available yet</div>
               )}
             </div>
           </div>
@@ -390,19 +376,4 @@ const ArtisanDetails = ({
   );
 };
 
-const mapStoreToProps = (state) => {
-  console.log('Redux State:', state);
-  return {
-    loading: state?.artisan?.loading,
-    data: state?.artisan?.data,
-    error: state?.artisan?.error,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getArtisan: (id) => dispatch(getArtisanIdAction(id)),
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(ArtisanDetails);
+export default CustomerArtisanDetails;

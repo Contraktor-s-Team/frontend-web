@@ -13,8 +13,15 @@ import ForgotPassword from './pages/Onboarding/ForgotPassword';
 import VerificationCode from './pages/Onboarding/VerificationCode';
 import CreateNewPassword from './pages/Onboarding/CreateNewPassword';
 
-import store from './redux/store';
-import { Provider } from 'react-redux';
+import { AuthProvider } from './contexts/AuthContext';
+import { JobListingProvider } from './contexts/JobListingContext';
+import { UserProvider } from './contexts/UserContext';
+import { ArtisanProvider } from './contexts/ArtisanContext';
+import { ArtisanJobsProvider } from './contexts/ArtisanJobsContext';
+import { ProposalProvider } from './contexts/ProposalContext';
+import { JobPostProvider } from './contexts/JobPostContext';
+import { HireArtisanProvider } from './contexts/HireArtisanContext';
+import { useUserRole } from './hooks/useUserRole';
 
 // Customer Pages
 import CustomerDashboard from './pages/Customer/Dashboard/Dashboard';
@@ -34,7 +41,7 @@ import CustomerHireArtisanTimeLocation from './pages/Customer/FindArtisans/HireA
 import CustomerHireArtisanReviewSubmit from './pages/Customer/FindArtisans/HireArtisan/ReviewSubmit';
 
 import CustomerArtisanDetails from './pages/Customer/FindArtisans/ArtisanDetails';
-import CustomerJobDetails from './pages/Customer/MyJobs/JobDetails';
+import CustomerJobDetails from './pages/Customer/MyJobs/CustomerMyJobDetails';
 
 // Artisan Pages
 import ArtisanDashboard from './pages/Artisan/Dashboard/Dashboard';
@@ -52,6 +59,7 @@ import NotificationsModal from './components/Notifications/NotificationsModal';
 
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './ProtectedRoute';
+import UserInitializer from './components/UserInitializer';
 
 // Layout Wrapper for protected routes
 const ProtectedLayout = ({ children }) => (
@@ -67,13 +75,9 @@ const AppRoutes = () => {
   // Use the current location as the "under" location or the saved background location from state
   const backgroundLocation = location.state?.backgroundLocation || location;
 
-    // Determine user type based on the current route
-    const isArtisanRoute = location.pathname.startsWith('/artisan');
-    const userType = isArtisanRoute ? 'artisan' : 'customer';
-
   return (
     <>
-    <ErrorBoundary>
+      <ErrorBoundary>
         <Routes location={backgroundLocation}>
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
@@ -148,9 +152,9 @@ const AppRoutes = () => {
                 <Route path=":tab" element={<ArtisanMyJobs />} />
                 <Route path=":tab/:jobId" element={<ArtisanMyJobDetails />} />
               </Route>
-              {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */} 
+              {/* <Route path="find-jobs" element={<ArtisanFindJob />} /> */}
               <Route path="find-jobs">
-                <Route index element={<Navigate to="listings" replace />} />
+                <Route index element={<Navigate to="requests" replace />} />
                 <Route path=":tab" element={<ArtisanFindJob />} />
                 <Route path=":tab/:jobId" element={<ArtisanJobDetails />} />
               </Route>
@@ -160,15 +164,15 @@ const AppRoutes = () => {
             </Route>
           </Route>
 
-          {/* 404 - Not Found */}
-          <Route path="*" element={<Navigate to={`/${userType}/dashboard`} replace />} />
- 
+          {/* 404 - Not Found - Protected route that checks user role */}
+          <Route path="*" element={<NotFoundRedirect />} />
         </Routes>
 
         {/* Modal Routes - shown on top of the main UI when URL matches */}
         {location !== backgroundLocation && (
           <Routes>
-            <Route path={`/${userType}/notifications`} element={<NotificationsModal />} />
+            <Route path="/customer/notifications" element={<NotificationsModal />} />
+            <Route path="/artisan/notifications" element={<NotificationsModal />} />
           </Routes>
         )}
       </ErrorBoundary>
@@ -176,19 +180,39 @@ const AppRoutes = () => {
   );
 };
 
+// Component to handle 404 redirects with user role check
+const NotFoundRedirect = () => {
+  const { userType } = useUserRole();
+  return <Navigate to={userType ? `/${userType}/dashboard` : '/customer/dashboard'} replace />;
+};
+
 function App() {
   return (
-    <Provider store={store}>
-      <Router>
-        <ScrollToTop />
-        <AppRoutes />
-      </Router>
-    </Provider>
+    <AuthProvider>
+      <UserProvider>
+        <ArtisanProvider>
+          <ArtisanJobsProvider>
+            <JobListingProvider>
+              <ProposalProvider>
+                <JobPostProvider>
+                  <HireArtisanProvider>
+                    <Router>
+                      <UserInitializer />
+                      <ScrollToTop />
+                      <AppRoutes />
+                    </Router>
+                  </HireArtisanProvider>
+                </JobPostProvider>
+              </ProposalProvider>
+            </JobListingProvider>
+          </ArtisanJobsProvider>
+        </ArtisanProvider>
+      </UserProvider>
+    </AuthProvider>
   );
 }
 
 export default App;
-
 
 class ErrorBoundary extends React.Component {
   constructor(props) {

@@ -1,19 +1,18 @@
+// Updated TimeLocation.jsx with proper urgent state management
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateJobData } from '../../../redux/slices/jobPostSlice';
+import { useJobPost } from '../../../contexts/JobPostContext';
 import { FormSection, DateTimePicker, AddressFields, WorkflowButtons } from '../../../components/FormWorkflow';
 import Button from '../../../components/Button/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const TimeLocation = () => {
-  const dispatch = useDispatch();
+  const { state: jobData, dispatch } = useJobPost();
   const navigate = useNavigate();
   const location = useLocation();
-  const jobData = useSelector((state) => state.jobPost);
 
-  const [date, setDate] = useState(jobData.date);
-  const [time, setTime] = useState(jobData.time);
-  const [urgent, setUrgent] = useState(jobData.urgent);
+  const [date, setDate] = useState(jobData.date || '');
+  const [time, setTime] = useState(jobData.time || '');
+  const [urgent, setUrgent] = useState(jobData.urgent || false);
   const [formAddress, setFormAddress] = useState({
     line1: jobData.address?.street || '',
     line2: jobData.address?.landmark || '',
@@ -27,12 +26,26 @@ const TimeLocation = () => {
   const [savedAddressActive, setSavedAddressActive] = useState(false);
 
   const handleCheckboxChange = (e) => {
-    setUrgent(e.target.checked);
+    const isUrgent = e.target.checked;
+    setUrgent(isUrgent);
+
+    // Log for debugging
+    console.log('Urgent checkbox changed:', isUrgent);
+
+    // If marking as urgent, we might want to clear date/time or keep them as preference
+    // Based on your UI, it seems like date/time are still required even for urgent jobs
+    // So we'll keep them as is
   };
 
   const handleDateTimeChange = (dateTimeValue) => {
     setDate(dateTimeValue.date || '');
     setTime(dateTimeValue.time || '');
+
+    console.log('Date/Time changed:', {
+      date: dateTimeValue.date,
+      time: dateTimeValue.time,
+      urgent
+    });
   };
 
   const saveFormData = () => {
@@ -45,7 +58,17 @@ const TimeLocation = () => {
       state: formAddress.state
     };
 
-    dispatch(updateJobData({ date, time, urgent, address: addressData }));
+    // Save all data including urgent flag to Redux
+    const dataToSave = {
+      date,
+      time,
+      urgent, // Make sure urgent is included
+      address: addressData
+    };
+
+    console.log('Saving form data to Redux:', dataToSave);
+
+    dispatch({ type: 'UPDATE_JOB_DATA', payload: dataToSave });
     return true;
   };
 
@@ -76,7 +99,46 @@ const TimeLocation = () => {
   };
 
   const isFormValid = () => {
-    return date && time && formAddress.line1 && formAddress.city && formAddress.postalCode && formAddress.state;
+    // Basic validation - date and time are required regardless of urgent status
+    const hasDateTime = urgent || (date && time);
+    const hasAddress = formAddress.line1 && formAddress.city && formAddress.postalCode && formAddress.state;
+
+    return hasDateTime && hasAddress;
+  };
+
+  const handleContinue = () => {
+    saveFormData();
+
+    // Pass complete data to review page
+    const navigationState = {
+      jobData: {
+        ...jobData,
+        date,
+        time,
+        urgent, // Make sure urgent is passed
+        address: {
+          street: formAddress.line1,
+          landmark: formAddress.line2,
+          city: formAddress.city,
+          lga: formAddress.postalCode,
+          state: formAddress.state
+        }
+      },
+      date,
+      time,
+      urgent, // Include urgent in navigation state as well
+      formAddress,
+      data: {
+        jobtitle: jobData.jobTitle,
+        description: jobData.description
+      },
+      file: jobData.files || [],
+      category: jobData.subcategory
+    };
+
+    console.log('Navigating with state:', navigationState);
+
+    navigate('/customer/post-job/review', { state: navigationState });
   };
 
   return (
@@ -88,7 +150,13 @@ const TimeLocation = () => {
       {/* Date and Time section with urgent checkbox */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-13">
         <div className="w-full md:w-[713px]">
-          <DateTimePicker value={{ date, time }} onChange={handleDateTimeChange} required labelClasses="text-sm" />
+          <DateTimePicker
+            value={{ date, time }}
+            onChange={handleDateTimeChange}
+            required
+            labelClasses="text-sm"
+            disabled={urgent}
+          />
         </div>
 
         {/* Set as urgent checkbox */}
@@ -105,6 +173,7 @@ const TimeLocation = () => {
               Set as urgent
             </label>
           </div>
+          {urgent && <p className="text-xs text-gray-500 mt-1">Job will be marked as ASAP priority</p>}
         </div>
       </div>
 
@@ -142,28 +211,8 @@ const TimeLocation = () => {
         </div>
       </div>
 
-      {/* CHANGE: Updated navigation to pass all job data including files from Redux */}
-      <Button
-        variant="primary"
-        onClick={() => {
-          saveFormData();
-          navigate('/customer/post-job/review', {
-            state: {
-              jobData,
-              date,
-              time,
-              formAddress,
-              data: {
-                jobtitle: jobData.jobTitle, // Use Redux data
-                description: jobData.description // Use Redux data
-              },
-              file: jobData.files || [], // Use files from Redux
-              category: jobData.subcategory // Use Redux data
-            }
-          });
-        }}
-        disabled={!isFormValid()}
-      >
+      {/* Continue button with proper urgent state handling */}
+      <Button variant="primary" onClick={handleContinue} disabled={!isFormValid()}>
         Save & Continue
       </Button>
     </FormSection>

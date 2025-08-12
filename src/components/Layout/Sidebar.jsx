@@ -97,6 +97,9 @@ const Sidebar = ({ userType = 'customer' }) => {
       className={`relative hidden md:flex items-center pl-9 pr-4 py-5 font-medium transition-colors ${
         isActive(item.path) ? 'text-pri-dark-3 bg-pri-light-1 font-semibold' : 'hover:bg-pri-light-2 font-medium'
       }`}
+      onClick={() => {
+        // Navigation handled by Link component
+      }}
     >
       {isActive(item.path) && <div className="absolute left-0 top-0 bottom-0 w-1 bg-pri-norm-1 rounded-r"></div>}
       <span className={`mr-3 ${isActive(item.path) ? 'text-pri-norm-1' : 'text-gray-500'}`}>{item.icon}</span>

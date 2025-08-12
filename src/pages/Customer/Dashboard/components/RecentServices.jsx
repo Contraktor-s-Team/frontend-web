@@ -2,52 +2,19 @@ import React, { useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import Button from '../../../../components/Button/Button';
 import ServiceTable from '../../../../components/Tables/ServiceTable';
-import { connect } from 'react-redux';
-import { jobAction } from '../../../../redux/Jobs/JobsAction';
+import { useJobListings } from '../../../../contexts/JobListingContext';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
-const services = [
-  {
-    id: 1,
-    title: 'AC Installation',
-    artisan: 'Musa Ibrahim',
-    status: 'Completed',
-    date: '6 Jul, 2023',
-    time: '1:00 PM',
-    image: '/img/avatar1.jpg'
-  },
-  {
-    id: 2,
-    title: 'Plumbing Leak Repair',
-    artisan: 'Fatima Bello',
-    status: 'In Progress',
-    date: '12 June 2023',
-    time: '1:00 PM',
-    image: '/img/avatar2.jpg'
-  },
-  {
-    id: 3,
-    title: 'House Cleaning',
-    artisan: 'Chinedu Okafor',
-    status: 'Completed',
-    date: '13 June 2023',
-    time: '1:00 PM',
-    image: '/img/avatar3.jpg'
-  },
-  {
-    id: 4,
-    title: 'Generator Service',
-    artisan: 'Ayodele Akinwumi',
-    status: 'In Progress',
-    date: '14 June 2023',
-    time: '1:00 PM',
-    image: ''
-  }
-];
-
-const RecentServices = ({ getJob, loading, jobsData, error }) => {
-  const { tab: activeTab = 'posted' } = useParams();
+const RecentServices = ({ activeTab }) => {
+  const { tab: routeTab = 'posted' } = useParams();
   const navigate = useNavigate();
+  const { fetchJobListings, state: jobListingState } = useJobListings();
+  const loading = jobListingState.jobListings.loading;
+  const jobListingData = jobListingState.jobListings.data;
+  const error = jobListingState.jobListings.error;
+
+  const currentTab = activeTab || routeTab;
+
   const formatJobSlug = (title) => {
     return title
       .toLowerCase()
@@ -63,39 +30,85 @@ const RecentServices = ({ getJob, loading, jobsData, error }) => {
     });
   };
 
-  // const transformJobData = (apiJob) => {
-  //   return {
-  //     id: apiJob.id,
-  //     title: apiJob.title.trim(), // Remove any trailing whitespace
-  //     description: apiJob.description,
-  //     postedAt: formatDate(apiJob.postedAt),
-  //     userId: apiJob.userId,
-  //     userFullName: apiJob.userFullName || 'Unknown User',
-  //     artisanSubcategoryId: apiJob.artisanSubcategoryId,
-  //     subcategoryName: apiJob.subcategoryName || 'General',
-  //     proposals: apiJob.proposals || [],
-  //     proposalCount: apiJob.proposals?.length || 0,
-  //     // Add tab classification based on your business logic
-  //     tab: determineJobTab(apiJob),
-  //     // Add artisan field if needed by your table
-  //     artisan: apiJob.userFullName || 'N/A'
-  //   };
-  // };
-
-  const determineJobTab = (job) => {
-    // This is where you'd implement your business logic
-    // For now, we'll categorize based on proposals or other criteria
-    if (job.proposals && job.proposals.length > 0) {
-      return 'ongoing';
-    }
-    return 'posted'; // Default to posted if no proposals
+  const transformJobListingData = (apiJobListing) => {
+    return {
+      id: apiJobListing.id,
+      title: apiJobListing.title.trim(),
+      description: apiJobListing.description,
+      postedAt: formatDate(apiJobListing.postedAt),
+      userId: apiJobListing.userId,
+      userFullName: apiJobListing.userFullName || 'Unknown User',
+      artisanSubcategoryId: apiJobListing.artisanSubcategoryId,
+      subcategoryName: apiJobListing.subcategoryName || 'General',
+      proposals: apiJobListing.proposals || [],
+      proposalCount: apiJobListing.proposals?.length || 0,
+      tab: determineJobListingTab(apiJobListing),
+      artisan: apiJobListing.userFullName || 'N/A'
+    };
   };
 
-  const allJobs = jobsData ? jobsData?.data?.map(transformJobData) : [];
+  const determineJobListingTab = (jobListing) => {
+    if (jobListing.status === 'completed' || jobListing.status === 'Completed') {
+      return 'completed';
+    }
+    if (jobListing.status === 'in-progress' || jobListing.status === 'In Progress') {
+      return 'ongoing';
+    }
+    if (jobListing.proposals && jobListing.proposals.length > 0) {
+      return 'ongoing';
+    }
+    return 'posted';
+  };
 
-  // useEffect(() => {
-  //   getJob();
-  // }, []);
+  // Handle different possible API response structures with proper error handling
+  let jobListingsArray = [];
+
+  if (jobListingData) {
+    if (Array.isArray(jobListingData.data)) {
+      jobListingsArray = jobListingData.data;
+    } else if (Array.isArray(jobListingData.data?.items)) {
+      jobListingsArray = jobListingData.data.items;
+    } else if (Array.isArray(jobListingData.data?.data)) {
+      jobListingsArray = jobListingData.data.data;
+    } else if (Array.isArray(jobListingData)) {
+      jobListingsArray = jobListingData;
+    } else {
+      jobListingsArray = []; // Ensure it's always an array
+    }
+  }
+
+  const allJobListings = jobListingsArray.length > 0 ? jobListingsArray.map(transformJobListingData) : [];
+
+  // Filter job listings by current tab and limit to 5 for dashboard display
+  const filteredJobListings = allJobListings
+    ? allJobListings.filter((jobListing) => jobListing.tab === currentTab).slice(0, 5)
+    : [];
+
+  useEffect(() => {
+    // Add guards to prevent unnecessary API calls
+    const authData = localStorage.getItem('auth');
+    if (!authData) {
+      console.log('🚫 RecentServices: No auth token found, skipping fetchJobListings');
+      return;
+    }
+
+    // Check if we already have data or are currently loading
+    if (loading) {
+      console.log('⏳ RecentServices: Already loading, skipping fetchJobListings');
+      return;
+    }
+
+    // Check if we have recent valid data (avoid fetching if we just got data)
+    if (jobListingData?.data && Array.isArray(jobListingData.data) && jobListingData.data.length >= 0) {
+      console.log('✅ RecentServices: Using existing job listings data');
+      return;
+    }
+
+    console.log('🚀 RecentServices: Fetching job listings for current tab:', currentTab);
+    fetchJobListings().catch((error) => {
+      console.error('RecentServices: Failed to fetch job listings:', error);
+    });
+  }, [currentTab]); // Only re-fetch when tab changes
 
   return (
     <div className="font-inter bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
@@ -107,41 +120,36 @@ const RecentServices = ({ getJob, loading, jobsData, error }) => {
           </Button>
         </Link>
       </div>
-      {allJobs?.length > 0 ? (
+      {filteredJobListings?.length > 0 ? (
         <ServiceTable
-          items={allJobs}
-          onRowClick={(job) => navigate(`/customer/jobs/${activeTab}/${job.id}`)}
-          activeTab={activeTab}
+          items={filteredJobListings}
+          onRowClick={(jobListing) => navigate(`/customer/jobs/${currentTab}/${jobListing.id}`)}
+          activeTab={currentTab}
           formatItemSlug={formatJobSlug}
         />
       ) : (
         <div className="p-6 text-center">
           <div className="text-gray-500">
-            <>
-              <p>No job found</p>
-              <p className="text-sm mt-1">Jobs will appear here when available</p>
-            </>
+            {loading ? (
+              <>
+                <p>Loading job listings...</p>
+              </>
+            ) : error ? (
+              <>
+                <p>Error loading job listings</p>
+                <p className="text-sm mt-1">Please try again later</p>
+              </>
+            ) : (
+              <>
+                <p>No {currentTab} job listings found</p>
+                <p className="text-sm mt-1">Job listings will appear here when available</p>
+              </>
+            )}
           </div>
         </div>
       )}
-      {/* <ServiceTable items={services} /> */}
     </div>
   );
 };
 
-const mapStoreToProps = (state) => {
-  console.log(state);
-  return {
-    loading: state?.jobs?.loading,
-    jobsData: state?.jobs?.data,
-    error: state?.jobs?.error
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getJob: () => dispatch(jobAction())
-  };
-};
-
-export default connect(mapStoreToProps, mapDispatchToProps)(RecentServices);
+export default RecentServices;
