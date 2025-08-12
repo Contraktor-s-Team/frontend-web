@@ -73,8 +73,10 @@ const TimeLocation = () => {
     }
   };
 
+  const hasDateTime = urgent || (date && time);
+
   const isFormValid = () => {
-    return date && time && formAddress.line1 && formAddress.city && formAddress.postalCode && formAddress.state;
+    return hasDateTime && formAddress.line1 && formAddress.city && formAddress.postalCode && formAddress.state;
   };
 
   return (

@@ -100,7 +100,7 @@ const TimeLocation = () => {
 
   const isFormValid = () => {
     // Basic validation - date and time are required regardless of urgent status
-    const hasDateTime = date && time;
+    const hasDateTime = urgent || (date && time);
     const hasAddress = formAddress.line1 && formAddress.city && formAddress.postalCode && formAddress.state;
 
     return hasDateTime && hasAddress;
