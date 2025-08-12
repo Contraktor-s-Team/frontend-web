@@ -66,6 +66,7 @@ const ProfilePicture = ({ userImage, onFileSelect, uploading }) => {
 const PersonalInfo = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null); // ✅ Local preview state
   const { fetchCurrentUser, state: userState } = useUser();
   const navigate = useNavigate();
 
@@ -125,15 +126,19 @@ const PersonalInfo = () => {
     const file = event.target.files[0];
     if (!file) return;
 
+    // ✅ File size check
     if (file.size > 2 * 1024 * 1024) {
       alert("File size should be less than 2MB");
       return;
     }
+
+    // ✅ File type check
     if (!["image/jpeg", "image/png"].includes(file.type)) {
       alert("Only JPG or PNG allowed");
       return;
     }
 
+    // ✅ Ensure user has an ID
     if (!user?.id) {
       alert("User ID is missing. Please refresh and try again.");
       console.error("User object is missing ID:", user);
@@ -144,8 +149,9 @@ const PersonalInfo = () => {
     formData.append("UserId", user.id);
     formData.append("Image", file);
 
-    console.log("Uploading profile picture for:", user.id);
-    console.log("File being sent:", file.name, file.type, file.size);
+    // ✅ Show preview immediately
+    const imageUrl = URL.createObjectURL(file);
+    setPreviewImage(imageUrl);
 
     try {
       setUploading(true);
@@ -158,11 +164,12 @@ const PersonalInfo = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`
-            // Let Axios set Content-Type for FormData automatically
+            // ❗ Let Axios handle Content-Type
           },
         }
       );
 
+      // ✅ Refresh user data from backend so changes persist
       await fetchCurrentUser();
     } catch (error) {
       console.error("Upload failed:", error.response?.data || error.message);
@@ -205,7 +212,7 @@ const PersonalInfo = () => {
       <div className="flex flex-col md:flex-row items-start gap-8 md:gap-16 lg:gap-28">
         <div className="w-full md:w-auto flex-shrink-0 flex justify-center md:justify-start">
           <ProfilePicture
-            userImage={user?.imageUrl || user?.profilePicture}
+            userImage={previewImage || user?.imageUrl || user?.profilePicture} // ✅ Show preview instantly
             onFileSelect={handleProfilePictureUpload}
             uploading={uploading}
           />
