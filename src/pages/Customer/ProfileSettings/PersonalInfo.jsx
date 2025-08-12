@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TextInput from '../../../components/Form/TextInput';
 import Button from '../../../components/Button/Button';
 import { Pencil } from 'lucide-react';
 import SelectField from '../../../components/Form/Select';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../contexts/UserContext';
+import axios from 'axios';
 
 const InfoRow = ({ label, value }) => (
   <>
@@ -16,48 +17,62 @@ const InfoRow = ({ label, value }) => (
   </>
 );
 
-const ProfilePicture = ({ onEdit, userImage }) => (
-  <div className="flex flex-col items-center w-full max-w-xs sm:max-w-none">
-    <h1 className="capitalize mb-4 text-sm">Profile Picture</h1>
-    <div className="relative w-32 h-32 sm:w-40 sm:h-40 overflow-hidden mb-2">
-      <img
-        src={userImage || '/img/avatar1.jpg'}
-        alt="Profile"
-        className="w-full h-full object-cover rounded-full"
-        onError={(e) => {
-          e.target.src = '/img/avatar1.jpg';
-        }}
-      />
-      <div className="absolute bottom-1 right-1">
-        <Button
-          variant="primary"
-          className="rounded-full w-10 h-10 sm:w-12 sm:h-12 border-2 border-white"
-          onClick={onEdit}
-          iconOnly
-          leftIcon={<Pencil size={20} />}
+const ProfilePicture = ({ userImage, onFileSelect, uploading }) => {
+  const fileInputRef = useRef(null);
+
+  return (
+    <div className="flex flex-col items-center w-full max-w-xs sm:max-w-none">
+      <h1 className="capitalize mb-4 text-sm">Profile Picture</h1>
+      <div className="relative w-32 h-32 sm:w-40 sm:h-40 overflow-hidden mb-2">
+        <img
+          src={userImage || '/img/avatar1.jpg'}
+          alt="Profile"
+          className="w-full h-full object-cover rounded-full"
+          onError={(e) => { e.target.src = '/img/avatar1.jpg'; }}
         />
+        {uploading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+            <div className="animate-spin h-8 w-8 border-4 border-white border-t-transparent rounded-full"></div>
+          </div>
+        )}
+        <div className="absolute bottom-1 right-1">
+          <Button
+            variant="primary"
+            className="rounded-full w-10 h-10 sm:w-12 sm:h-12 border-2 border-white"
+            onClick={() => fileInputRef.current.click()}
+            iconOnly
+            leftIcon={<Pencil size={20} />}
+          />
+          <input
+            type="file"
+            accept="image/png, image/jpeg"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={onFileSelect}
+          />
+        </div>
+      </div>
+      <div className="w-full text-center">
+        <p className="text-sm text-gray-400 mt-2">
+          JPG or PNG file, no larger
+          <br />
+          than 2MB. (400×400px)
+        </p>
       </div>
     </div>
-    <div className="w-full text-center">
-      <p className="text-sm text-gray-400 mt-2">
-        JPG or PNG file, no larger
-        <br />
-        than 2MB. (400×400px)
-      </p>
-    </div>
-  </div>
-);
+  );
+};
+
 const PersonalInfo = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null); // ✅ Local preview state
   const { fetchCurrentUser, state: userState } = useUser();
   const navigate = useNavigate();
 
-  // Get user data from context
   const userData = userState.user.data;
   const userLoading = userState.user.loading;
   const userError = userState.user.error;
-
-  // Extract user information with fallbacks
   const user = userData?.data || userData;
 
   const [formData, setFormData] = useState({
@@ -67,7 +82,6 @@ const PersonalInfo = () => {
     dob: ''
   });
 
-  // Populate form data when user data is available
   useEffect(() => {
     if (user) {
       const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
@@ -80,36 +94,21 @@ const PersonalInfo = () => {
     }
   }, [user]);
 
-  // Fetch user data on component mount only if needed
   useEffect(() => {
     const authData = localStorage.getItem('auth');
-    if (!authData) {
-      console.log('🚫 PersonalInfo: No auth token found, skipping fetchCurrentUser');
-      return;
-    }
+    if (!authData) return;
 
     try {
       const parsedAuth = JSON.parse(authData);
       const hasToken = !!parsedAuth?.token;
       const hasUserData = userData?.data?.id || userData?.id || (userData && Object.keys(userData).length > 0);
-      const isLoading = userLoading;
-
-      if (hasToken && !hasUserData && !isLoading) {
-        console.log('🚀 PersonalInfo: Fetching current user with valid token');
-        fetchCurrentUser().catch((error) => {
-          console.error('PersonalInfo: Failed to fetch user data:', error);
-        });
-      } else {
-        console.log('🚫 PersonalInfo: Skipping fetchCurrentUser -', {
-          hasToken,
-          hasUserData: !!hasUserData,
-          isLoading
-        });
+      if (hasToken && !hasUserData && !userLoading) {
+        fetchCurrentUser().catch(console.error);
       }
     } catch (error) {
       console.error('PersonalInfo: Error parsing auth data:', error);
     }
-  }, []); // Empty dependency array - only run once on mount
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -123,7 +122,63 @@ const PersonalInfo = () => {
     navigate(-1);
   };
 
-  // Show loading state
+  const handleProfilePictureUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // ✅ File size check
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File size should be less than 2MB");
+      return;
+    }
+
+    // ✅ File type check
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      alert("Only JPG or PNG allowed");
+      return;
+    }
+
+    // ✅ Ensure user has an ID
+    if (!user?.id) {
+      alert("User ID is missing. Please refresh and try again.");
+      console.error("User object is missing ID:", user);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("UserId", user.id);
+    formData.append("Image", file);
+
+    // ✅ Show preview immediately
+    const imageUrl = URL.createObjectURL(file);
+    setPreviewImage(imageUrl);
+
+    try {
+      setUploading(true);
+      const authData = JSON.parse(localStorage.getItem("auth"));
+      const token = authData?.token;
+
+      await axios.post(
+        "https://distrolink-001-site1.anytempurl.com/api/Users/upload-picture",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+            // ❗ Let Axios handle Content-Type
+          },
+        }
+      );
+
+      // ✅ Refresh user data from backend so changes persist
+      await fetchCurrentUser();
+    } catch (error) {
+      console.error("Upload failed:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (userLoading) {
     return (
       <div className="bg-white p-4 sm:p-8 rounded-lg">
@@ -137,7 +192,6 @@ const PersonalInfo = () => {
     );
   }
 
-  // Show error state
   if (userError && Object.keys(userError).length > 0) {
     return (
       <div className="bg-white p-4 sm:p-8 rounded-lg">
@@ -157,7 +211,11 @@ const PersonalInfo = () => {
     <div className="bg-white p-4 sm:p-8 rounded-lg">
       <div className="flex flex-col md:flex-row items-start gap-8 md:gap-16 lg:gap-28">
         <div className="w-full md:w-auto flex-shrink-0 flex justify-center md:justify-start">
-          <ProfilePicture onEdit={() => setIsEditing(true)} userImage={user?.imageUrl || user?.profilePicture} />
+          <ProfilePicture
+            userImage={previewImage || user?.imageUrl || user?.profilePicture} // ✅ Show preview instantly
+            onFileSelect={handleProfilePictureUpload}
+            uploading={uploading}
+          />
         </div>
         <div className="w-full max-w-2xl">
           {isEditing ? (
