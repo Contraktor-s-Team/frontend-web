@@ -81,8 +81,9 @@ const DescribeJob = () => {
     });
 
     // Navigate to time-location step (relative navigation within nested routes)
-    navigate('../time-location', {
+    navigate(`../time-location`, {
       state: {
+        ...location.state,
         jobTitle,
         description,
         subcategory,

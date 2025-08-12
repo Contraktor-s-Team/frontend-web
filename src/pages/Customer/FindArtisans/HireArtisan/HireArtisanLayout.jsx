@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useParams, Navigate, useLocation } from 'react-router-dom';
 import { MessageSquareText, Phone } from 'lucide-react';
-import { useArtisan } from '../../../../contexts/ArtisanContext';
+// import { useArtisan } from '../../../../contexts/ArtisanContext';
 import { useEffect } from 'react';
 import { StepIndicator } from '../../../../components/FormWorkflow';
 
@@ -123,83 +123,22 @@ const ArtisanDetailsPanel = ({ artisan }) => {
 };
 
 const HireArtisanLayout = () => {
-  const { artisanId } = useParams();
-  const { state: artisanState, fetchArtisanById } = useArtisan();
-  const loading = artisanState.artisan.loading;
-  const data = artisanState.artisan.data;
-  const error = artisanState.artisan.error;
+  const { artisanId, tab } = useParams();
+  const location = useLocation();
+  const artisan = location.state?.artisan;
 
-  useEffect(() => {
-    if (artisanId) {
-      fetchArtisanById(artisanId);
-    }
-  }, [artisanId, fetchArtisanById]);
-
-  // Transform API data to match UI expectations
-  const transformArtisanData = (apiData) => {
-    if (!apiData || !apiData.user) return null;
-
-    const user = apiData.user;
-    const subcategories = apiData.subcategories?.result || [];
-
-    // Get primary specialty from first subcategory
-    const primarySpecialty = subcategories.length > 0 ? subcategories[0].subcategory.name : 'General Services';
-
-    // Get all service names
-    const services = subcategories.map((sub) => sub.subcategory.name);
-
-    return {
-      id: user.id,
-      name: `${user.firstName} ${user.lastName}`,
-      specialty: primarySpecialty,
-      rating: 4.5, // Default rating - you might want to fetch this from another endpoint
-      reviewCount: 0, // Default - you might want to fetch this from another endpoint
-      location: user.address || 'Location not specified',
-      available: user.isActive,
-      phoneNumber: user.phoneNumber,
-      email: user.email,
-      languages: ['English'], // Default - you might want to add this to your API
-      image: user.imageUrl,
-      services: services
-    };
-  };
-
-  // Get transformed artisan data
-  const artisan = data ? transformArtisanData(data) : null;
-
-  // If no artisanId, redirect to FindArtisans
-  if (!artisanId) {
+  // If no artisanId or no artisan data, redirect to FindArtisans
+  if (!artisanId || !artisan) {
     return <Navigate to="/find-artisans" />;
   }
 
   // If at base hire-artisan route, redirect to describe step
-  const { tab } = useParams();
-  const location = useLocation();
   const isAtBaseRoute =
     location.pathname.endsWith(`/hire-artisan/${tab}/${artisanId}`) ||
     location.pathname.endsWith(`/hire-artisan/${tab}/${artisanId}/`);
 
   if (isAtBaseRoute) {
     return <Navigate to={`/customer/hire-artisan/${tab}/${artisanId}/describe`} replace />;
-  }
-
-  const hasError = error && (error.message || error.error || (typeof error === 'string' && error.length > 0));
-  // Error state
-  if (hasError) {
-    return (
-      <div className="font-medium">
-        <div className="bg-red-50 p-6 rounded-lg">
-          <h2 className="text-red-800 font-semibold mb-2">Error Loading Artisan</h2>
-          <p className="text-red-600">{error.message || 'Failed to load artisan details'}</p>
-          <Link
-            to="/customer/artisans/all"
-            className="inline-block mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Back to Artisans
-          </Link>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -237,16 +176,7 @@ const HireArtisanLayout = () => {
 
         {/* Artisan details sidebar */}
         <div className="w-full md:max-w-[475px]">
-          {loading ? (
-            <div className="bg-white p-6 rounded-lg shadow-sm flex justify-center items-center min-h-[400px]">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pri-norm-1 mx-auto mb-4"></div>
-                <p>Loading artisan details...</p>
-              </div>
-            </div>
-          ) : (
-            <ArtisanDetailsPanel artisan={artisan} />
-          )}
+          <ArtisanDetailsPanel artisan={artisan} />
         </div>
       </div>
     </div>

@@ -53,25 +53,20 @@ const ArtisanGrid = ({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
       {artisans.map((artisan) => (
-        <div key={artisan.id} className="flex flex-col gap-3.5 bg-white rounded-lg shadow-md p-4">
+        <div
+          key={artisan.id}
+          className="flex flex-col gap-3.5 bg-white rounded-lg shadow-md p-4"
+          onClick={() => navigate(`/customer/artisans/${activeTab}/${artisan.id}`, { state: { artisan } })}
+        >
           <div className="relative group">
-            <Link to={`/customer/artisans/${activeTab}/${artisan.id}`} className="cursor-pointer">
-              <FallbackImage src={artisan.image} alt={artisan.name} className="w-full h-45.5 object-cover rounded-xl" />
+            <FallbackImage src={artisan.image} alt={artisan.name} className="w-full h-45.5 object-cover rounded-xl" />
 
-              <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
-                <GoStarFill size={12} className="text-warning-norm-1" />
-                <span className="text-xs font-medium text-gray-900">{artisan.rating}</span>
-              </div>
-
-              <div className="absolute top-0 left-0 w-full h-full rounded-xl group-hover:bg-pri-norm-1/50"></div>
-            </Link>
-
-            <div
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group-hover:opacity-100 opacity-0 cursor-pointer"
-              onClick={() => navigate(`/customer/hire-artisan/${activeTab}/${artisan.id}`)}
-            >
-              <h3 className="capitalize text-white text-2xl">hire</h3>
+            <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-1 shadow-sm flex items-center gap-2">
+              <GoStarFill size={12} className="text-warning-norm-1" />
+              <span className="text-xs font-medium text-gray-900">{artisan.rating}</span>
             </div>
+
+            <div className="absolute top-0 left-0 w-full h-full rounded-xl group-hover:bg-pri-norm-1/50"></div>
           </div>
 
           <div className="flex flex-col justify-between h-full">
@@ -108,27 +103,31 @@ const ArtisanGrid = ({
               <div className="flex gap-2">
                 <div
                   className={`flex items-center gap-2 ${
-                    artisan.available ? 'bg-success-light-1' : 'bg-warning-light-1'
+                    artisan.isAvailable ? 'bg-success-light-1' : 'bg-warning-light-1'
                   } px-4.25 py-2 w-fit rounded-full`}
                 >
                   <div
                     className={`w-3.5 h-3.5 ${
-                      artisan.available ? 'bg-success-norm-1' : 'bg-warning-norm-1'
+                      artisan.isAvailable ? 'bg-success-norm-1' : 'bg-warning-norm-1'
                     } rounded-full`}
                   ></div>
                   <span
                     className={`text-sm font-medium ${
-                      artisan.available ? 'text-success-norm-3' : 'text-warning-norm-3'
+                      artisan.isAvailable ? 'text-success-norm-3' : 'text-warning-norm-3'
                     }`}
                   >
-                    {artisan.available ? 'Available Now' : 'Not Available'}
+                    {artisan.isAvailable ? 'Available' : 'Unavailable'}
                   </span>
                 </div>
 
                 <Button
                   variant="primary"
                   className="w-fit px-5 py-2.5"
-                  onClick={() => navigate(`/customer/hire-artisan/${activeTab}/${artisan.id}`)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Prevent the click from propagating to the parent div
+                    navigate(`/customer/hire-artisan/${activeTab}/${artisan.id}/describe`, { state: { artisan } });
+                  }}
                 >
                   Hire
                 </Button>

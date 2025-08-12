@@ -22,13 +22,13 @@ const ReviewSubmit = () => {
   const { state: jobListingState } = useJobListings();
 
   // Debug logging
-  console.log('ReviewSubmit Debug Info:', {
-    artisanId,
-    tab,
-    fullPath: location.pathname,
-    allParams: useParams(),
-    windowLocation: window.location.href
-  });
+  // console.log('ReviewSubmit Debug Info:', {
+  //   artisanId,
+  //   tab,
+  //   fullPath: location.pathname,
+  //   allParams: useParams(),
+  //   windowLocation: window.location.href
+  // });
   const {
     // Using all these variables in the component
     jobTitle,

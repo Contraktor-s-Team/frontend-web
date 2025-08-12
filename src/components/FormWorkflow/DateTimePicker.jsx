@@ -10,7 +10,13 @@ import { Calendar, Clock, ChevronDown } from 'lucide-react';
  * @param {string} props.labelClasses - Classes to apply to labels
  * @param {boolean} props.showTimeFields - Whether to show the time input fields
  */
-const DateTimePicker = ({ value = { date: '', time: '' }, onChange, required = false, showTimeFields = true }) => {
+const DateTimePicker = ({
+  value = { date: '', time: '' },
+  onChange,
+  required = false,
+  showTimeFields = true,
+  disabled = false
+}) => {
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
   const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
   const dateDropdownRef = useRef(null);
@@ -134,21 +140,26 @@ const DateTimePicker = ({ value = { date: '', time: '' }, onChange, required = f
         </label>
         <div
           onClick={() => {
-            setIsDateDropdownOpen(!isDateDropdownOpen);
-            setIsTimeDropdownOpen(false);
+            if (!disabled) {
+              setIsDateDropdownOpen(!isDateDropdownOpen);
+              setIsTimeDropdownOpen(false);
+            }
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
               e.preventDefault();
               setIsDateDropdownOpen(!isDateDropdownOpen);
               setIsTimeDropdownOpen(false);
             }
           }}
-          tabIndex={0}
+          tabIndex={disabled ? -1 : 0}
           role="button"
           aria-label="Select date"
           aria-expanded={isDateDropdownOpen}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white flex items-center justify-between"
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md ${
+            disabled ? 'bg-gray-100 cursor-not-allowed text-gray-400' : 'cursor-pointer hover:border-gray-400'
+          } transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white flex items-center justify-between`}
+          aria-disabled={disabled}
         >
           <div className="flex items-center gap-2">
             <Calendar size={18} className="text-gray-400" />
@@ -161,7 +172,7 @@ const DateTimePicker = ({ value = { date: '', time: '' }, onChange, required = f
         </div>
 
         {/* Date Dropdown Options */}
-        {isDateDropdownOpen && (
+        {isDateDropdownOpen && !disabled && (
           <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
             {dateOptions.map((option) => (
               <div
@@ -186,21 +197,26 @@ const DateTimePicker = ({ value = { date: '', time: '' }, onChange, required = f
           </label>
           <div
             onClick={() => {
-              setIsTimeDropdownOpen(!isTimeDropdownOpen);
-              setIsDateDropdownOpen(false);
+              if (!disabled) {
+                setIsTimeDropdownOpen(!isTimeDropdownOpen);
+                setIsDateDropdownOpen(false);
+              }
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
                 e.preventDefault();
                 setIsTimeDropdownOpen(!isTimeDropdownOpen);
                 setIsDateDropdownOpen(false);
               }
             }}
-            tabIndex={0}
+            tabIndex={disabled ? -1 : 0}
             role="button"
             aria-label="Select time"
             aria-expanded={isTimeDropdownOpen}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white flex items-center justify-between"
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md ${
+              disabled ? 'bg-gray-100 cursor-not-allowed text-gray-400' : 'cursor-pointer hover:border-gray-400'
+            } transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white flex items-center justify-between`}
+            aria-disabled={disabled}
           >
             <div className="flex items-center gap-2">
               <Clock size={18} className="text-gray-400" />
@@ -213,7 +229,7 @@ const DateTimePicker = ({ value = { date: '', time: '' }, onChange, required = f
           </div>
 
           {/* Time Dropdown Options */}
-          {isTimeDropdownOpen && (
+          {isTimeDropdownOpen && !disabled && (
             <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
               {timeOptions.map((option) => (
                 <div

@@ -86,7 +86,13 @@ const TimeLocation = () => {
       {/* Date and Time section with urgent checkbox */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-13">
         <div className="w-full md:w-[713px]">
-          <DateTimePicker value={{ date, time }} onChange={handleDateTimeChange} required labelClasses="text-sm" />
+          <DateTimePicker
+            value={{ date, time }}
+            onChange={handleDateTimeChange}
+            required
+            labelClasses="text-sm"
+            disabled={urgent}
+          />
         </div>
 
         {/* Set as urgent checkbox */}
@@ -148,6 +154,7 @@ const TimeLocation = () => {
           // Navigate to review step (relative navigation within nested routes)
           navigate('../review', {
             state: {
+              ...location.state,
               jobData,
               date,
               time,

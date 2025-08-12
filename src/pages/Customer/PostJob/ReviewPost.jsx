@@ -24,10 +24,15 @@ const ReviewPost = () => {
   useEffect(() => {
     setErrors(false);
     // Fetch categories if not already loaded to display category names
-    if (!categoriesState.data?.data?.length && !categoriesState.loading) {
+    if (
+      jobListingState &&
+      jobListingState.categories &&
+      !jobListingState.categories.data?.data?.length &&
+      !jobListingState.categories.loading
+    ) {
       fetchCategories();
     }
-  }, [fetchCategories, categoriesState.data, categoriesState.loading]);
+  }, [fetchCategories, jobListingState?.categories?.data, jobListingState?.categories?.loading]);
 
   const handlePrev = () => navigate('/customer/post-job/time-location');
 
@@ -243,7 +248,7 @@ const ReviewPost = () => {
         <h2 className="font-manrope font-semibold text-2xl">Make sure everything looks good before posting</h2>
 
         {/* Success message display */}
-        {jobPostState.data && Object.keys(jobPostState.data).length > 0 && !posted && (
+        {jobListingState?.jobPost?.data && Object.keys(jobListingState.jobPost.data).length > 0 && !posted && (
           <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -266,10 +271,12 @@ const ReviewPost = () => {
 
         {/* Fixed error display to prevent showing errors on initial state */}
         {(errors ||
-          (jobPostState.error && typeof jobPostState.error === 'string' && jobPostState.error.trim() !== '') ||
-          (typeof jobPostState.error === 'object' &&
-            jobPostState.error &&
-            Object.keys(jobPostState.error).length > 0)) && (
+          (jobListingState?.jobPost?.error &&
+            typeof jobListingState.jobPost.error === 'string' &&
+            jobListingState.jobPost.error.trim() !== '') ||
+          (typeof jobListingState?.jobPost?.error === 'object' &&
+            jobListingState?.jobPost?.error &&
+            Object.keys(jobListingState.jobPost.error).length > 0)) && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -317,7 +324,7 @@ const ReviewPost = () => {
               <p className="text-sm">
                 {(() => {
                   // Get category data from JobListingContext to display category name
-                  const categories = categoriesState.data?.data || [];
+                  const categories = jobListingState?.categories?.data?.data || [];
                   const categoryId = jobData.category || location?.state?.categoryId;
                   const selectedCategory = categories.find((cat) => cat.id === categoryId);
 
@@ -341,7 +348,7 @@ const ReviewPost = () => {
               <p className="text-sm">
                 {(() => {
                   // Get subcategory data from JobListingContext to display subcategory name
-                  const categories = categoriesState.data?.data || [];
+                  const categories = jobListingState?.categories?.data?.data || [];
                   const categoryId = jobData.category || location?.state?.categoryId;
                   const subcategoryId = jobData.subcategory || location?.state?.subcategoryId;
                   const selectedCategory = categories.find((cat) => cat.id === categoryId);
@@ -540,9 +547,9 @@ const ReviewPost = () => {
             variant="primary"
             onClick={handlePost}
             className="px-6 py-4.25"
-            disabled={jobLoading || jobPostState.loading}
+            disabled={jobLoading || jobListingState?.jobPost?.loading}
           >
-            {jobLoading || jobPostState.loading ? <LoaderComp /> : 'Post Job'}
+            {jobLoading || jobListingState?.jobPost?.loading ? <LoaderComp /> : 'Post Job'}
           </Button>
         </div>
       </div>

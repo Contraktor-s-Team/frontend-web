@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
   MessageSquare,
@@ -16,57 +16,24 @@ import {
 } from 'lucide-react';
 import Button from '../../../components/Button/Button';
 import { GoStarFill } from 'react-icons/go';
-import PageHeader from '../../../components/PageHeader/PageHeader';
-import { useUser } from '../../../contexts/UserContext';
-import { useArtisan } from '../../../contexts/ArtisanContext';
 import { useHireArtisan } from '../../../contexts/HireArtisanContext';
 import FallbackImage from '../../../components/FallbackImage';
-import Avatar from '/img/avatar1.jpg';
 import { FaRegBookmark } from 'react-icons/fa6';
 
 const CustomerArtisanDetails = () => {
   const { artisanId, tab } = useParams();
   const navigate = useNavigate();
-  const { state: artisanState, fetchArtisanById } = useArtisan();
+  const location = useLocation();
   const { dispatch } = useHireArtisan();
 
-  // Extract data from the correct state structure
-  const artisanData = artisanState.artisan.data;
-  const loading = artisanState.artisan.loading;
-  const error = artisanState.artisan.error;
+  // Use artisan data from navigation state
+  const artisanData = location.state?.artisan;
+  const loading = !artisanData; // loading if no data in state
+  const error = !artisanData ? { message: 'No artisan data found in navigation state.' } : null;
 
-  // Transform API response to match component expectations
-  const artisan = artisanData
-    ? {
-        id: artisanData.user?.id,
-        name: `${artisanData.user?.firstName || ''} ${artisanData.user?.lastName || ''}`.trim(),
-        firstName: artisanData.user?.firstName,
-        lastName: artisanData.user?.lastName,
-        email: artisanData.user?.email,
-        phone: artisanData.user?.phoneNumber,
-        imageUrl: artisanData.user?.imageUrl,
-        available: artisanData.user?.isAvailable,
-        specialty: artisanData.subcategories?.result?.[0]?.subcategory?.name || 'General Services',
-        services: artisanData.subcategories?.result?.map((item) => item.subcategory) || [],
-        location: artisanData.user?.address || 'Location not specified',
-        rating: 4.5, // Default rating since not in API response
-        reviewCount: 0, // Default review count since not in API response
-        languages: ['English'], // Default languages since not in API response
-        workPhotos: [], // Default empty array since not in API response
-        reviews: [], // Default empty array since not in API response
-        description:
-          artisanData.subcategories?.result?.[0]?.subcategory?.description ||
-          'Professional artisan ready to help with your needs.'
-      }
-    : null;
+  // Use the artisan data as-is from location.state
+  const artisan = artisanData || null;
 
-  useEffect(() => {
-    if (artisanId && fetchArtisanById) {
-      fetchArtisanById(artisanId);
-    }
-  }, [artisanId, fetchArtisanById]);
-
-  console.log('Artisan State:', artisanState);
   console.log('Artisan Data:', artisan);
   console.log('Loading:', loading);
   console.log('Error:', error);
@@ -88,12 +55,12 @@ const CustomerArtisanDetails = () => {
           rating: artisan.rating,
           image: artisan.imageUrl,
           location: artisan.location,
-          availability: artisan.available ? 'Available' : 'Not Available',
+          availability: artisan.isAvailable ? 'Available' : 'Not Available',
           languages: Array.isArray(artisan.languages) ? artisan.languages.join(', ') : artisan.languages || 'English'
         }
       });
     }
-    navigate(`/customer/hire-artisan/${tab}/${artisanId}/describe`);
+    navigate(`/customer/hire-artisan/${tab}/${artisanId}/describe`, { state: { artisan } });
   };
 
   if (loading) {
@@ -191,20 +158,20 @@ const CustomerArtisanDetails = () => {
                     render: () => (
                       <div
                         className={`inline-flex items-center gap-2 ${
-                          artisan.available ? 'bg-success-light-1' : 'bg-warning-light-1'
+                          artisan.isAvailable ? 'bg-success-light-1' : 'bg-warning-light-1'
                         } px-3 py-1.5 rounded-full`}
                       >
                         <div
                           className={`w-3 h-3 ${
-                            artisan.available ? 'bg-success-norm-1' : 'bg-warning-norm-1'
+                            artisan.isAvailable ? 'bg-success-norm-1' : 'bg-warning-norm-1'
                           } rounded-full`}
                         ></div>
                         <span
                           className={`text-sm font-medium ${
-                            artisan.available ? 'text-success-norm-3' : 'text-warning-norm-3'
+                            artisan.isAvailable ? 'text-success-norm-3' : 'text-warning-norm-3'
                           }`}
                         >
-                          {artisan.available ? 'Available Now' : 'Not Available'}
+                          {artisan.isAvailable ? 'Available' : 'Unavailable'}
                         </span>
                       </div>
                     )
@@ -226,7 +193,7 @@ const CustomerArtisanDetails = () => {
               {/* Right side - Image */}
               <div className="relative">
                 <FallbackImage
-                  src={artisan.imageUrl}
+                  src={artisan.image}
                   alt={artisan.name}
                   className="w-26.25 h-26.25 rounded-full object-cover"
                 />

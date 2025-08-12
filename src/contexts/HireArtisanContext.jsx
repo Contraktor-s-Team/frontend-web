@@ -78,35 +78,14 @@ export function HireArtisanProvider({ children }) {
         throw new Error('No authentication token found');
       }
 
-      // Build URL with artisanId and price as query parameters
-      const url = `${baseUrl}/ArtisanDiscovery?artisanId=${encodeURIComponent(artisanId)}&price=${encodeURIComponent(
-        price
-      )}`;
-
-      // Comprehensive payload logging
-      console.log('🚀 HireArtisan API Call - Complete Payload Debug:');
-      console.log('═══════════════════════════════════════════════════');
-      console.log('📡 URL:', url);
-      console.log('🔑 Auth Token (first 20 chars):', token.substring(0, 20) + '...');
-      console.log('💰 Price:', price);
-      console.log('👤 Artisan ID:', artisanId);
-
-      console.log('\n📦 FormData Contents:');
-      const formDataObj = {};
+      // Log the FormData contents for debugging
+      console.log('Hire Artisan Debug - FormData entries:');
       for (let [key, value] of postState.entries()) {
-        if (value instanceof File) {
-          console.log(`${key}: [FILE] ${value.name} (${value.size} bytes, ${value.type})`);
-          formDataObj[key] = `[FILE] ${value.name} (${value.size} bytes)`;
-        } else {
-          console.log(`${key}:`, value);
-          formDataObj[key] = value;
-        }
+        console.log(`${key}:`, value);
       }
 
-      console.log('\n🔍 Complete Request Summary:');
-      console.log('URL Parameters:', { artisanId, price });
-      console.log('FormData Object:', formDataObj);
-      console.log('═══════════════════════════════════════════════════');
+      // Build URL with artisanId and price as query parameters
+      const url = `${baseUrl}/ArtisanDiscovery?artisanId=${artisanId}&price=${price}`;
 
       const res = await axios.post(url, postState, {
         headers: {

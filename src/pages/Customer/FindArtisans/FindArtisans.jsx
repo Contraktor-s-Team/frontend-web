@@ -57,13 +57,13 @@ const FindArtisans = () => {
         email: artisan.email,
         specialty: primaryCategory,
         location: artisan.address || 'Location not specified',
-        image: artisan.imageUrl || '/api/placeholder/300/200', // Fallback image
+        image: artisan.imageUrl,
         rating: 4.5, // Default rating since not in API
-        available: artisan.isAvailable, // ✅ FIXED: Use isAvailable instead of isActive
+        isAvailable: artisan.isAvailable,
         services: subcategoryNames.length > 0 ? subcategoryNames : [primaryCategory],
-        priceRange: '₦5,000 – ₦15,000', // Default range since not in API
+        priceRange: '₦5,000 – ₦15,000',
         description: subcategories[0]?.subcategory?.description || '',
-        saved: false, // Default value for saved state
+        saved: false,
         phoneNumber: artisan.phoneNumber,
         emailConfirmed: artisan.emailConfirmed,
         numberConfirmed: artisan.numberConfirmed,

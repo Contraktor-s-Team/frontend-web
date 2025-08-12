@@ -4,8 +4,10 @@ import { Link, useLocation } from 'react-router-dom';
 import TextInput from '../Form/TextInput';
 import Button from '../Button/Button';
 import avatar from '/img/avatarnew.png';
+import { useNavigate } from 'react-router-dom';
 
 const TopBar = ({ logout, userType = 'customer', data }) => {
+  const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
   const [userLocation] = useState('Ikeja GRA, Lagos');
@@ -95,7 +97,12 @@ const TopBar = ({ logout, userType = 'customer', data }) => {
                     Profile
                   </a>
                 </div>
-                <div className="py-1 border-t border-gray-100" onClick={() => logout()}>
+                <div
+                  className="py-1 border-t border-gray-100"
+                  onClick={() => {
+                    logout();
+                  }}
+                >
                   <a href="#" className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
                     <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
