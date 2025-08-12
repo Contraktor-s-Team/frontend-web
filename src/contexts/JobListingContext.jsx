@@ -9,7 +9,9 @@ const initialState = {
   jobListingById: { loading: false, data: {}, error: {} },
   categories: { loading: false, data: {}, error: {} },
   subcategories: { loading: false, data: {}, error: {} },
-  artisanJobListings: { loading: false, data: {}, error: {} }
+  artisanJobListings: { loading: false, data: {}, error: {} },
+  // Add new state for user jobs (ongoing/completed/cancelled)
+  userJobs: { loading: false, data: {}, error: {} }
 };
 
 const JobListingContext = createContext(null);
@@ -65,6 +67,13 @@ function jobListingReducer(state, action) {
       return { ...state, artisanJobListings: { loading: false, data: action.payload, error: {} } };
     case 'ARTISAN_JOB_LISTING_FAILURE':
       return { ...state, artisanJobListings: { loading: false, data: {}, error: action.payload } };
+    // User Jobs (ongoing/completed/cancelled)
+    case 'USER_JOBS_REQUEST':
+      return { ...state, userJobs: { ...state.userJobs, loading: true } };
+    case 'USER_JOBS_SUCCESS':
+      return { ...state, userJobs: { loading: false, data: action.payload, error: {} } };
+    case 'USER_JOBS_FAILURE':
+      return { ...state, userJobs: { loading: false, data: {}, error: action.payload } };
     default:
       return state;
   }
@@ -73,6 +82,7 @@ function jobListingReducer(state, action) {
 export function JobListingProvider({ children }) {
   const [state, dispatch] = useReducer(jobListingReducer, initialState);
   const baseUrl = 'https://distrolink-001-site1.anytempurl.com/api/JobListing';
+  const jobsBaseUrl = 'https://distrolink-001-site1.anytempurl.com/api/Jobs';
 
   // Add call guards to prevent duplicate API calls
   const callGuards = useRef({
@@ -80,6 +90,7 @@ export function JobListingProvider({ children }) {
     fetchJobListingById: new Map(),
     fetchArtisanJobListings: new Map(), // Map to track calls by subcategory combination
     fetchCategories: false,
+    fetchUserJobs: false,
     lastFetchTimestamps: new Map()
   });
 
@@ -150,7 +161,7 @@ export function JobListingProvider({ children }) {
     }
   }, []);
 
-  // Fetch all job listings
+  // Fetch job listings (for posted jobs only)
   const fetchJobListings = useCallback(
     async (filters = {}) => {
       // Prevent duplicate calls if already loading
@@ -216,7 +227,50 @@ export function JobListingProvider({ children }) {
       }
     },
     [state.jobListings.loading, getUserRole]
-  ); // Fetch job by ID
+  );
+
+  // NEW: Fetch user jobs (ongoing/completed/cancelled) from Jobs API
+  const fetchUserJobs = useCallback(
+    async (filters = {}) => {
+      // Prevent duplicate calls if already loading
+      if (state.userJobs.loading) {
+        console.log('⏳ fetchUserJobs: Already loading, skipping duplicate call');
+        return;
+      }
+
+      dispatch({ type: 'USER_JOBS_REQUEST' });
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        console.log('🔍 fetchUserJobs: Fetching user jobs with filters:', filters);
+
+        const response = await axios.get(`${jobsBaseUrl}/GetUserJobs`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: filters
+        });
+
+        console.log('✅ fetchUserJobs response:', response.data);
+        dispatch({ type: 'USER_JOBS_SUCCESS', payload: response.data });
+        return response.data;
+      } catch (error) {
+        console.error('❌ fetchUserJobs error:', error.response?.status, error.response?.data);
+
+        // Handle authentication errors first
+        if (handleAuthError(error)) {
+          return; // Early return if redirected to login
+        }
+
+        dispatch({ type: 'USER_JOBS_FAILURE', payload: error.response?.data?.message || error.message });
+        throw error;
+      }
+    },
+    [state.userJobs.loading]
+  );
+
+  // Fetch job by ID
   const fetchJobListingById = useCallback(
     async (id) => {
       console.log('🚀 fetchJobListingById called with ID:', id);
@@ -513,7 +567,8 @@ export function JobListingProvider({ children }) {
         deleteJobListing,
         fetchCategories,
         fetchSubcategories,
-        fetchArtisanJobListings
+        fetchArtisanJobListings,
+        fetchUserJobs // Add the new function to the context
       }}
     >
       {children}
