@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { jobIdAction } from '../../../redux/Jobs/JobsAction';
 import { jobProposalAction, negotiateAction, negotiateProposalAction } from '../../../redux/Proposals/ProposalAction';
 import NegotiationModal from '../../../components/Modal/NegotiateModal';
-import SuccessModal from '../../../components/Modal/SuccessModal'; 
+import ActionModel from '../../../components/Modal/ActionModel'; 
 
 const JobDetails = ({
   getJobId,
@@ -34,7 +34,7 @@ const JobDetails = ({
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [selectedProposal, setSelectedProposal] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showActionModel, setShowActionModel] = useState(false);
   const [modalError, setModalError] = useState('');
   // Handle star click
   const handleStarClick = (star) => {

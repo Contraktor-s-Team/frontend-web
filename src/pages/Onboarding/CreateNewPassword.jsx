@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import AuthSidePanel from "../../components/Layout/AuthSidePanel";
 import { TextInput } from "../../components/Form";
-import SuccessModal from "../../components/Modal/SuccessModal";
+import ActionModel from "../../components/Modal/ActionModel";
 import { connect } from "react-redux";
 import { resetPasswordAction } from "../../redux/Auth/Login/LoginAction";
 import LoaderComp from "../../assets/animation/loader";
@@ -13,7 +13,7 @@ const CreateNewPassword = ({resetPassword,loading, error, data}) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showActionModel, setShowActionModel] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const email = location.state?.email;
@@ -121,9 +121,9 @@ const CreateNewPassword = ({resetPassword,loading, error, data}) => {
       </div>
 
       {/* Success Modal */}
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+      <ActionModel
+        isOpen={showActionModel}
+        onClose={() => setShowActionModel(false)}
         title="Password Reset Successful!"
         message="You can now log in with your new password."
         primaryButtonText="Browse Artisans"

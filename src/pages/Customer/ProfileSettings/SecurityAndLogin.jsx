@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import TextInput from '../../../components/Form/TextInput';
 import Button from '../../../components/Button/Button';
 import { Trash2 } from 'lucide-react';
+import ActionModel from '../../../components/Modal/ActionModel';
 
 const sessions = [
   {
@@ -33,6 +34,8 @@ const sessions = [
 
 function SecurityAndLogin() {
   const [enabled, setEnabled] = useState(true);
+
+  const [showActionModel, setShowActionModel] = useState(false);
 
   return (
     <div className="w-full max-w-203.75">
@@ -120,9 +123,19 @@ function SecurityAndLogin() {
         </div>
       </div>
 
-      <Button variant="destructive-sec" rightIcon={<Trash2 size={20} />} className="capitalize mt-15 p-4">
+      <Button variant="destructive-sec" rightIcon={<Trash2 size={20} />} className="capitalize mt-15 p-4" onClick={() => setShowActionModel(true)}>
         delete my account
       </Button>
+
+      <ActionModel
+        isOpen={showActionModel}
+        onClose={() => setShowActionModel(false)}
+        isSuccess={false}
+        title="Delete Account"
+        message="This action will permanently remove your account and all associated data. Are you sure you want to proceed?"
+        primaryButtonText="Delete Account"
+        // onPrimaryButtonClick={}
+      />
     </div>
   );
 }

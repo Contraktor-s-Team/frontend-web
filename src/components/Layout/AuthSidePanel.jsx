@@ -48,7 +48,7 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
       <div className="font-manrope font-bold text-white text-4xl">ContraKtor</div>
       
       {/* Slider Content */}
-      <div className="flex flex-col items-center space-y-6">
+      <div className="flex flex-col items-center space-y-7">
         {/* Image Placeholder - Replace with actual image component */}
         {/* <div className="w-[168px] h-[96px] bg-gray-300 rounded"></div> */}
         <img src={slides[currentSlide]?.image} alt={slides[currentSlide]?.title} className="w-70" />
@@ -63,7 +63,7 @@ const AuthSidePanel = ({ className = '', currentSlide: externalCurrentSlide = nu
         </p>
 
         {/* Slide Indicators */}
-        <div className="flex justify-center items-center space-x-4 mt-8">
+        <div className="flex justify-center items-center space-x-4">
           {slides.map((_, index) => (
             <button
               key={index}

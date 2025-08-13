@@ -5,7 +5,7 @@ import { FaUpload } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { navigate } from "@storybook/addon-links";
-import SuccessModal from "../../../components/Modal/SuccessModal";
+import ActionModel from "../../../components/Modal/ActionModel";
 
 const VerifyIdentify = ({
     formData,
@@ -17,7 +17,7 @@ const VerifyIdentify = ({
     error
 }) => {
     const [selectedIdType, setSelectedIdType] = useState('National ID Card');
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showActionModel, setShowActionModel] = useState(false);
     const [frontSideFile, setFrontSideFile] = useState(null);
     const [backSideFile, setBackSideFile] = useState(null);
     const Navigate = useNavigate();
@@ -57,10 +57,10 @@ const VerifyIdentify = ({
     );
     
     const handleContinue = () => {
-        setShowSuccessModal(true);
+        setShowActionModel(true);
     }
     const handleSkip = () => {
-        setShowSuccessModal(true);
+        setShowActionModel(true);
     }
 
     return ( 
@@ -125,9 +125,9 @@ const VerifyIdentify = ({
                 Continue
             </button>
             </div>
-            <SuccessModal
-              isOpen={showSuccessModal}
-              onClose={() => setShowSuccessModal(false)}
+            <ActionModel
+              isOpen={showActionModel}
+              onClose={() => setShowActionModel(false)}
               title="You’re All Set!"
               message="You’ve successfully created your account and Ready to find the right artisan for the job"
               primaryButtonText="Browse Artisans"

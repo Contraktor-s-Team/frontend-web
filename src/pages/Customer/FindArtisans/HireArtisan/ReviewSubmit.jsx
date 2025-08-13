@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Pencil } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { resetJobData } from '../../../../redux/slices/hireArtisanSlice';
-import SuccessModal from '../../../../components/Modal/SuccessModal';
+import ActionModel from '../../../../components/Modal/ActionModel';
 import Button from '../../../../components/Button';
 
 // Reusable field display component to reduce repetitive code
@@ -29,7 +29,7 @@ const ReviewSubmit = () => {
     address
   } = useSelector((state) => state.hireArtisan);
 
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showActionModel, setShowActionModel] = useState(false);
 
   const handlePrevious = () => {
     // Get the path parts to construct the new path
@@ -41,7 +41,7 @@ const ReviewSubmit = () => {
   const handleSubmit = () => {
     // In a real app, this would make an API call to submit the job request
     // For now, just show the success modal
-    setShowSuccessModal(true);
+    setShowActionModel(true);
   };
 
   const handleViewJob = () => {
@@ -168,9 +168,9 @@ const ReviewSubmit = () => {
       </div>
 
       {/* Success Modal */}
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+      <ActionModel
+        isOpen={showActionModel}
+        onClose={() => setShowActionModel(false)}
         title="Job Request Sent to Artisan"
         message="The artisan has received your job request. You'll be notified once they review and accept the job."
         primaryButtonText="View Job"

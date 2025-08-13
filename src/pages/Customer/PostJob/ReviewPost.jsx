@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '../../../components/Button/Button';
-import SuccessModal from '../../../components/Modal/SuccessModal';
+import ActionModel from '../../../components/Modal/ActionModel';
 import { useSelector, useDispatch } from 'react-redux';
 import { resetJobData } from '../../../redux/slices/jobPostSlice';
 import { Pencil } from 'lucide-react';
@@ -165,7 +165,7 @@ const ReviewPost = () => {
         </div>
       </div>
 
-      <SuccessModal
+      <ActionModel
         isOpen={posted}
         onClose={closeModal}
         title="Your Job has been posted!"

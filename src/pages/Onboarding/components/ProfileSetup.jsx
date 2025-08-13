@@ -4,7 +4,7 @@ import Button from '../../../components/Button';
 import { Select, TextInput } from '../../../components/Form';
 import SelectField from '../../../components/Form/Select';
 import profile from "../../../assets/profile.png"
-import SuccessModal from '../../../components/Modal/SuccessModal';
+import ActionModel from '../../../components/Modal/ActionModel';
 import { useNavigate } from 'react-router-dom';
 import TextAreaInput from '../../../components/Form/TextAreaInput';
 import { connect } from 'react-redux';
@@ -42,7 +42,7 @@ const ProfileSetup = ({
   const Navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = React.useState(false);
-  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+  const [showActionModel, setShowActionModel] = React.useState(false);
   const [category, setCategory] = React.useState( '');
   const [subcategory, setSubcategory] = React.useState( '');
   const [imageUploaded, setImageUploaded] = React.useState(false);
@@ -99,7 +99,7 @@ const ProfileSetup = ({
   //     subCategoryIds: formData?.selectedServices,
   //   };
   //   postAssignment(postState, ()=>{
-  //     setShowSuccessModal(true);
+  //     setShowActionModel(true);
   //     onNext();
   //   },() => {
   //     setError(true);
@@ -134,14 +134,14 @@ const ProfileSetup = ({
         };
         
         postAssignment(postState, () => {
-          // setShowSuccessModal(true);
+          // setShowActionModel(true);
           onNext();
         }, () => {
           setError(true);
         });
       } else {
         // For regular users, just show success
-        setShowSuccessModal(true);
+        setShowActionModel(true);
         onNext();
       }
       
@@ -364,9 +364,9 @@ const ProfileSetup = ({
                   "Create Account"
                 )}  
             </Button>
-            <SuccessModal
-              isOpen={showSuccessModal}
-              onClose={() => setShowSuccessModal(false)}
+            <ActionModel
+              isOpen={showActionModel}
+              onClose={() => setShowActionModel(false)}
               title="You’re All Set!"
               message="You’ve successfully created your account and Ready to find the right artisan for the job"
               primaryButtonText="Browse Artisans"
