@@ -86,7 +86,7 @@ function SecurityAndLogin() {
   };
 
   return (
-    <div className="w-full max-w-[450px]">
+    <div className="w-full max-w-[451px]">
       <h1 className="font-semibold capitalize">Change your password</h1>
 
       <div className="w-full my-5 border-b-2 border-neu-light-2"></div>
