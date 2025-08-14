@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import TextInput from '../../../components/Form/TextInput';
 import Button from '../../../components/Button/Button';
 import { Pencil } from 'lucide-react';
-import SelectField from '../../../components/Form/Select';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../contexts/UserContext';
 import axios from 'axios';
@@ -11,7 +10,7 @@ const InfoRow = ({ label, value }) => (
   <>
     <div>
       <h3 className="text-sm font-medium text-black mb-1">{label}</h3>
-      <p className="text-neu-norm-1 text-sm">{value}</p>
+      <p className="text-neu-norm-1 text-sm">{value || 'Not provided'}</p>
     </div>
     <div className="border-b-2 border-neu-light-2 my-7"></div>
   </>
@@ -74,6 +73,11 @@ const PersonalInfo = () => {
   const userLoading = userState.user.loading;
   const userError = userState.user.error;
   const user = userData?.data || userData;
+  
+  // Debug: Log the full user data structure
+  console.log('🔍 Full userState:', userState);
+  console.log('🔍 userData:', userData);
+  console.log('🔍 Final user object:', user);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -84,12 +88,21 @@ const PersonalInfo = () => {
 
   useEffect(() => {
     if (user) {
+      console.log('🔍 User data structure:', user);
+      console.log('🔍 Available user fields:', Object.keys(user));
+      console.log('🔍 DOB fields check:', {
+        dateOfBirth: user.dateOfBirth,
+        dob: user.dob,
+        dateOfBirthType: typeof user.dateOfBirth,
+        dobType: typeof user.dob
+      });
+      
       const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
       setFormData({
         fullName: fullName || 'Not provided',
         email: user.email || 'Not provided',
         phone: user.phoneNumber || 'Not provided',
-        dob: user.dateOfBirth || 'Not provided'
+        dob: user.dateOfBirth || user.dob || user.DateOfBirth || user.DOB || ''
       });
     }
   }, [user]);
@@ -117,7 +130,9 @@ const PersonalInfo = () => {
 
   const handleSave = (e) => {
     e.preventDefault();
-    console.log('Saving data:', formData);
+    console.log('🔍 Saving data:', formData);
+    console.log('🔍 Current user object:', user);
+    console.log('🔍 User data structure:', JSON.stringify(user, null, 2));
     setIsEditing(false);
     navigate(-1);
   };
@@ -243,20 +258,14 @@ const PersonalInfo = () => {
                 value={formData.phone}
                 onChange={handleChange}
               />
-              <SelectField
+              <TextInput
                 className="text-sm"
-                labelClassName="text-sm"
-                dropdownClassName="text-sm"
                 label="Date of Birth"
                 name="dob"
+                type="date"
                 value={formData.dob}
-                onChange={handleChange}
-                options={[
-                  { value: '12 - 04 - 2001', label: '12 - 04 - 2001' },
-                  { value: '01 - 01 - 1990', label: '01 - 01 - 1990' },
-                  { value: '15 - 06 - 1995', label: '15 - 06 - 1995' }
-                ]}
-                placeholder="Select date of birth"
+                disabled={true}
+                readOnly={true}
               />
               <Button onClick={handleSave} variant="primary" className="px-6 py-3.25 mt-14.5">
                 Save Changes
@@ -267,7 +276,7 @@ const PersonalInfo = () => {
               <InfoRow label="Full Name" value={formData.fullName} />
               <InfoRow label="Email Address" value={formData.email} />
               <InfoRow label="Phone Number" value={formData.phone} />
-              <InfoRow label="Date of birth" value={formData.dob} />
+              <InfoRow label="Date of Birth" value={formData.dob} />
               <Button
                 onClick={() => {
                   setIsEditing(true);

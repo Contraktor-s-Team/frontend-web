@@ -59,6 +59,7 @@ const Signup = () => {
     lastName: '',
     location: '',
     phoneNumber: '',
+    dob: '',
     selectedServices: []
   });
   const [validationErrors, setValidationErrors] = useState({});
@@ -216,15 +217,18 @@ const Signup = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phoneNumber: formData.phoneNumber,
-        address: formData.location
+        address: formData.location,
+        dateOfBirth: formData.dob
       };
 
       // Use user data from fetchCurrentUser (stored in userState.user.data)
       const userData = userState.user.data;
       const userId = userData?.data?.id || userData?.id;
 
-      console.log('Starting user update with data:', updateData);
-      console.log('Using userId:', userId);
+      console.log('🔍 Starting user update with data:', updateData);
+      console.log('🔍 Using userId:', userId);
+      console.log('🔍 FormData DOB value:', formData.dob);
+      console.log('🔍 UpdateData DOB value:', updateData.dateOfBirth);
 
       if (!userId) {
         console.error('❌ No user ID found for update');
@@ -260,7 +264,8 @@ const Signup = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phoneNumber: formData.phoneNumber,
-        address: formData.location
+        address: formData.location,
+        dateOfBirth: formData.dob
       };
 
       // Use user data from fetchCurrentUser (stored in userState.user.data)

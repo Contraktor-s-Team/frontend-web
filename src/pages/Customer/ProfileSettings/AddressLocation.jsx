@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextInput from '../../../components/Form/TextInput';
 import Button from '../../../components/Button/Button';
 import { Map, Pencil } from 'lucide-react';
 import SelectField from '../../../components/Form/Select';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../../contexts/UserContext';
 
 const InfoRow = ({ label, value }) => (
   <>
@@ -17,15 +18,49 @@ const InfoRow = ({ label, value }) => (
 
 const AddressLocation = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const { fetchCurrentUser, state: userState } = useUser();
+  const navigate = useNavigate();
+
+  const userData = userState.user.data;
+  const userLoading = userState.user.loading;
+  const userError = userState.user.error;
+  const user = userData?.data || userData;
+
   const [formData, setFormData] = useState({
-    address: '123 Main Street, Victoria Island',
-    city: 'Lagos',
-    state: 'Lagos State',
-    country: 'Nigeria',
-    postalCode: '100001'
+    address: '',
+    city: '',
+    state: '',
+    country: '',
+    postalCode: ''
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        address: user.address || user.streetAddress || 'Not provided',
+        city: user.city || 'Not provided',
+        state: user.state || user.stateProvince || 'Not provided',
+        country: user.country || 'Not provided',
+        postalCode: user.postalCode || user.zipCode || 'Not provided'
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const authData = localStorage.getItem('auth');
+    if (!authData) return;
+
+    try {
+      const parsedAuth = JSON.parse(authData);
+      const hasToken = !!parsedAuth?.token;
+      const hasUserData = userData?.data?.id || userData?.id || (userData && Object.keys(userData).length > 0);
+      if (hasToken && !hasUserData && !userLoading) {
+        fetchCurrentUser().catch(console.error);
+      }
+    } catch (error) {
+      console.error('AddressLocation: Error parsing auth data:', error);
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +73,34 @@ const AddressLocation = () => {
     setIsEditing(false);
     navigate(-1);
   };
+
+  if (userLoading) {
+    return (
+      <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pri-norm-1 mx-auto mb-4"></div>
+            <p>Loading address information...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (userError && Object.keys(userError).length > 0) {
+    return (
+      <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Failed to load address information</p>
+            <Button variant="primary" onClick={() => fetchCurrentUser()} className="px-6 py-2">
+              Retry
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg">

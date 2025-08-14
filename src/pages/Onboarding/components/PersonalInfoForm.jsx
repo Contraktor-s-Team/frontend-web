@@ -3,8 +3,8 @@ import Button from '../../../components/Button';
 import { TextInput } from '../../../components/Form';
 import LoaderComp from '../../../assets/animation/loader';
 
-const PersonalInfo = ({ formData, onFormChange, onNext, userData, isLoading, isError, error }) => {
-  const { firstName = '', lastName = '', phoneNumber = '' } = formData || {};
+const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, error }) => {
+  const { firstName = '', lastName = '', phoneNumber = '', dob = '' } = formData || {};
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -55,6 +55,32 @@ const PersonalInfo = ({ formData, onFormChange, onNext, userData, isLoading, isE
         }
         break;
 
+      case 'dob':
+        if (!value.trim()) {
+          error = 'Date of birth is required';
+        } else {
+          // Validate date format and reasonable age range
+          const selectedDate = new Date(value);
+          const today = new Date();
+          const age = today.getFullYear() - selectedDate.getFullYear();
+          
+          // Check if date is valid
+          if (isNaN(selectedDate.getTime())) {
+            error = 'Please enter a valid date';
+          }
+          // Check if date is in the future
+          else if (selectedDate > today) {
+            error = 'Date of birth cannot be in the future';
+          }
+          // Check if age is reasonable (between 13 and 120 years)
+          else if (age < 13) {
+            error = 'You must be at least 13 years old';
+          } else if (age > 120) {
+            error = 'Please enter a valid date of birth';
+          }
+        }
+        break;
+
       default:
         break;
     }
@@ -69,6 +95,7 @@ const PersonalInfo = ({ formData, onFormChange, onNext, userData, isLoading, isE
     newErrors.firstName = validateField('firstName', firstName);
     newErrors.lastName = validateField('lastName', lastName);
     newErrors.phoneNumber = validateField('phoneNumber', phoneNumber);
+    newErrors.dob = validateField('dob', dob);
 
     // Remove empty errors
     Object.keys(newErrors).forEach((key) => {
@@ -139,7 +166,8 @@ const PersonalInfo = ({ formData, onFormChange, onNext, userData, isLoading, isE
     setTouched({
       firstName: true,
       lastName: true,
-      phoneNumber: true
+      phoneNumber: true,
+      dob: true
     });
 
     // Validate form
@@ -150,12 +178,12 @@ const PersonalInfo = ({ formData, onFormChange, onNext, userData, isLoading, isE
 
   // Check if form is valid
   const isFormValid = () => {
-    return firstName.trim() && lastName.trim() && phoneNumber.trim() && Object.keys(errors).length === 0;
+    return firstName.trim() && lastName.trim() && phoneNumber.trim() && dob.trim() && Object.keys(errors).length === 0;
   };
 
   // Auto-populate from user data if available
   useEffect(() => {
-    if (!firstName || !lastName || !phoneNumber) {
+    if (!firstName || !lastName || !phoneNumber || !dob) {
       if (!firstName) {
         onFormChange('firstName', firstName);
       }
@@ -165,8 +193,11 @@ const PersonalInfo = ({ formData, onFormChange, onNext, userData, isLoading, isE
       if (!phoneNumber) {
         onFormChange('phoneNumber', phoneNumber);
       }
+      if (!dob) {
+        onFormChange('dob', dob);
+      }
     }
-  }, [firstName, lastName, phoneNumber]);
+  }, [firstName, lastName, phoneNumber, dob]);
   return (
     <div className="">
       <div className="space-y-2">
@@ -229,6 +260,21 @@ const PersonalInfo = ({ formData, onFormChange, onNext, userData, isLoading, isE
           onChange={handleChange}
           isError={touched.phoneNumber && errors.phoneNumber}
           errorMessage={errors.phoneNumber}
+        />
+
+        <TextInput
+          id="dob"
+          name="dob"
+          label="Date of Birth"
+          type="date"
+          placeholder="Select your date of birth"
+          className="mb-[40px]"
+          value={dob}
+          onChange={handleChange}
+          isError={touched.dob && errors.dob}
+          errorMessage={errors.dob}
+          max={new Date().toISOString().split('T')[0]}
+          min="1900-01-01"
         />
       </form>
 
