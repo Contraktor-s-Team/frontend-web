@@ -3,7 +3,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Pencil } from 'lucide-react';
 import { useHireArtisan } from '../../../../contexts/HireArtisanContext';
 import { useJobListings } from '../../../../contexts/JobListingContext';
-import SuccessModal from '../../../../components/Modal/SuccessModal';
+import ActionModel from '../../../../components/Modal/ActionModel';
 import Button from '../../../../components/Button';
 
 // Reusable field display component to reduce repetitive code
@@ -55,7 +55,7 @@ const ReviewSubmit = () => {
     return categoryData?.name || categoryId || 'Mot Specified';
   };
 
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showActionModel, setShowActionModel] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState('');
   const [price, setPrice] = useState(''); // Add price field
@@ -319,9 +319,9 @@ const ReviewSubmit = () => {
       </div>
 
       {/* Success Modal */}
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+      <ActionModel
+        isOpen={showActionModel}
+        onClose={() => setShowActionModel(false)}
         title="Job Request Sent to Artisan"
         message="The artisan has received your job request. You'll be notified once they review and accept the job."
         primaryButtonText="View Job"

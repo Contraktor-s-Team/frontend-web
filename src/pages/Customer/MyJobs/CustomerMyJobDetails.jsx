@@ -8,7 +8,7 @@ import Avatar from '/img/avatar1.jpg';
 import { useJobListings } from '../../../contexts/JobListingContext.jsx';
 import { useProposal } from '../../../contexts/ProposalContext.jsx';
 import NegotiationModal from '../../../components/Modal/NegotiateModal.jsx';
-import SuccessModal from '../../../components/Modal/SuccessModal.jsx';
+import ActionModal from '../../../components/Modal/ActionModal.jsx';
 import ConfirmationModal from '../../../components/Modal/ComfirmationModal.jsx';
 import SuccessPopup from '../../../components/Modal/SuccessPopup.jsx';
 
@@ -29,7 +29,7 @@ const CustomerJobDetails = () => {
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [selectedProposal, setSelectedProposal] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showActionModal, setShowActionModal] = useState(false);
   const [modalError, setModalError] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);

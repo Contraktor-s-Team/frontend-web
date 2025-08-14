@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useProposal } from '../../contexts/ProposalContext';
 import { X } from 'lucide-react';
-import SuccessModal from './SuccessModal';
+import ActionModel from './ActionModel';
 
 export default function NegotiationModal({
   isOpen,
@@ -22,7 +22,7 @@ export default function NegotiationModal({
     message: '',
     proposedPrice: ''
   });
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showActionModel, setShowActionModel] = useState(false);
   const [modalError, setModalError] = useState(false);
 
   // Get acceptNegotiation and rejectNegotiation from context
@@ -71,7 +71,7 @@ export default function NegotiationModal({
         negotiationPayload,
         () => {
           // Success callback - move to sent view
-          setShowSuccessModal(true);
+          setShowActionModel(true)
           setCurrentView('sent');
           setNegotiationData({ message: '', proposedPrice: '' });
         },
@@ -113,8 +113,9 @@ export default function NegotiationModal({
       }
     );
   };
-  const handleCloseSuccessModal = () => {
-    setShowSuccessModal(false);
+  const handleCloseActionModel = () => {
+    setShowActionModel(false);
+    
   };
   const handleRenegotiate = () => {
     setCurrentView('typing');
@@ -447,14 +448,14 @@ export default function NegotiationModal({
           </>
         )}
       </div>
-      {showSuccessModal && (
-        <SuccessModal
-          isOpen={showSuccessModal}
-          onClose={handleCloseSuccessModal}
+      {showActionModel && (
+        <ActionModel
+          isOpen={showActionModel}
+          onClose={handleCloseActionModel}
           title="Negotiation Sent Successfully!"
           message="Your negotiation has been sent to the artisan. You'll receive a response shortly."
           primaryButtonText="Continue"
-          onPrimaryButtonClick={handleCloseSuccessModal}
+          onPrimaryButtonClick={handleCloseActionModel}
         />
       )}
     </div>

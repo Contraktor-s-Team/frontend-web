@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../../components/Button';
 import { Select, TextInput } from '../../../components/Form';
 import SelectField from '../../../components/Form/Select';
-import profile from '../../../assets/profile.png';
+import profile from "../../../assets/profile.png"
+import ActionModel from '../../../components/Modal/ActionModel';
+import { useNavigate } from 'react-router-dom';
 import TextAreaInput from '../../../components/Form/TextAreaInput';
 import { useUser } from '../../../contexts/UserContext';
 import { useArtisan } from '../../../contexts/ArtisanContext';
@@ -29,8 +31,9 @@ const ProfileSetup = ({
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = React.useState(false);
-  const [category, setCategory] = React.useState('');
-  const [subcategory, setSubcategory] = React.useState('');
+  const [showActionModel, setShowActionModel] = React.useState(false);
+  const [category, setCategory] = React.useState( '');
+  const [subcategory, setSubcategory] = React.useState( '');
   const [imageUploaded, setImageUploaded] = React.useState(false);
   const [hasAttemptedImageUpload, setHasAttemptedImageUpload] = React.useState(false);
   const [error, setError] = React.useState(false);
