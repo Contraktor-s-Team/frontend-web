@@ -94,15 +94,36 @@ const PersonalInfo = () => {
         dateOfBirth: user.dateOfBirth,
         dob: user.dob,
         dateOfBirthType: typeof user.dateOfBirth,
-        dobType: typeof user.dob
+        dobType: typeof user.dob,
+        dateOfBirthFormatted: user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'null'
       });
       
       const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+      // Helper function to format date from API response
+      const formatDate = (dateString) => {
+        if (!dateString) return 'Not provided';
+        try {
+          // Handle API response format (ISO timestamp like "2025-08-14T01:52:51.592Z")
+          const date = new Date(dateString);
+          if (isNaN(date.getTime())) return 'Not provided';
+          
+          // Format as readable date (e.g., "August 14, 2025")
+          return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+        } catch (error) {
+          console.error('Error formatting date:', error);
+          return 'Not provided';
+        }
+      };
+
       setFormData({
         fullName: fullName || 'Not provided',
         email: user.email || 'Not provided',
         phone: user.phoneNumber || 'Not provided',
-        dob: user.dateOfBirth || user.dob || user.DateOfBirth || user.DOB || 'Not provided'
+        dob: formatDate(user.dateOfBirth || user.dob || user.DateOfBirth || user.DOB)
       });
     }
   }, [user]);

@@ -233,7 +233,7 @@ const Signup = () => {
         lastName: formData.lastName,
         phoneNumber: formData.phoneNumber,
         address: formData.location,
-        dateOfBirth: formData.dob
+        dateOfBirth: formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : null
       };
 
       // Use user data from fetchCurrentUser (stored in userState.user.data)
@@ -296,7 +296,7 @@ const Signup = () => {
         lastName: formData.lastName,
         phoneNumber: formData.phoneNumber,
         address: formData.location,
-        dateOfBirth: formData.dob
+        dateOfBirth: formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : null
       };
 
       // Use user data from fetchCurrentUser (stored in userState.user.data)
