@@ -8,7 +8,6 @@ import Avatar from '/img/avatar1.jpg';
 import { useJobListings } from '../../../contexts/JobListingContext.jsx';
 import { useProposal } from '../../../contexts/ProposalContext.jsx';
 import NegotiationModal from '../../../components/Modal/NegotiateModal.jsx';
-import ActionModal from '../../../components/Modal/ActionModal.jsx';
 import ConfirmationModal from '../../../components/Modal/ComfirmationModal.jsx';
 import SuccessPopup from '../../../components/Modal/SuccessPopup.jsx';
 
