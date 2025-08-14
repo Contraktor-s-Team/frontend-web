@@ -103,6 +103,9 @@ export function UserProvider({ children }) {
           headers: { Authorization: `Bearer ${token}` }
         });
 
+        console.log('🔍 Backend response for GetCurrentUser:', response.data);
+        console.log('🔍 Backend response structure:', JSON.stringify(response.data, null, 2));
+
         callGuards.current.lastFetchTimestamp = Date.now();
         callGuards.current.consecutiveErrors = 0; // Reset error count on success
         dispatch({ type: 'USER_SUCCESS', payload: response.data });
@@ -139,10 +142,18 @@ export function UserProvider({ children }) {
   const updateUser = useCallback(async (id, postState, onSuccess, onError) => {
     dispatch({ type: 'UPDATE_USER_REQUEST' });
     try {
+      console.log('🔍 Sending update to backend:', { id, postState });
+      console.log('🔍 Update data structure:', JSON.stringify(postState, null, 2));
+      
       const res = await axios.post(`${baseUrl}/${id}/update`, postState);
+      
+      console.log('🔍 Backend update response:', res.data);
+      console.log('🔍 Backend update response structure:', JSON.stringify(res.data, null, 2));
+      
       dispatch({ type: 'UPDATE_USER_SUCCESS', payload: res.data });
       if (onSuccess) onSuccess();
     } catch (error) {
+      console.error('🔍 Update user error:', error.response?.data || error.message);
       dispatch({ type: 'UPDATE_USER_FAILURE', payload: error?.response?.data?.message || error.message });
       if (onError) onError();
     }

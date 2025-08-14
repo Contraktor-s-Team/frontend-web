@@ -102,7 +102,7 @@ const PersonalInfo = () => {
         fullName: fullName || 'Not provided',
         email: user.email || 'Not provided',
         phone: user.phoneNumber || 'Not provided',
-        dob: user.dateOfBirth || user.dob || user.DateOfBirth || user.DOB || ''
+        dob: user.dateOfBirth || user.dob || user.DateOfBirth || user.DOB || 'Not provided'
       });
     }
   }, [user]);
