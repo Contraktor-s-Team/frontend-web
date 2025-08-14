@@ -2,10 +2,13 @@ import { useState } from 'react';
 import TextInput from '../../../components/Form/TextInput';
 import Button from '../../../components/Button/Button';
 import { Trash2 } from 'lucide-react';
+import ActionModel from '../../../components/Modal/ActionModel';
 import axios from 'axios';
 
 function SecurityAndLogin() {
   const [enabled, setEnabled] = useState(true);
+
+  const [showActionModel, setShowActionModel] = useState(false);
 
   // Password form state including confirmPassword
   const [passwords, setPasswords] = useState({
@@ -178,6 +181,16 @@ function SecurityAndLogin() {
       >
         Delete my account
       </Button>
+
+      <ActionModel
+        isOpen={showActionModel}
+        onClose={() => setShowActionModel(false)}
+        isSuccess={false}
+        title="Delete Account"
+        message="This action will permanently remove your account and all associated data. Are you sure you want to proceed?"
+        primaryButtonText="Delete Account"
+        // onPrimaryButtonClick={}
+      />
     </div>
   );
 }

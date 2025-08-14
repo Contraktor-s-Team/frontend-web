@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useJobPost } from '../../../contexts/JobPostContext';
 import { useJobListings } from '../../../contexts/JobListingContext';
 import Button from '../../../components/Button/Button';
-import SuccessModal from '../../../components/Modal/SuccessModal';
+import ActionModel from '../../../components/Modal/ActionModel';
 import LoaderComp from '../../../assets/animation/loader';
 import { Pencil } from 'lucide-react';
 
@@ -547,7 +547,7 @@ const ReviewPost = () => {
         </div>
       </div>
 
-      <SuccessModal
+      <ActionModel
         isOpen={posted}
         onClose={closeModal}
         title="Your Job has been posted!"

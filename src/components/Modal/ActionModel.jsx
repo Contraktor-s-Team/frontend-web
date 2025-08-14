@@ -1,12 +1,13 @@
 import React from 'react';
 // import { FaCheck } from 'react-icons/fa';
 import Button from '../Button/Button';
-import { Check } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import { FaCheck } from 'react-icons/fa';
 
-const SuccessModal = ({
+const ActionModel = ({
   isOpen,
   onClose,
+  isSuccess=true,
   title = 'Your Job has been posted!',
   message = "You'll receive quotes from artisans shortly.",
   primaryButtonText = 'View Job',
@@ -30,10 +31,17 @@ const SuccessModal = ({
 
         onClick={e => e.stopPropagation()}
       >
-        {/* Success Icon */}
+        {/* action Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-27 h-27 rounded-full bg-[#FFEFD8] flex items-center justify-center">
-            <Check className="text-[#FFA500]" size={55} />
+        <div className={`w-27 h-27 rounded-full ${isSuccess ? 'bg-[#FFEFD8]' : 'bg-[#FBE9E9]'} flex items-center justify-center`}>
+          {
+            isSuccess ? (
+              <Check className="text-[#FFA500]" size={55} />
+            ) : (
+              <Trash2 className="text-err-norm-1" size={55} />
+            )
+          }
+            {/* <Check className={`${isSuccess ? 'text-[#FFA500]' : 'text-err-norm-1'}`} size={55} /> */}
           </div>
         </div>
 
@@ -53,7 +61,7 @@ const SuccessModal = ({
             </Button>
           )}
           <Button
-            variant="primary"
+            variant={isSuccess ? 'primary' : 'destructive-pri'}
             size="large"
             className={`justify-center ${secondaryButtonText && onSecondaryButtonClick ? 'flex-1' : 'w-full'}`}
             onClick={onPrimaryButtonClick}
@@ -66,4 +74,4 @@ const SuccessModal = ({
   );
 };
 
-export default SuccessModal;
+export default ActionModel;
