@@ -58,7 +58,6 @@ const ReviewSubmit = () => {
   const [showActionModel, setShowActionModel] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState('');
-  const [price, setPrice] = useState(''); // Add price field
 
   const handlePrevious = () => {
     // Navigate to time-location step (relative navigation within nested routes)
@@ -66,10 +65,11 @@ const ReviewSubmit = () => {
   };
 
   const handleSubmit = async () => {
-    if (!price) {
-      setErrors('Please provide a price for this job.');
-      return;
-    }
+    // Remove price validation
+    // if (!price) {
+    //   setErrors('Please provide a price for this job.');
+    //   return;
+    // }
 
     // Debug: Check if artisanId is available
     console.log('Debug - artisanId from params:', artisanId);
@@ -147,11 +147,11 @@ const ReviewSubmit = () => {
         formData.append('Images', file);
       });
 
-      // Use hireArtisan function (which will add ArtisanId and price)
+      // Use hireArtisan function with budgetAmount as price
       await hireArtisan(
         formData,
         artisanId,
-        price,
+        budgetAmount, // Use budgetAmount instead of manually entered price
         // Success callback
         () => {
           dispatch({ type: 'RESET_JOB_DATA' });
@@ -283,25 +283,16 @@ const ReviewSubmit = () => {
             </div>
           </div>
 
-          {/* Price Section */}
-          <div className="border-b-[1.5px] border-neu-light-3 pb-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Job Price</h3>
-            <div>
-              <label htmlFor="price" className="text-sm text-neu-dark-1 mb-2.5 block">
-                Enter your price for this job (NGN)
-              </label>
-              <input
-                type="number"
-                id="price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="0.00"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pri-norm-1 focus:border-transparent"
-                min="0"
-                step="0.01"
-              />
+          {/* Remove Price Section - we'll use budget amount instead */}
+          {/* Show Budget Section if budgetType is true */}
+          {budgetType && (
+            <div className="border-b-[1.5px] border-neu-light-3 pb-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Budget</h3>
+              <div>
+                <p className="text-sm text-neu-dark-1 mb-2.5">Amount (NGN): {budgetAmount}</p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Error Display */}
           {errors && <div className="p-4 bg-red-50 text-red-700 rounded-lg">{errors}</div>}

@@ -11,7 +11,7 @@ const ReviewPost = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: jobData, dispatch } = useJobPost();
-  const { postJobListing, state: jobListingContextState, fetchCategories } = useJobListings();
+  const { postJobListing, state: jobListingContextState, fetchCategories, clearJobPostState } = useJobListings();
   const [posted, setPosted] = useState(false);
   const [errors, setErrors] = useState(false);
   const [jobLoading, setJobLoading] = useState(false);
@@ -20,14 +20,15 @@ const ReviewPost = () => {
   const jobPostState = jobListingContextState?.jobListingPost || { loading: false, data: {}, error: {} };
   const categoriesState = jobListingContextState?.categories || { loading: false, data: {}, error: {} };
 
-  // Clear any previous errors when component mounts and fetch categories
+  // Clear job post state when component mounts
   useEffect(() => {
+    clearJobPostState();
     setErrors(false);
     // Fetch categories if not already loaded to display category names
     if (!categoriesState.data?.data?.length && !categoriesState.loading) {
       fetchCategories();
     }
-  }, [fetchCategories, categoriesState.data, categoriesState.loading]);
+  }, [fetchCategories, categoriesState.data, categoriesState.loading, clearJobPostState]);
 
   const handlePrev = () => navigate('/customer/post-job/time-location');
 
@@ -213,11 +214,13 @@ const ReviewPost = () => {
 
   const navigateToDashboard = () => {
     setPosted(false);
+    clearJobPostState();
     navigate('/customer/dashboard/posted');
   };
 
   const navigateToJobView = () => {
     setPosted(false);
+    clearJobPostState();
     navigate('/customer/jobs/ongoing');
   };
 

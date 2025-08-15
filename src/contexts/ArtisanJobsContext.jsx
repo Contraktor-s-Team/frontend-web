@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useRef, useCallback } from 'react';
+import axios from 'axios';
+import { getAuthToken } from '../utils/authUtils';
 
 const ArtisanJobsContext = createContext();
 
@@ -39,24 +41,49 @@ export const ArtisanJobsProvider = ({ children }) => {
       setError(null);
 
       try {
-        console.log(`🚀 ArtisanJobsContext: ${isRetry ? 'Retrying' : 'Fetching'} jobs data...`);
-        const response = await fetch('/artisan-jobs.json', {
-          signal: abortController.current.signal
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('No authentication token found');
         }
 
-        const data = await response.json();
-        console.log(
-          `✅ ArtisanJobsContext: ${isRetry ? 'Retry' : 'Fetch'} successful, fetched:`,
-          data?.length || 0,
-          'jobs'
+        console.log(`🚀 ArtisanJobsContext: ${isRetry ? 'Retrying' : 'Fetching'} jobs data...`);
+
+        const response = await axios.get(
+          'https://distrolink-001-site1.anytempurl.com/api/ArtisanDiscovery/GetJobsForCurrentArtisan',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: abortController.current.signal
+          }
         );
-        setAllJobs(data);
+
+        if (!response.data.isSuccess) {
+          throw new Error(response.data.message || 'Failed to fetch jobs');
+        }
+
+        // Transform API data to match existing structure
+        const transformedJobs = response.data.data.items.map((job) => ({
+          id: job.id,
+          title: job.title,
+          description: job.description,
+          postedAt: job.postedAt,
+          category: job.subcategoryName,
+          tab: 'newRequests', // All jobs from this endpoint are new requests
+          status: 'new',
+          jobDetails: {
+            jobDescription: job.description,
+            dateTime: job.postedAt,
+            jobLocation: {
+              address: job.location || 'Location not specified'
+            },
+            attachedPhotos: job.imageUrls || [],
+            agreedPrice: job.budget
+          }
+        }));
+
+        console.log(`✅ ArtisanJobsContext: Fetch successful, fetched:`, transformedJobs.length, 'jobs');
+        setAllJobs(transformedJobs);
         setError(null);
-        return data;
+        return transformedJobs;
       } catch (error) {
         if (error.name === 'AbortError') {
           console.log('🚫 ArtisanJobsContext: Request was aborted');

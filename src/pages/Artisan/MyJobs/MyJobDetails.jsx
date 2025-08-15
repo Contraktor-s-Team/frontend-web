@@ -7,6 +7,8 @@ import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
 import FallbackImage from '../../../components/FallbackImage';
 import { useArtisanJobs } from '../../../contexts/ArtisanJobsContext';
+import axios from 'axios';
+import { getAuthToken } from '../../../utils/authUtils';
 
 const MyJobDetails = () => {
   const { tab, jobId } = useParams();
@@ -40,9 +42,14 @@ const MyJobDetails = () => {
     if (foundJob) {
       setJob(foundJob);
     } else if (allJobs && allJobs.length > 0) {
-      // Data is loaded but job not found
-      console.warn('Job not found:', { tab, jobId });
-      setJob(null);
+      // Check if job matches by ID instead of slug for API data
+      const jobById = allJobs.find((j) => j.id === jobId);
+      if (jobById) {
+        setJob(jobById);
+      } else {
+        console.warn('Job not found:', { tab, jobId });
+        setJob(null);
+      }
     } else if (!loading && !error) {
       // No data loaded yet, fetch it
       fetchJobs();
@@ -52,6 +59,67 @@ const MyJobDetails = () => {
   // Handle back navigation while preserving tab state
   const handleBack = () => {
     navigate(-1);
+  };
+
+  // Add handlers for job actions
+  const handleAcceptJob = async () => {
+    try {
+      const token = getAuthToken();
+      await axios.post(
+        `https://distrolink-001-site1.anytempurl.com/api/Jobs/AcceptJob/${job.id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      // Refresh jobs data
+      await fetchJobs();
+      navigate('/artisan/my-jobs/ongoing');
+    } catch (error) {
+      console.error('Error accepting job:', error);
+    }
+  };
+
+  const handleRejectJob = async () => {
+    try {
+      const token = getAuthToken();
+      await axios.post(
+        `https://distrolink-001-site1.anytempurl.com/api/Jobs/RejectJob/${job.id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      await fetchJobs();
+      navigate('/artisan/my-jobs/cancelled');
+    } catch (error) {
+      console.error('Error rejecting job:', error);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!rating) {
+      return; // Don't submit if no rating
+    }
+
+    try {
+      const token = getAuthToken();
+      await axios.post(
+        `https://distrolink-001-site1.anytempurl.com/api/Jobs/SubmitReview/${job.id}`,
+        {
+          rating,
+          review: reviewText
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      // Refresh jobs data
+      await fetchJobs();
+      navigate('/artisan/my-jobs/completed');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+    }
   };
 
   if (!job) {
@@ -116,10 +184,15 @@ const MyJobDetails = () => {
 
         {['newRequests'].includes(tab) && (
           <div className="flex items-center gap-5">
-            <Button variant="secondary" rightIcon={<Check size={20} />} className="px-4 py-3.75">
+            <Button
+              variant="secondary"
+              rightIcon={<Check size={20} />}
+              className="px-4 py-3.75"
+              onClick={handleAcceptJob}
+            >
               Accept Job
             </Button>
-            <Button variant="grey-sec" className="px-4 py-3.75">
+            <Button variant="grey-sec" className="px-4 py-3.75" onClick={handleRejectJob}>
               Reject Job
             </Button>
             <Button variant="destructive-sec" className="px-4 py-3.75">
@@ -431,13 +504,21 @@ const MyJobDetails = () => {
                   </label>
                   <textarea
                     id="review"
-                    rows="2"
-                    className="w-full px-3 py-2 border border-neu-light-3 rounded-lg focus:border-pri-norm-1 focus:outline-none"
-                    placeholder="Tell us about your experience..."
+                    className="block w-full p-3 text-sm rounded-md border focus:ring focus:ring-pri-norm-1 focus:outline-none"
+                    placeholder="Share your experience..."
                     value={reviewText}
                     onChange={(e) => setReviewText(e.target.value)}
-                  />
+                  ></textarea>
                 </div>
+              </div>
+
+              <div className="pt-4">
+                <Button variant="secondary" className="w-full" disabled={!rating} onClick={handleSubmitReview}>
+                  Submit Review
+                </Button>
+                {!rating && (
+                  <p className="text-xs text-red-500 mt-2 text-center">Please select a rating before submitting</p>
+                )}
               </div>
             </div>
           )}
@@ -445,6 +526,6 @@ const MyJobDetails = () => {
       </div>
     </div>
   );
-}; // Closing brace for MyJobDetails component
+};
 
 export default MyJobDetails;

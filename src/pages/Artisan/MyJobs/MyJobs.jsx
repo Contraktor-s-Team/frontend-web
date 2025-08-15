@@ -72,57 +72,6 @@ const MyJobs = () => {
     { id: 'cancelled', label: 'Cancelled' }
   ];
 
-  // Loading state
-  // if (loading) {
-  //   return (
-  //     <div className="space-y-6">
-  //       <PageHeader
-  //         title="My Jobs"
-  //         subtitle="Manage your posted jobs and track their progress"
-  //         buttonText="Post a Job"
-  //         buttonVariant="secondary"
-  //         buttonHref="/customer/post-job/describe"
-  //         buttonIcon={<Plus size={18} />}
-  //       />
-
-  //       <TabNav
-  //         tabs={tabs}
-  //         activeTab={activeTab}
-  //         basePath="/customer/jobs"
-  //         navClassName="flex flex-wrap items-center justify-between"
-  //       />
-
-  //       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-  //         <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-  //           <h3 className="font-manrope text-xl leading-6 font-semibold text-gray-900">
-  //             {tabs.find((tab) => tab.id === activeTab)?.label}
-  //           </h3>
-  //         </div>
-
-  //         {/* Loading skeleton */}
-  //         <div className="p-6">
-  //           <div className="animate-pulse">
-  //             <div className="flex space-x-4 mb-4">
-  //               <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-  //               <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-  //               <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-  //               <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-  //             </div>
-  //             {[...Array(5)].map((_, i) => (
-  //               <div key={i} className="flex space-x-4 mb-3">
-  //                 <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-  //                 <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-  //                 <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-  //                 <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-  //               </div>
-  //             ))}
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="space-y-6">
       <PageHeader title="My Jobs" subtitle="Manage your posted jobs and track their progress" />

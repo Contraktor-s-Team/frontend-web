@@ -109,25 +109,9 @@ const CreateAccountForm = ({ onNext, onInputChange, loading, error, formData, is
               </svg>
             </div>
             <div className="ml-3">
-              {/* <h3 className="text-sm font-medium text-red-800">
-                {typeof error === 'string' ? error : 'An error occurred'}
-              </h3> */}
-              {/* {typeof error === 'object' && error.data.message && ( */}
               <div className="text-sm text-red-700">
                 <p>{error}</p>
               </div>
-              {/* )} */}
-              {/* {typeof error === 'object' && error.errors && (
-                <div className="mt-2 text-sm text-red-700">
-                  <ul className="list-disc pl-5 space-y-1">
-                    {Object.entries(error.errors).map(([field, messages]) => (
-                      <li key={field}>
-                        <strong>{field}:</strong> {Array.isArray(messages) ? messages.join(', ') : messages}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )} */}
             </div>
           </div>
         </div>

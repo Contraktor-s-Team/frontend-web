@@ -139,17 +139,18 @@ export function UserProvider({ children }) {
   // }, []);
 
   // Update user
-  const updateUser = useCallback(async (id, postState, onSuccess, onError) => {
+  const updateUser = useCallback(async (userId, postState, onSuccess, onError) => {
     dispatch({ type: 'UPDATE_USER_REQUEST' });
+    console.log(userId);
     try {
-      console.log('🔍 Sending update to backend:', { id, postState });
+      console.log('🔍 Sending update to backend:', { userId, postState });
       console.log('🔍 Update data structure:', JSON.stringify(postState, null, 2));
-      
-      const res = await axios.post(`${baseUrl}/${id}/update`, postState);
-      
+
+      const res = await axios.post(`${baseUrl}/${userId}/update`, postState);
+
       console.log('🔍 Backend update response:', res.data);
       console.log('🔍 Backend update response structure:', JSON.stringify(res.data, null, 2));
-      
+
       dispatch({ type: 'UPDATE_USER_SUCCESS', payload: res.data });
       if (onSuccess) onSuccess();
     } catch (error) {
