@@ -127,7 +127,7 @@ const NewJobRequestsTab = () => {
   const handleJobClick = (job) => {
     if (job.id) {
       console.log('Navigating to job details for ID:', job.id);
-      navigate(`/artisan/find-jobs/job-details/${job.id}`);
+      navigate(`/artisan/find-jobs/requests/${job.id}`);
     } else {
       console.warn('Job ID not found for navigation:', job);
     }

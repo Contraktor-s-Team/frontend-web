@@ -233,6 +233,8 @@ export function JobListingProvider({ children }) {
   );
 
   // NEW: Fetch user jobs (ongoing/completed/cancelled) from Jobs API
+  // i will create a separate tabs, i will separate it for this endpoint [for posted, on-going, completed].
+  //  i should check why the proposed job data does not show immediately
   const fetchUserJobs = useCallback(
     async (filters = {}) => {
       // Prevent duplicate calls if already loading

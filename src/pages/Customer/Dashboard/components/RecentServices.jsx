@@ -54,9 +54,7 @@ const RecentServices = ({ activeTab }) => {
     if (jobListing.status === 'in-progress' || jobListing.status === 'In Progress') {
       return 'ongoing';
     }
-    if (jobListing.proposals && jobListing.proposals.length > 0) {
-      return 'ongoing';
-    }
+
     return 'posted';
   };
 
