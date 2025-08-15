@@ -16,13 +16,14 @@ const ArtisanJobDetails = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const { tab, jobId } = useParams();
-
   const location = useLocation();
-
-  const proposalId = location.state.proposalId;
+  // Only use proposalId when tab is 'proposal-sent'
+  const proposalId = tab === 'proposal-sent' ? location.state?.proposalId : undefined;
 
   console.log('Job Id:', jobId);
-  console.log('proposal Id', proposalId);
+  if (tab === 'proposal-sent') {
+    console.log('proposal Id', proposalId);
+  }
 
   const navigate = useNavigate();
 
@@ -49,12 +50,18 @@ const ArtisanJobDetails = () => {
   const fetchedNegotiationId = useRef(null);
 
   // Get current user info
+
   const { state: userState } = useUser();
   const userData = userState.user;
-  const currentUserId = userData?.data?.data.id;
-  const currentUserRole = userData?.data?.data.role; // Assuming role is available
+  // Defensive: handle possible undefined/null structures
+  const currentUserId = userData?.data?.data?.id || userData?.data?.id;
+  const currentUserRole = userData?.data?.data?.role || userData?.data?.role;
 
-  console.log(userData.data.data);
+  if (userData?.data?.data) {
+    console.log(userData.data.data);
+  } else if (userData?.data) {
+    console.log(userData.data);
+  }
   console.log(currentUserId);
   console.log(currentUserRole);
 
@@ -220,7 +227,7 @@ const ArtisanJobDetails = () => {
     );
   }
 
-  if (!job) {
+  if (!job || typeof job !== 'object' || !('id' in job)) {
     return (
       <div className="p-6">
         <Button variant="destructive-sec" onClick={handleBack} leftIcon={<ArrowLeft size={20} />}>
