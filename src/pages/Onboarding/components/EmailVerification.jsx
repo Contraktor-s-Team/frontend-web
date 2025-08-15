@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Button from '../../../components/Button';
 import LoaderComp from '../../../assets/animation/loader';
 
+const getErrorMessage = (error) => {
+  if (!error) return '';
+  if (typeof error === 'string') return error;
+  if (error.message) return error.message;
+  return '';
+};
+
 const EmailVerification = ({
   code,
   onCodeChange,
@@ -15,22 +22,33 @@ const EmailVerification = ({
 }) => {
   const [countdown, setCountdown] = useState(40);
   const [canResend, setCanResend] = useState(false);
+  const [localError, setLocalError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isCodeComplete) {
-      try {
-        await onNext(e);
-      } catch (error) {
-        console.error('Email verification failed:', error);
-      }
+    setHasAttemptedSubmission(true);
+    setLocalError('');
+
+    if (!isCodeComplete) {
+      setLocalError('Please enter the complete 6-digit verification code.');
+      return;
+    }
+
+    try {
+      await onNext(e);
+    } catch (error) {
+      console.error('Email verification failed:', error);
+      setLocalError(error || 'Email verification failed. Please try again.');
     }
   };
+
   const handleResend = (e) => {
+    setLocalError(''); // Clear any previous errors
     onResendCode(e);
     setCountdown(40); // Restart countdown
     setCanResend(false);
   };
+
   useEffect(() => {
     let timer;
     if (countdown > 0) {
@@ -40,15 +58,40 @@ const EmailVerification = ({
     }
     return () => clearTimeout(timer);
   }, [countdown]);
+
+  // Clear errors when user starts typing
+  useEffect(() => {
+    if (code.some((digit) => digit !== '')) {
+      setLocalError('');
+      setHasAttemptedSubmission(false); // Reset submission state when user starts typing
+    }
+  }, [code]);
+
+  // Only show error if there's an actual error message or if user has attempted submission
+  const [hasAttemptedSubmission, setHasAttemptedSubmission] = useState(false);
+
+  // Ensure error is always a string, not an object
+  const getErrorString = (error) => {
+    if (!error) return '';
+    if (typeof error === 'string') return error;
+    if (typeof error === 'object') {
+      return error.message || error.error || JSON.stringify(error);
+    }
+    return String(error);
+  };
+
+  const displayError = getErrorMessage(confirmError) || getErrorMessage(localError);
+
   return (
     <div className="">
       <div className="">
         <h3 className="font-manrope font-bold text-[#101928] text-2xl xl:text-3xl">Verify Your Email Address</h3>
         <p className="font-inter font-medium text-[#101928] text-sm md:text-base t5 mt-4">
-          We've sent a 4-digit code to your inbox. Enter it here to activate your account.
+          We've sent a 6-digit code to your inbox. Enter it here to activate your account.
         </p>
       </div>
-      {isError && (
+
+      {displayError && (
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -61,11 +104,12 @@ const EmailVerification = ({
               </svg>
             </div>
             <div className="ml-3">
-              <div className="text-sm text-red-700">{/* <p>{confirmError}</p> */}</div>
+              <div className="text-sm text-red-700">{displayError}</div>
             </div>
           </div>
         </div>
       )}
+
       <div className="mt-[61px]">
         <div className="flex space-x-3">
           {[...Array(6)].map((_, index) => (
@@ -73,9 +117,15 @@ const EmailVerification = ({
               key={index}
               id={`code-${index}`}
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               maxLength="1"
               value={code[index] || ''}
-              onChange={(e) => onCodeChange(index, e.target.value)}
+              onChange={(e) => {
+                // Only allow numeric input
+                const value = e.target.value.replace(/[^0-9]/g, '');
+                onCodeChange(index, value);
+              }}
               onKeyDown={(e) => onKeyDown(index, e)}
               className="w-[50px] h-[50px] lg:w-[50px] lg:h-[50px] xl:w-[83px] xl:h-[80px] text-center text-3xl font-semibold border-[2px] border-[#DFE2E7] rounded-[10px] focus:border-[#0091F0] focus:outline-none transition-colors"
             />

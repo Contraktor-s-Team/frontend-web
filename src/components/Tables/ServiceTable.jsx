@@ -68,11 +68,8 @@ const ServiceTable = ({
 
   return (
     <div className={`w-full overflow-x-auto font-inter font-medium ${containerClassName}`}>
-      <table
-        className="min-w-[600px] sm:min-w-full divide-y divide-neu-light-1 text-xs sm:text-sm"
-        style={{ tableLayout: 'auto' }}
-      >
-        <thead className="bg-neu-light-1">
+      <table className="min-w-[600px] sm:min-w-full divide-y divide-neu-light-1 text-xs sm:text-sm">
+        <thead>
           <tr className="h-10 sm:h-12">
             <th
               scope="col"
@@ -119,20 +116,14 @@ const ServiceTable = ({
         </thead>
         <tbody className="bg-white divide-y divide-gray-100">
           {items.map((item, index) => {
-            return (
-              <tr
-                key={`${item.id}-${activeTab}-${index}`} // More unique key
-                className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => (onRowClick ? onRowClick(item) : null)}
-              >
-                <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
-                  <div className="text-xs sm:text-sm font-medium text-gray-900">
-                    {item.title || item.service || 'Untitled Job'}
-                  </div>
+            const hasProposals = Array.isArray(item.proposals) && item.proposals.length > 0;
+            const budget = item.jobDetails?.agreedPrice || item.budget;
 
-                  {activeTab !== 'posted' && item.description && (
-                    <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]">{item.description}</div>
-                  )}
+            return (
+              <tr key={item.id || index} className="hover:bg-gray-50 cursor-pointer" onClick={() => onRowClick?.(item)}>
+                <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                  <div className="text-xs sm:text-sm font-medium text-gray-900">{item.title}</div>
+                  {budget && <div className="text-xs text-gray-500 mt-1">Budget: ₦{budget.toLocaleString()}</div>}
                 </td>
 
                 {['in-progress', 'completed', 'cancelled'].includes(activeTab) && (

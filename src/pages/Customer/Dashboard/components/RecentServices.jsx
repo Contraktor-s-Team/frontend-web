@@ -131,18 +131,23 @@ const RecentServices = ({ activeTab }) => {
         <div className="p-6 text-center">
           <div className="text-gray-500">
             {loading ? (
-              <>
-                <p>Loading job listings...</p>
-              </>
-            ) : error ? (
-              <>
-                <p>Error loading job listings</p>
-                <p className="text-sm mt-1">Please try again later</p>
-              </>
+              <p>Loading job listings...</p>
             ) : (
               <>
-                <p>No {currentTab} job listings found</p>
-                <p className="text-sm mt-1">Job listings will appear here when available</p>
+                {currentTab === 'completed' ? (
+                  <p className="text-lg font-medium text-gray-700">No completed jobs yet</p>
+                ) : currentTab === 'ongoing' ? (
+                  <p className="text-lg font-medium text-gray-700">No ongoing jobs</p>
+                ) : (
+                  <p className="text-lg font-medium text-gray-700">No posted jobs yet</p>
+                )}
+                <p className="text-sm mt-2 text-gray-500">
+                  {currentTab === 'completed'
+                    ? 'Your completed jobs will appear here'
+                    : currentTab === 'ongoing'
+                    ? 'Jobs in progress will appear here'
+                    : 'Ready to get started? Post a job and connect with skilled artisans.'}
+                </p>
               </>
             )}
           </div>

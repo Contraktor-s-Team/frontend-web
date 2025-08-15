@@ -1,9 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUpload } from 'react-icons/fi';
-import { IoMdClose } from 'react-icons/io';
-import { IoCheckmarkDone } from 'react-icons/io5';
-import { FaMapMarkedAlt } from 'react-icons/fa';
 
 import AuthSidePanel from '../../components/Layout/AuthSidePanel';
 import ProgressBar from './components/ProgressBar';
@@ -63,7 +59,6 @@ const Signup = () => {
     selectedServices: []
   });
   const [validationErrors, setValidationErrors] = useState({});
-  // ...existing code...
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -89,13 +84,13 @@ const Signup = () => {
 
   const handleInputChange = (name, value) => {
     console.log('🔍 Signup - handleInputChange called:', { name, value });
-    
+
     setFormData((prev) => {
       const newFormData = {
         ...prev,
         [name]: value
       };
-      
+
       // Special logging for DOB field
       if (name === 'dob') {
         console.log('🔍 Signup - DOB updated in formData:', {
@@ -104,7 +99,7 @@ const Signup = () => {
           fullFormData: newFormData
         });
       }
-      
+
       return newFormData;
     });
   };
@@ -225,15 +220,17 @@ const Signup = () => {
   };
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setErrors(false); // Clear any previous errors
+    setErrors(false);
+    setValidationErrors({});
 
     try {
+      // Format data according to API requirements
       const updateData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phoneNumber: formData.phoneNumber,
-        address: formData.location,
-        dateOfBirth: formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : null
+        address: formData.location
+        // dateOfBirth: formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : null
       };
 
       // Use user data from fetchCurrentUser (stored in userState.user.data)
@@ -260,29 +257,41 @@ const Signup = () => {
         () => {
           console.log('✅ User updated successfully, moving to next step...');
           console.log('🔍 After update - Fetching updated user data...');
-          
+
           // Fetch the updated user data to confirm DOB was saved
-          fetchCurrentUser().then((updatedUserData) => {
-            console.log('🔍 After update - Updated user data:', updatedUserData);
-            console.log('🔍 After update - DOB in updated data:', {
-              dateOfBirth: updatedUserData?.dateOfBirth,
-              dob: updatedUserData?.dob,
-              fullUserData: updatedUserData
+          fetchCurrentUser()
+            .then((updatedUserData) => {
+              console.log('🔍 After update - Updated user data:', updatedUserData);
+              console.log('🔍 After update - DOB in updated data:', {
+                dateOfBirth: updatedUserData?.dateOfBirth,
+                dob: updatedUserData?.dob,
+                fullUserData: updatedUserData
+              });
+            })
+            .catch((error) => {
+              console.error('🔍 After update - Failed to fetch updated user data:', error);
             });
-          }).catch((error) => {
-            console.error('🔍 After update - Failed to fetch updated user data:', error);
-          });
-          
+
           nextStep();
         },
-        () => {
-          console.error('❌ User update failed');
+        (errorMessage) => {
           setErrors(true);
+          setValidationErrors((prev) => ({
+            ...prev,
+            update: Array.isArray(errorMessage)
+              ? errorMessage[0]
+              : typeof errorMessage === 'string'
+              ? errorMessage
+              : 'Failed to update profile. Please try again.'
+          }));
         }
       );
     } catch (error) {
-      console.error('❌ Update user request failed:', error);
       setErrors(true);
+      setValidationErrors((prev) => ({
+        ...prev,
+        update: 'An unexpected error occurred. Please try again later.'
+      }));
     }
   };
 
@@ -605,13 +614,12 @@ const Signup = () => {
             onFormChange={handleInputChange}
             onNext={handleUpdate}
             onBack={prevStep}
-            isLoading={isUpdateLoading || userState.user.loading}
+            isLoading={isUpdateLoading}
             isError={errors}
-            error={updateError}
+            error={validationErrors.update || updateError}
           />
         )}
 
-        {/* Step 6: Profile Setup - For both customers and artisans */}
         {step === 6 && (
           <ProfileSetup
             formData={formData}
@@ -635,18 +643,9 @@ const Signup = () => {
           />
         )}
 
-        {/* Step 7: Identity Verification - Only for Artisans */}
         {step === 7 && formData.role === 'artisan' && (
           <VerifyIdentify user={userState.user} onNext={handleArtisanComplete} onBack={prevStep} />
         )}
-
-        {/* Step 6: Success Message */}
-        {/* {step === 6 && (
-                        <SuccessMessage 
-                            role={formData.role}
-                            onGetStarted={() => navigate('/dashboard')}
-                        />
-                    )} */}
       </div>
     </div>
   );

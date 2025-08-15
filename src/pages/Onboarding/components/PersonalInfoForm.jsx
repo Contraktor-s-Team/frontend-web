@@ -63,7 +63,7 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
           const selectedDate = new Date(value);
           const today = new Date();
           const age = today.getFullYear() - selectedDate.getFullYear();
-          
+
           // Check if date is valid
           if (isNaN(selectedDate.getTime())) {
             error = 'Please enter a valid date';
@@ -105,6 +105,7 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
     });
 
     setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -123,11 +124,11 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
 
     // Update form data
     onFormChange(name, formattedValue);
-    
+
     // Special logging for DOB field
     if (name === 'dob') {
-      console.log('🔍 PersonalInfoForm - DOB field updated:', { 
-        originalValue: value, 
+      console.log('🔍 PersonalInfoForm - DOB field updated:', {
+        originalValue: value,
         formattedValue: formattedValue,
         timestamp: new Date().toISOString()
       });
@@ -224,7 +225,7 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
           Add your name and phone number to finish creating your account
         </p>
       </div>
-      {isError && (
+      {isError && error && (
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex">
             <div className="flex-shrink-0">
@@ -237,8 +238,8 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
               </svg>
             </div>
             <div className="ml-3">
-              <div className="mt-2 text-sm text-red-700">
-                <p>{error}</p>
+              <div className="text-sm text-red-700">
+                {typeof error === 'string' ? error : 'Please check the form for errors'}
               </div>
             </div>
           </div>

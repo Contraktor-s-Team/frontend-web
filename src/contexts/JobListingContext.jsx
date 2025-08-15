@@ -74,6 +74,9 @@ function jobListingReducer(state, action) {
       return { ...state, userJobs: { loading: false, data: action.payload, error: {} } };
     case 'USER_JOBS_FAILURE':
       return { ...state, userJobs: { loading: false, data: {}, error: action.payload } };
+    // Clear Job Post State
+    case 'CLEAR_JOB_POST_STATE':
+      return { ...state, jobListingPost: { loading: false, data: {}, error: {} } };
     default:
       return state;
   }
@@ -556,6 +559,10 @@ export function JobListingProvider({ children }) {
     [state.artisanJobListings.data, state.artisanJobListings.loading]
   );
 
+  const clearJobPostState = useCallback(() => {
+    dispatch({ type: 'CLEAR_JOB_POST_STATE' });
+  }, []);
+
   return (
     <JobListingContext.Provider
       value={{
@@ -568,7 +575,8 @@ export function JobListingProvider({ children }) {
         fetchCategories,
         fetchSubcategories,
         fetchArtisanJobListings,
-        fetchUserJobs // Add the new function to the context
+        fetchUserJobs, // Add the new function to the context
+        clearJobPostState
       }}
     >
       {children}
