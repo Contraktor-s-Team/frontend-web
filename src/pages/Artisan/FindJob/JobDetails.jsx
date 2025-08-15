@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, Map, MessageSquareText, Phone } from 'lucide-react';
 import Button from '../../../components/Button/Button';
 import Avatar from '/img/avatar1.jpg';
@@ -13,7 +13,17 @@ import FallbackImage from '../../../components/FallbackImage';
 const ArtisanJobDetails = () => {
   console.log('🚀 JobDetails component is mounting/rendering');
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const { tab, jobId } = useParams();
+
+  const location = useLocation();
+
+  const proposalId = location.state.proposalId;
+
+  console.log('Job Id:', jobId);
+  console.log('proposal Id', proposalId);
+
   const navigate = useNavigate();
 
   console.log('🔍 JobDetails: tab from useParams:', tab, 'jobId:', jobId);
@@ -41,8 +51,12 @@ const ArtisanJobDetails = () => {
   // Get current user info
   const { state: userState } = useUser();
   const userData = userState.user;
-  const currentUserId = userData?.data?.id;
-  const currentUserRole = userData?.data?.role || 'User'; // Assuming role is available
+  const currentUserId = userData?.data?.data.id;
+  const currentUserRole = userData?.data?.data.role; // Assuming role is available
+
+  console.log(userData.data.data);
+  console.log(currentUserId);
+  console.log(currentUserRole);
 
   useEffect(() => {
     console.log('🔍 JobDetails: useParams jobId:', jobId);
@@ -87,23 +101,21 @@ const ArtisanJobDetails = () => {
 
   // Find the current user's proposal for this job when in proposal-sent tab
   useEffect(() => {
-    if (tab === 'proposal-sent' && proposalData?.data && currentUserId && fetchNegotiation) {
-      // The proposalData.data should be an array of proposals for this job
-      const proposals = Array.isArray(proposalData.data) ? proposalData.data : [proposalData.data];
+    // Fetch negotiations when page loads for proposal-sent tab
+    if (tab === 'proposal-sent' && proposalId && fetchNegotiation) {
+      console.log('🔄 Fetching negotiations for proposal:', proposalId);
+      fetchNegotiation(proposalId);
 
-      // Find the proposal that matches current user
-      const userProposal = proposals.find((proposal) => proposal.senderId === currentUserId);
-
-      if (userProposal && userProposal.id !== selectedProposal?.id) {
-        setSelectedProposal(userProposal);
-        // Fetch negotiations for this proposal only if not already fetched
-        if (fetchedNegotiationId.current !== userProposal.id) {
-          fetchedNegotiationId.current = userProposal.id;
-          fetchNegotiation(userProposal.id);
+      // If we have proposal data, set the selected proposal
+      if (proposalData?.data) {
+        const proposals = Array.isArray(proposalData.data) ? proposalData.data : [proposalData.data];
+        const userProposal = proposals.find((proposal) => proposal.senderId === currentUserId);
+        if (userProposal) {
+          setSelectedProposal(userProposal);
         }
       }
     }
-  }, [tab, proposalData?.data, currentUserId]); // Removed fetchNegotiation and jobId from dependencies
+  }, [tab, proposalId, fetchNegotiation, proposalData?.data, currentUserId]);
 
   // Update negotiations when they are received
   useEffect(() => {
@@ -123,11 +135,17 @@ const ArtisanJobDetails = () => {
   const openQuoteModal = () => setIsQuoteModalOpen(true);
   const openNegotiationModal = () => setIsNegotiationModalOpen(true);
 
-  // Check if current user can accept negotiations
-  const canAcceptNegotiation = () => {
-    if (!selectedProposal || !currentUserId) return false;
-    // User cannot accept if they are the sender (artisan) of the proposal
-    return selectedProposal.senderId !== currentUserId;
+  // Check if current user can take actions on negotiations
+  const canTakeNegotiationActions = () => {
+    if (!selectedProposal || !currentUserId || !proposalNegotiations || proposalNegotiations.length === 0) {
+      return false;
+    }
+
+    // Get the most recent negotiation
+    const latestNegotiation = proposalNegotiations[0];
+
+    // User cannot take actions if they are the sender of the latest negotiation
+    return latestNegotiation.senderId !== currentUserId;
   };
 
   // Check if there are ongoing negotiations
@@ -149,16 +167,32 @@ const ArtisanJobDetails = () => {
     // You would typically call an API to reject the proposal
   };
 
+  // Check if current user can take actions on negotiations
+  // const canTakeNegotiationActions = () => {
+  //   if (!selectedProposal || !currentUserId || !proposalNegotiations || proposalNegotiations.length === 0) {
+  //     return false;
+  //   }
+  //   // Get the most recent negotiation
+  //   const latestNegotiation = proposalNegotiations[0];
+  //   // User cannot take actions if they are the sender of the latest negotiation
+  //   return latestNegotiation.senderId !== currentUserId;
+  // };
+
   // Handle negotiation submission
   const handleNegotiateProposal = (proposalId, negotiationData, successCallback, errorCallback) => {
+    // Check if user can take actions before allowing negotiation
+    if (!canTakeNegotiationActions()) {
+      errorCallback?.("You cannot negotiate at this time. Wait for the other party's response.");
+      return;
+    }
+
     console.log('Sending negotiation for proposal:', proposalId, negotiationData);
     // Implement negotiation logic here
     // This should call your negotiation API
+
     // For now, we'll simulate success
     setTimeout(() => {
-      if (successCallback) successCallback();
-      // Refresh negotiations after successful submission
-      fetchNegotiation(proposalId);
+      successCallback?.();
     }, 1000);
   };
 
@@ -221,74 +255,35 @@ const ArtisanJobDetails = () => {
     }
 
     if (tab === 'proposal-sent') {
-      // Check if current user is the sender of the proposal
-      const isCurrentUserSender = selectedProposal?.senderId === currentUserId;
+      const canTakeActions = canTakeNegotiationActions();
+      return (
+        <div className="flex items-center gap-4">
+          {/* View/Send Negotiations Button */}
+          <Button
+            variant="secondary"
+            onClick={openNegotiationModal}
+            className="px-4 py-3.75"
+            disabled={hasOngoingNegotiation() && !canTakeActions}
+          >
+            {hasOngoingNegotiation()
+              ? `View Negotiations (${proposalNegotiations.length})${!canTakeActions ? ' - Waiting for Response' : ''}`
+              : 'Start Negotiation'}
+          </Button>
 
-      if (isCurrentUserSender) {
-        // User is the artisan who sent the proposal - they can only view status, no actions
-        let statusText = 'Proposal Sent';
-        let statusClass = 'bg-blue-100 text-blue-700';
-
-        if (hasOngoingNegotiation()) {
-          const latestNegotiation = proposalNegotiations[0];
-          if (latestNegotiation?.status === 'accepted') {
-            statusText = 'Proposal Accepted';
-            statusClass = 'bg-green-100 text-green-700';
-          } else if (latestNegotiation?.status === 'rejected') {
-            statusText = 'Proposal Rejected';
-            statusClass = 'bg-red-100 text-red-700';
-          } else {
-            statusText = 'Awaiting Response';
-            statusClass = 'bg-yellow-100 text-yellow-700';
-          }
-        }
-
-        return (
-          <div className="flex items-center gap-5">
-            <div className={`px-4 py-3 rounded-lg text-sm font-medium ${statusClass}`}>{statusText}</div>
-            <Button variant="grey-sec" className="px-4 py-3.75">
-              Report Issue
-            </Button>
+          {/* Status Indicator */}
+          <div
+            className={`px-4 py-2 rounded-lg ${
+              hasOngoingNegotiation() ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+            }`}
+          >
+            {hasOngoingNegotiation()
+              ? canTakeActions
+                ? 'Your Turn to Respond'
+                : 'Waiting for Response'
+              : 'Proposal Sent'}
           </div>
-        );
-      } else {
-        // User is not the sender (they can accept/reject)
-        if (hasOngoingNegotiation()) {
-          return (
-            <div className="flex items-center gap-5">
-              <button
-                onClick={handleAccept}
-                className="py-4 px-3.75 bg-success-norm-1 text-white text-sm font-medium rounded-full hover:bg-success-norm-2"
-              >
-                Accept Offer
-              </button>
-              <Button variant="secondary" onClick={openNegotiationModal} className="px-4 py-3.75">
-                Renegotiate
-              </Button>
-              <Button variant="grey-sec" className="px-4 py-3.75">
-                Report Issue
-              </Button>
-            </div>
-          );
-        } else {
-          return (
-            <div className="flex items-center gap-5">
-              <button
-                onClick={handleAccept}
-                className="py-4 px-3.75 bg-success-norm-1 text-white text-sm font-medium rounded-full hover:bg-success-norm-2"
-              >
-                Accept Job
-              </button>
-              <Button variant="destructive-sec" onClick={handleReject} className="px-4 py-3.75">
-                Reject Job
-              </Button>
-              <Button variant="grey-sec" className="px-4 py-3.75">
-                Report Issue
-              </Button>
-            </div>
-          );
-        }
-      }
+        </div>
+      );
     }
 
     return null;
@@ -490,8 +485,8 @@ const ArtisanJobDetails = () => {
         postProposal={postProposal}
       />
 
-      {/* Negotiation Modal for requests tab */}
-      {tab === 'requests' && selectedProposal && (
+      {/* Negotiation Modal for proposal-sent tab */}
+      {tab === 'proposal-sent' && selectedProposal && (
         <NegotiationModal
           isOpen={isNegotiationModalOpen}
           setIsOpen={setIsNegotiationModalOpen}

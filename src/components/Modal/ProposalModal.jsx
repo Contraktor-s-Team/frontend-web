@@ -91,11 +91,29 @@ export default function ProposalModal({ isOpen, setIsOpen, job, postProposal, na
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const formatNumberWithCommas = (value) => {
+    // Remove any non-digit characters except decimal point
+    const numberOnly = value.replace(/[^\d.]/g, '');
+    // Format with commas
+    const parts = numberOnly.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+  };
+
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value
-    }));
+    if (field === 'topEstimatedCost') {
+      // Format the number as the user types
+      const formattedValue = formatNumberWithCommas(value);
+      setFormData((prev) => ({
+        ...prev,
+        [field]: formattedValue
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value
+      }));
+    }
   };
 
   const handleCostBreakdownChange = (index, field, value) => {
@@ -162,10 +180,13 @@ export default function ProposalModal({ isOpen, setIsOpen, job, postProposal, na
       // Filter out empty cost breakdown items
       const validCostBreakdown = formData.costBreakdown.filter((item) => item.name.trim() && item.amount.trim());
 
+      // Remove commas from the price before sending to API
+      const cleanPrice = formData.topEstimatedCost.replace(/,/g, '');
+
       // Prepare the proposal data according to your API structure
       const proposalData = {
         jobId: job?.id,
-        proposedPrice: formData.topEstimatedCost,
+        proposedPrice: cleanPrice,
         // costBreakdown: validCostBreakdown,
         message: formData.message
         // Add any other required fields based on your API

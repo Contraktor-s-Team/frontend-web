@@ -9,7 +9,8 @@ const ProposalCard = ({ proposal, activeTab }) => {
     description,
     customer,
     postedAt,
-    jobListingId, // Add jobListingId for navigation
+    jobListingId,
+    proposalId,
     // Negotiation-related props
     canAccept,
     hasNegotiation,
@@ -120,16 +121,19 @@ const ProposalCard = ({ proposal, activeTab }) => {
     }
   };
 
+  console.log(proposal.proposalId, 'This is for the proposal card stuff');
+
   return (
     <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 hover:border-blue-200">
       {/* Clickable area for navigation */}
       <Link
         to={`/artisan/find-jobs/${activeTab}/${navigationId}`}
+        state={{ proposalId: proposal.proposalId }}
         className="block"
         onClick={() => {
           console.log('🔗 ProposalCard: Navigating to job details with ID:', navigationId);
           console.log('🔗 ProposalCard: Original Job Listing ID:', jobListingId);
-          console.log('🔗 ProposalCard: Original Proposal ID:', proposal.id);
+          console.log('🔗 ProposalCard: Original Proposal ID:', proposal.proposalId);
           console.log('🔗 ProposalCard: Cleaned Navigation ID:', navigationId);
           console.log('🔗 ProposalCard: Generated URL:', `/artisan/find-jobs/${activeTab}/${navigationId}`);
         }}

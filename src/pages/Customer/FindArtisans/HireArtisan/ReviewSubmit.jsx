@@ -58,6 +58,7 @@ const ReviewSubmit = () => {
   const [showActionModel, setShowActionModel] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handlePrevious = () => {
     // Navigate to time-location step (relative navigation within nested routes)
@@ -151,16 +152,21 @@ const ReviewSubmit = () => {
       await hireArtisan(
         formData,
         artisanId,
-        budgetAmount, // Use budgetAmount instead of manually entered price
+        budgetAmount,
         // Success callback
-        () => {
+        (response) => {
+          console.log('Job request submitted successfully:', response);
           dispatch({ type: 'RESET_JOB_DATA' });
           setShowSuccessModal(true);
           setIsSubmitting(false);
+          setShowActionModel(true);
         },
         // Error callback
-        () => {
-          setErrors('Failed to submit job request. Please try again.');
+        (error) => {
+          console.error('Job request submission error:', error);
+          const errorMessage =
+            error?.response?.data?.message || error?.message || 'Failed to submit job request. Please try again.';
+          setErrors(errorMessage);
           setIsSubmitting(false);
         }
       );

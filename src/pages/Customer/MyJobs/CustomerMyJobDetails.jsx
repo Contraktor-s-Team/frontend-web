@@ -10,6 +10,7 @@ import { useProposal } from '../../../contexts/ProposalContext.jsx';
 import NegotiationModal from '../../../components/Modal/NegotiateModal.jsx';
 import ConfirmationModal from '../../../components/Modal/ComfirmationModal.jsx';
 import SuccessPopup from '../../../components/Modal/SuccessPopup.jsx';
+import { useUser } from '../../../contexts/UserContext.jsx';
 
 const CustomerJobDetails = () => {
   const { state: jobListingState, fetchJobListingById, deleteJobListing } = useJobListings();
@@ -49,7 +50,12 @@ const CustomerJobDetails = () => {
   const deleteLoading = jobListingState.jobListingDelete.loading;
   const deleteSuccess = jobListingState.jobListingDelete.data?.isSuccess;
   const deleteError = jobListingState.jobListingDelete.error;
-  const userData = {}; // TODO: get user data from context if needed
+  // const userData = {}; // TODO: get user data from context if needed
+
+  const { state: userState } = useUser();
+  const userData = userState.user;
+  const currentUserId = userData?.data?.data.id;
+  const currentUserRole = userData?.data?.data.role; // Assuming role is available
 
   // Handle star click
   const handleStarClick = (star) => {
@@ -585,8 +591,8 @@ const CustomerJobDetails = () => {
           negotiationsLoading={negotiationsLoading} // Pass loading state
           negotiateSuccess={negotiations?.isSuccess}
           errors={negotiationsError}
-          currentUserId={userData?.id} // Replace with actual current user ID from Redux
-          currentUserRole="User" // Replace with actual current user role from Redux
+          currentUserId={currentUserId} // Replace with actual current user ID from Redux
+          currentUserRole={currentUserRole} // Replace with actual current user role from Redux
         />
       )}
 

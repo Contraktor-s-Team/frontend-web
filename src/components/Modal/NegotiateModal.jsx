@@ -14,7 +14,7 @@ export default function NegotiationModal({
   negotiateSuccess,
   negotiationsLoading = false, // Loading state for negotiations
   currentUserId, // Current user's ID to determine sender/receiver
-  currentUserRole = 'User', // Current user's role (User/Artisan)
+  currentUserRole, // Current user's role (User/Artisan)
   errors
 }) {
   const [currentView, setCurrentView] = useState('list'); // 'list', 'typing', 'sent'
@@ -28,13 +28,15 @@ export default function NegotiationModal({
   // Get acceptNegotiation and rejectNegotiation from context
   const { acceptNegotiation, rejectNegotiation } = useProposal();
 
+  // Check if current user can take actions
+  const canTakeActions = () => {
+    if (!negotiations || negotiations.length === 0) return true; // Allow initial actions
+    const latestNegotiation = negotiations[0];
+    return latestNegotiation.senderId !== currentUserId;
+  };
+
   // Reset form when modal opens/closes or proposal changes
-  useEffect(() => {
-    if (!isOpen) {
-      setNegotiationData({ message: '', proposedPrice: '' });
-      setCurrentView('list');
-    }
-  }, [isOpen, selectedProposal]);
+  useEffect(() => {}, [isOpen, selectedProposal]);
 
   const handleInputChange = (field, value) => {
     setNegotiationData((prev) => ({
@@ -45,7 +47,26 @@ export default function NegotiationModal({
 
   const handleSendNegotiation = () => {
     if (!selectedProposal?.id) {
-      console.error('No proposal selected');
+      setModalError('Invalid proposal selected');
+      return;
+    }
+
+    // Check if the current user has already sent a proposal in the latest round
+    if (negotiations && negotiations.length > 0) {
+      const latestNegotiation = negotiations[0]; // Most recent negotiation
+      if (latestNegotiation.senderId === currentUserId) {
+        setModalError('You cannot send another proposal until the other party responds');
+        return;
+      }
+    }
+
+    if (!canTakeActions()) {
+      setModalError("You cannot negotiate at this time. Wait for the other party's response.");
+      return;
+    }
+
+    if (!negotiationData.message.trim() || !negotiationData.proposedPrice.trim()) {
+      setModalError('Please enter both a message and a price');
       return;
     }
 
@@ -62,60 +83,68 @@ export default function NegotiationModal({
       sentAt: new Date().toISOString()
     };
 
-    console.log('Sending negotiation:', negotiationPayload);
-
-    // Call the negotiate function from props
-    if (negotiateProposal) {
+    try {
+      // Call the negotiateProposal function passed as prop
       negotiateProposal(
-        selectedProposal.id,
         negotiationPayload,
         () => {
-          // Success callback - move to sent view
-          setShowActionModel(true)
+          // On success
           setCurrentView('sent');
+          setModalError(null);
+          // Reset form data
           setNegotiationData({ message: '', proposedPrice: '' });
+          if (negotiateSuccess) {
+            negotiateSuccess();
+          }
         },
-        () => {
-          // Error callback
-          setModalError(true);
-          console.error('Failed to send negotiation:', errors);
+        (error) => {
+          // On error
+          setModalError(error || 'Failed to send negotiation');
         }
       );
+    } catch (error) {
+      setModalError('An unexpected error occurred');
+      console.error('Negotiation error:', error);
     }
   };
 
   const handleAcceptLatestOffer = () => {
     const latestNegotiation = negotiations[0];
-    if (!latestNegotiation || !acceptNegotiation) return;
+    if (!latestNegotiation || !acceptNegotiation || !canTakeActions()) {
+      setModalError("You cannot accept at this time. Wait for the other party's response.");
+      return;
+    }
     acceptNegotiation(
       latestNegotiation.id,
       () => {
-        setShowSuccessModal(true);
+        setShowActionModel(true);
         closeModal();
       },
       (error) => {
-        setModalError(error || 'Failed to accept negotiation');
+        setModalError(error || 'Failed to accept offer');
       }
     );
   };
 
   const handleRejectLatestOffer = () => {
     const latestNegotiation = negotiations[0];
-    if (!latestNegotiation || !rejectNegotiation) return;
+    if (!latestNegotiation || !rejectNegotiation || !canTakeActions()) {
+      setModalError("You cannot reject at this time. Wait for the other party's response.");
+      return;
+    }
     rejectNegotiation(
       latestNegotiation.id,
       () => {
-        setShowSuccessModal(true);
+        setShowActionModel(true);
         closeModal();
       },
       (error) => {
-        setModalError(error || 'Failed to reject negotiation');
+        setModalError(error || 'Failed to reject offer');
       }
     );
   };
   const handleCloseActionModel = () => {
     setShowActionModel(false);
-    
   };
   const handleRenegotiate = () => {
     setCurrentView('typing');
@@ -261,10 +290,7 @@ export default function NegotiationModal({
                   );
                 }
                 // If the latest negotiation was sent by the current user (by id or role), hide actions
-                if (
-                  (latest.senderId && latest.senderId === currentUserId) ||
-                  (latest.senderRole && latest.senderRole === currentUserRole)
-                ) {
+                if (latest.senderId === currentUserId || latest.senderRole === currentUserRole) {
                   return (
                     <div className="text-center text-gray-500 text-sm mt-2">
                       Waiting for a response from the other party...

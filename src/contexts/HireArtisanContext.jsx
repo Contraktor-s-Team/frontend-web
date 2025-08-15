@@ -89,21 +89,23 @@ export function HireArtisanProvider({ children }) {
         throw new Error('No authentication token found');
       }
 
-      // Use the correct API endpoint
-      // Changed from /api/ArtisanDiscovery/hire-artisan to /api/jobs/hire-artisan
-      const url = `${baseUrl}/ArtisanDiscovery?ArtisanId=${artisanId}&price=${validPrice}`;
+      // Construct URL with query parameters for artisanId and price
+      const url = `${baseUrl}/ArtisanDiscovery?artisanId=${artisanId}&price=${validPrice}`;
 
-      // Add artisanId and price to formData instead of URL parameters
-      // Log the FormData contents for debugging
+      // FormData contains only the job details, not the artisanId and price
+      // since those are passed as query parameters
+
+      // Log FormData contents for debugging
       console.log('PostJob Debug - FormData entries:');
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
 
+      // Set proper headers for multipart/form-data
       const response = await axios.post(url, formData, {
         headers: {
-          Authorization: `Bearer ${token}`
-          // Don't set Content-Type manually for FormData - let axios handle it
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json'
         }
       });
 
