@@ -112,6 +112,8 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    console.log('🔍 PersonalInfoForm - Field change:', { name, value });
+
     // Special handling for phone number formatting
     let formattedValue = value;
     if (name === 'phoneNumber') {
@@ -121,6 +123,15 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
 
     // Update form data
     onFormChange(name, formattedValue);
+    
+    // Special logging for DOB field
+    if (name === 'dob') {
+      console.log('🔍 PersonalInfoForm - DOB field updated:', { 
+        originalValue: value, 
+        formattedValue: formattedValue,
+        timestamp: new Date().toISOString()
+      });
+    }
 
     // Clear error for this field when user starts typing
     if (errors[name]) {
@@ -162,6 +173,10 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log('🔍 PersonalInfoForm - Form submission started');
+    console.log('🔍 PersonalInfoForm - Current formData:', { firstName, lastName, phoneNumber, dob });
+    console.log('🔍 PersonalInfoForm - Form validation errors:', errors);
+
     // Mark all fields as touched
     setTouched({
       firstName: true,
@@ -172,7 +187,10 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
 
     // Validate form
     if (validateForm()) {
+      console.log('🔍 PersonalInfoForm - Form validation passed, calling onNext');
       onNext(e);
+    } else {
+      console.log('🔍 PersonalInfoForm - Form validation failed');
     }
   };
 
@@ -197,7 +215,7 @@ const PersonalInfo = ({ formData, onFormChange, onNext, isLoading, isError, erro
         onFormChange('dob', dob);
       }
     }
-  }, [firstName, lastName, phoneNumber, dob]);
+  }, [firstName, lastName, phoneNumber, dob, onFormChange]);
   return (
     <div className="">
       <div className="space-y-2">

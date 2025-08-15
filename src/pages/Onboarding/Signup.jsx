@@ -88,10 +88,25 @@ const Signup = () => {
   ];
 
   const handleInputChange = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    console.log('🔍 Signup - handleInputChange called:', { name, value });
+    
+    setFormData((prev) => {
+      const newFormData = {
+        ...prev,
+        [name]: value
+      };
+      
+      // Special logging for DOB field
+      if (name === 'dob') {
+        console.log('🔍 Signup - DOB updated in formData:', {
+          previousDOB: prev.dob,
+          newDOB: value,
+          fullFormData: newFormData
+        });
+      }
+      
+      return newFormData;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -218,7 +233,7 @@ const Signup = () => {
         lastName: formData.lastName,
         phoneNumber: formData.phoneNumber,
         address: formData.location,
-        dateOfBirth: formData.dob
+        dateOfBirth: formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : null
       };
 
       // Use user data from fetchCurrentUser (stored in userState.user.data)
@@ -229,6 +244,8 @@ const Signup = () => {
       console.log('🔍 Using userId:', userId);
       console.log('🔍 FormData DOB value:', formData.dob);
       console.log('🔍 UpdateData DOB value:', updateData.dateOfBirth);
+      console.log('🔍 Full formData object:', formData);
+      console.log('🔍 User data before update:', userData);
 
       if (!userId) {
         console.error('❌ No user ID found for update');
@@ -242,6 +259,20 @@ const Signup = () => {
         updateData,
         () => {
           console.log('✅ User updated successfully, moving to next step...');
+          console.log('🔍 After update - Fetching updated user data...');
+          
+          // Fetch the updated user data to confirm DOB was saved
+          fetchCurrentUser().then((updatedUserData) => {
+            console.log('🔍 After update - Updated user data:', updatedUserData);
+            console.log('🔍 After update - DOB in updated data:', {
+              dateOfBirth: updatedUserData?.dateOfBirth,
+              dob: updatedUserData?.dob,
+              fullUserData: updatedUserData
+            });
+          }).catch((error) => {
+            console.error('🔍 After update - Failed to fetch updated user data:', error);
+          });
+          
           nextStep();
         },
         () => {
@@ -265,7 +296,7 @@ const Signup = () => {
         lastName: formData.lastName,
         phoneNumber: formData.phoneNumber,
         address: formData.location,
-        dateOfBirth: formData.dob
+        dateOfBirth: formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : null
       };
 
       // Use user data from fetchCurrentUser (stored in userState.user.data)
