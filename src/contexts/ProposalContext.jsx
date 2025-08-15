@@ -85,6 +85,7 @@ export function ProposalProvider({ children }) {
 
   // Post a proposal
   const postProposal = useCallback(async (postState, onSuccess, onError) => {
+    console.log('postProposal called with state:', postState);
     dispatch({ type: 'POST_PROPOSAL_REQUEST' });
     try {
       const token = getAuthToken();
@@ -92,7 +93,7 @@ export function ProposalProvider({ children }) {
         throw new Error('No authentication token found');
       }
 
-      const res = await axios.post(`${baseUrl}/`, postState, {
+      const res = await axios.post('https://distrolink-001-site1.anytempurl.com/api/Proposal', postState, {
         headers: { Authorization: `Bearer ${token}` }
       });
       dispatch({ type: 'POST_PROPOSAL_SUCCESS', payload: res.data });
@@ -100,9 +101,11 @@ export function ProposalProvider({ children }) {
     } catch (error) {
       // Handle authentication errors first
       if (handleAuthError(error)) {
+        console.error('postProposal error:', error.response?.status, error.response?.data);
         return; // Early return if redirected to login
       }
 
+      console.error('postProposal error:', error.response?.status, error.response?.data);
       dispatch({ type: 'POST_PROPOSAL_FAILURE', payload: error?.response?.data?.message || error.message });
       if (onError) onError();
     }

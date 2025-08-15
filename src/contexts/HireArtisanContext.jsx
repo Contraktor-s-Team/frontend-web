@@ -72,6 +72,7 @@ export function HireArtisanProvider({ children }) {
 
   const hireArtisan = async (formData, artisanId, price, onSuccess, onError) => {
     try {
+      console.log('Hiring artisan with data:', { artisanId, price, formData });
       if (!artisanId) {
         throw new Error('Artisan ID is required');
       }
@@ -82,17 +83,27 @@ export function HireArtisanProvider({ children }) {
         throw new Error('Valid price is required');
       }
 
+      const token = getAuthToken();
+      console.log('Auth Token:', token);
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
       // Use the correct API endpoint
       // Changed from /api/ArtisanDiscovery/hire-artisan to /api/jobs/hire-artisan
-      const url = `/api/jobs/hire-artisan`;
+      const url = `${baseUrl}/ArtisanDiscovery?ArtisanId=${artisanId}&price=${validPrice}`;
 
       // Add artisanId and price to formData instead of URL parameters
-      formData.append('ArtisanId', artisanId);
-      formData.append('Price', validPrice.toString());
+      // Log the FormData contents for debugging
+      console.log('PostJob Debug - FormData entries:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
 
       const response = await axios.post(url, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          Authorization: `Bearer ${token}`
+          // Don't set Content-Type manually for FormData - let axios handle it
         }
       });
 
